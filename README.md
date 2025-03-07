@@ -152,7 +152,7 @@ docker compose up -d
 ## 🤿 Configuration Deep Dive
 
 
-The Quick Start only covered the.essential settings, here is a more detailed walktrough of the configuration options.
+The Quick Start only covered the essential settings, here is a more detailed walktrough of the configuration options.
 
 
 ### 📁 Basic Structure
