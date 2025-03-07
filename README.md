@@ -69,9 +69,9 @@ Never miss critical container events again - Get instant alerts for security bre
 
 ## ⚡️ Quick start
 
-Choose your preferred setup method - simple environment variables for basic use, or a YAML config for advanced control.<br>
-With environment variables you can have LoggiFly up and running in a minute with just docker compose.<br>
-With YAML you can use complex Regex patterns and have different keywords & other settings per container. 
+Choose your preferred setup method - simple environment variables for basic use, or a YAML config for advanced control.
+- Environment variables allow for a simple setup and let you spin this thing up in a minute
+- With YAML you can use complex Regex patterns and have different keywords & other settings per container. 
 
 
 <details><summary><em>Click to expand:</em> 🐋 <strong>Basic Setup: Docker Compose (Environment Variables)</</strong></summary>
@@ -150,7 +150,10 @@ docker compose up -d
 
 
 ## 🤿 Configuration Deep Dive
-The Quick Start only covered the essential settings, here is a more detailed walktrough of the configuration options.
+
+
+The Quick Start only covered the.essential settings, here is a more detailed walktrough of the configuration options.
+
 
 ### 📁 Basic Structure
 
@@ -158,7 +161,7 @@ The `config.yaml` file is divided into four main sections:
 
 1. **`settings`**: Global settings like cooldowns and log levels.
 2. **`notifications`**: Configure Ntfy (URL, Topic, Token, Priority and Tags) and/or your Apprise URL
-3. **`containers`**: Define which Containers to monitor and their specific Keywords.
+3. **`containers`**: Define which Containers to monitor and their specific Keywords (plus optional settings).
 4. **`global_keywords`**: Keywords that apply to **all** monitored Containers.
 
 <details><summary><em>Click to expand:</em><strong> ⚙️ Settings </strong></summary>
@@ -169,7 +172,7 @@ settings:
   log_level: INFO               # DEBUG, INFO, WARNING, ERROR
   notification_cooldown: 5      # Seconds between alerts for same keyword (per container)
   attachment_lines: 20          # Number of Lines to include in log attachments
-  multi_line_entries: true      # Detect multi-line log entries
+  multi_line_entries: true      # Monitor multi-line log entries instead of line by line. 
   disable_restart: false        # Disable restart when a config change is detected 
   disable_start_message: false  # Suppress startup notification
   disable_shutdown_message: false  # Suppress shutdown notification
@@ -202,6 +205,8 @@ notifications:
 ```yaml
 containers:
   container-name:               # Must match exact container_name
+    # The next 5 settings are optional
+    # They override the respective global setting for this container 
     ntfy_topic: your_topic      # Overrides global ntfy topic for this contaner.
     ntfy_tags: "tag1, tag2"     # Overrides global ntfy tags for this contaner.
     ntfy_priority: 4            # Overrides global ntfy priority for this contaner. (1-5)
@@ -244,7 +249,7 @@ global_keywords:
 
 ### 🍀 Enviroment Variables
 
-Except for container specific settings and regex patterns you can configure most settings via docker environment variables in either your docker compose or an .env file
+Except for container specific settings and regex patterns you can configure most settings via docker environment variables.
 
 <details><summary><em>Click to expand:</em><strong> Enviroment Variables </strong></summary><br>
 
@@ -277,7 +282,7 @@ Except for container specific settings and regex patterns you can configure most
 
 1. If you want to **Protect Sensitive Credentials** like tokens or Apprise URLs, store them in environment variables (not in YAML).
 2. Ensure containers names **exactly match** your Docker **container names**. 
-    - ```docker ps --format "{{.Names}}" ```
+    - Find out your containers names: ```docker ps --format "{{.Names}}" ```
     - 💡 Pro Tip: Define the `container_name:` in your compose files. 
 3. **Troubleshooting Multi-Line Logs**. If multi-line entries aren't detected:
     - Wait for Patterns: LoggiFly needs a few lines to detect the pattern the log entries start with (e.g. timestamps/log formats)
