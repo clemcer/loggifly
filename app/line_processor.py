@@ -81,14 +81,16 @@ class LogProcessor:
         self.container_keywords.extend(keyword for keyword in config.containers[self.container_name].keywords if keyword not in self.container_keywords)
         self.container_keywords_with_file = config.global_keywords.keywords_with_attachment.copy()
         self.container_keywords_with_file.extend(keyword for keyword in config.containers[self.container_name].keywords_with_attachment if keyword not in self.container_keywords_with_file)
-        self.container_keywords_restart = [keyword for keyword in config.containers[self.container_name].restart_keywords if keyword not in self.container_keywords]
+        self.container_keywords_restart = [keyword for keyword in config.containers[self.container_name].restart_keywords]
 
         self.lines_number_attachment = config.containers[self.container_name].attachment_lines or config.settings.attachment_lines
         self.multi_line_config = config.settings.multi_line_entries
         self.notification_cooldown = config.containers[self.container_name].notification_cooldown or config.settings.notification_cooldown
         self.time_per_keyword = {}  
-        self.restart_cooldown = config.containers[self.container_name].restart_cooldown 
-        self.last_restart_time = time.time()
+        self.restart_cooldown = config.containers[self.container_name].restart_cooldown or 300
+        self.last_restart_time = time.time()# parser.isoparse(container.attrs['State']['StartedAt']).timestamp()
+        
+
         self.restart_event = threading.Event()
 
         self.lock_file_name = Lock()
@@ -295,9 +297,10 @@ class LogProcessor:
                          if len(keywords_found + keywords_with_attachment_found) > 1 
                          else f"The Keyword '{keywords_found[0]}' was found in {self.container_name}{formatted_log_entry}"
                          )
+       # logging.debug(f"Container: {self.container.name} Time since last restart: {time.time() - self.last_restart_time}. Cooldown: {max(int(self.restart_cooldown), 60)}, Restart keywords: {self.container_keywords_restart}")
         if time.time() - self.last_restart_time >= max(int(self.restart_cooldown), 60):
             for keyword in self.container_keywords_restart:
-               # logging.debug(f"Searching for {keyword}")
+             #   logging.debug(f"Searching for {keyword}")
                 keyword_found = None
                 if isinstance(keyword, dict) and keyword.get("regex") is not None:  
                     regex_keyword = keyword["regex"]

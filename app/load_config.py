@@ -49,7 +49,7 @@ class ContainerConfig(BaseConfigModel, KeywordBase):
     ntfy_priority: Optional[int] = None
     attachment_lines: Optional[int] = None
     notification_cooldown: Optional[int] = None
-    restart_cooldown: int = Field(300, description="Cooldown in seconds for until container can restart again")
+    restart_cooldown: Optional[int] = None
 
     @field_validator("ntfy_priority")
     def validate_priority(cls, v):
