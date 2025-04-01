@@ -222,7 +222,7 @@ class LogProcessor:
             if self.line_count < self.line_limit:
                 self._find_pattern(clean_line)
             if self.valid_pattern == True:
-                if not self.flush_thread_running:
+                if self.flush_thread_running is False:
                     logging.debug(f"Restarting flush_thread for container {self.container.name}")
                     self._start_flush_thread()
                 self._process_multi_line(clean_line)

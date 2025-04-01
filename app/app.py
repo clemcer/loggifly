@@ -132,9 +132,8 @@ class DockerLogMonitor:
             return new_count, current_time
     
     def monitor_container(self, container):
-        container_start_time = container.attrs['State']['StartedAt']
         
-        def check_container():
+        def check_container(container_start_time):
             container.reload()
             if container.status != "running":
                 logging.debug(f"Container {container.name} not running")
@@ -149,6 +148,8 @@ class DockerLogMonitor:
             """
             I am using a buffer in case the logstream has an unfinished log line that can't be decoded correctly.
             """
+            container_start_time = container.attrs['State']['StartedAt']
+
             error_count = 0
             last_error_time = time.time()  
             logging.debug(f"Container {container.name} Start Time: {container_start_time}")
@@ -192,8 +193,8 @@ class DockerLogMonitor:
 
                             if container.name == "vg-backend":
                                 logging.debug(f"LINE FROM VG_BACKEND: {log_line_decoded}")
-                        time.sleep(0.1)
-                        if not check_container():
+                       # time.sleep(0.1)
+                        if not check_container(container_start_time):
                             break
 
                 except docker.errors.NotFound as e:
@@ -215,7 +216,7 @@ class DockerLogMonitor:
                     
                     logging.info(f"Finally block for container {container.name}")
                     time.sleep(0.1)
-                    if not check_container():
+                    if not check_container(container_start_time):
                         try:
                             logging.debug(f"Trying to close old log stream for container {container.name}")
                             log_stream.close()
