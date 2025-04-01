@@ -193,7 +193,7 @@ class DockerLogMonitor:
                             if container.name == "vg-backend":
                                 logging.debug(f"LINE FROM VG_BACKEND: {log_line_decoded}")
                         time.sleep(0.1)
-                        if not check_container(container_start_time):
+                        if not check_container():
                             break
 
                 except docker.errors.NotFound as e:
@@ -215,7 +215,7 @@ class DockerLogMonitor:
                     
                     logging.info(f"Finally block for container {container.name}")
                     time.sleep(0.1)
-                    if not check_container(container_start_time):
+                    if not check_container():
                         try:
                             logging.debug(f"Trying to close old log stream for container {container.name}")
                             log_stream.close()
