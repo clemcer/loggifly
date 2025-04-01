@@ -80,8 +80,8 @@ class LogProcessor:
 
         self.container_keywords = config.global_keywords.keywords.copy()
         self.container_keywords.extend(keyword for keyword in config.containers[self.container_name].keywords if keyword not in self.container_keywords)
-        self.container_keywords_with_file = config.global_keywords.keywords_with_attachment.copy()
-        self.container_keywords_with_file.extend(keyword for keyword in config.containers[self.container_name].keywords_with_attachment if keyword not in self.container_keywords_with_file)
+        self.container_keywords_with_attachment = config.global_keywords.keywords_with_attachment.copy()
+        self.container_keywords_with_attachment.extend(keyword for keyword in config.containers[self.container_name].keywords_with_attachment if keyword not in self.container_keywords_with_attachment)
         self.container_keywords_restart = [keyword for keyword in config.containers[self.container_name].restart_keywords]
 
         self.lines_number_attachment = config.containers[self.container_name].attachment_lines or config.settings.attachment_lines
@@ -91,13 +91,13 @@ class LogProcessor:
         self.restart_cooldown = config.containers[self.container_name].restart_cooldown or 300
         self.last_restart_time = None
 
-        for keyword in self.container_keywords + self.container_keywords_with_file:
+        for keyword in self.container_keywords + self.container_keywords_with_attachment:
             if isinstance(keyword, dict) and keyword.get("regex") is not None:
                 self.time_per_keyword[keyword["regex"]] = 0
             else:
                 self.time_per_keyword[keyword] = 0  
 
-        logging.debug(f"container: {self.container_name}: Keywords: {self.container_keywords}, Keywords with attachment: {self.container_keywords_with_file}")
+        logging.debug(f"container: {self.container_name}: Keywords: {self.container_keywords}, Keywords with attachment: {self.container_keywords_with_attachment}")
 
         if self.multi_line_config is True:
             self.lock_buffer = Lock()
@@ -120,7 +120,9 @@ class LogProcessor:
             self.log_stream_last_updated = time.time()
             self.running = True
             # Start Background-Thread for Timeout
+            self.flush_thread_stopped = threading.Event()
             self._start_flush_thread()
+            
             
 
     # def _refresh_pattern(self):
@@ -187,12 +189,12 @@ class LogProcessor:
 
 
     def _start_flush_thread(self):
-    # Every second the buffer which consists of log lines that are not new entries is flushed because there won't be a log entry that produces lines over one second
+    # Every second the buffer with all log lines that belong to the same entry gets flushed
         def check_flush():
             while True:
                 if self.shutdown_event.is_set() or self.container_stop_event.is_set():
-                    logging.debug(f"Container: {self.container_name}: Stopping Flush Thraead.")
-                    self.flush_thread_running = False
+                    logging.debug(f"Container: {self.container_name}: Stopping Flush Thraead. shutdown_event: {self.shutdown_event.is_set()}: container_stop_event: {self.container_stop_event.is_set()}")
+                    self.flush_thread_stopped.set()
                     break
                 with self.lock_buffer:
                     if (time.time() - self.log_stream_last_updated > self.log_stream_timeout) and self.buffer:
@@ -202,7 +204,7 @@ class LogProcessor:
 
         self.flush_thread = Thread(target=check_flush, daemon=True)
         self.flush_thread.start()
-        self.flush_thread_running = True
+        self.flush_thread_stopped.clear()
 
 
 
@@ -218,7 +220,7 @@ class LogProcessor:
                 self._find_pattern(clean_line)
             if self.valid_pattern == True:
                 self._process_multi_line(clean_line)
-                if self.flush_thread_running is False:
+                if self.flush_thread_stopped.is_set():
                     logging.debug(f"Restarting flush_thread for container {self.container.name}")
                     self._start_flush_thread()
             else:
@@ -253,55 +255,46 @@ class LogProcessor:
     # This function is called either when the buffer is flushed every second 
     # or if a new log entry was found which means everything in the buffer is one complete log entry
     def _handle_and_clear_buffer(self):
-
         message = "\n".join(self.buffer)
         self._search_and_send(message)
         self.buffer.clear()
+
+
+    def _search_keyword(self, log_line, keyword, ignore_keyword_time=False):
+            if isinstance(keyword, dict) and keyword.get("regex") is not None:
+                regex_keyword = keyword["regex"]
+                if ignore_keyword_time or time.time() - self.time_per_keyword.get(regex_keyword) >= int(self.notification_cooldown):
+                    if re.search(regex_keyword, log_line, re.IGNORECASE):
+                        self.time_per_keyword[regex_keyword] = time.time()
+                        return f"regex: {regex_keyword}"
+            else:
+                if ignore_keyword_time or time.time() - self.time_per_keyword.get(keyword) >= int(self.notification_cooldown):
+                    if str(keyword).lower() in log_line.lower():
+                        self.time_per_keyword[keyword] = time.time()
+                        return keyword
+            return None
+    
 
     # Here the line is searchd for simple keywords or regex patterns
     def _search_and_send(self, log_line):
         keywords_with_attachment_found = [] 
         keywords_found = []
-
-        def search_regex(log_line, regex_keyword):
-            if re.search(regex_keyword, log_line, re.IGNORECASE):
-                self.time_per_keyword[regex_keyword] = time.time()
-                return f"regex: {regex_keyword}"
-
-        def search_keyword(log_line, keyword):
-            if str(keyword).lower() in log_line.lower():
-                self.time_per_keyword[keyword] = time.time()
-                return keyword
-
+        # Search for normal keywords
         for keyword in self.container_keywords:
-            keyword_found = None
-            if isinstance(keyword, dict) and keyword.get("regex") is not None:  
-                regex_keyword = keyword["regex"]
-                if time.time() - self.time_per_keyword.get(regex_keyword) >= int(self.notification_cooldown) or int(self.notification_cooldown) == 0:
-                    keyword_found = search_regex(log_line, regex_keyword)
-            else: 
-                if time.time() - self.time_per_keyword.get(keyword) >= int(self.notification_cooldown) or int(self.notification_cooldown) == 0:
-                    keyword_found = search_keyword(log_line, keyword)
-            if keyword_found:
-                keywords_found.append(keyword_found)
-            
-        for keyword in self.container_keywords_with_file:
-            keyword_with_attachment_found = None
-            if isinstance(keyword, dict) and keyword.get("regex") is not None:
-                regex_keyword = keyword["regex"]
-                if time.time() - self.time_per_keyword.get(regex_keyword) >= int(self.notification_cooldown) or int(self.notification_cooldown) == 0:
-                    keyword_with_attachment_found = search_regex(log_line, regex_keyword)
-            else:
-                if time.time() - self.time_per_keyword.get(keyword) >= int(self.notification_cooldown) or int(self.notification_cooldown) == 0:
-                    keyword_with_attachment_found = search_keyword(log_line, keyword)
-            if keyword_with_attachment_found:
-                keywords_with_attachment_found.append(keyword_with_attachment_found)      
-        
+            found = self._search_keyword(log_line, keyword)
+            if found:
+                keywords_found.append(found)
+        # Search for Keywords with attachment
+        for keyword in self.container_keywords_with_attachment:
+            found = self._search_keyword(log_line, keyword)
+            if found:
+                keywords_with_attachment_found.append(found)        
+        # Trigger notification if keywords have been found
         formatted_log_entry ="\n  -----  LOG-ENTRY  -----\n" + ' | ' + '\n | '.join(log_line.splitlines()) + "\n   -----------------------"
         if keywords_with_attachment_found:
-            logging.info(f"The following keywords were found in {self.container_name}: {keywords_found + keywords_with_attachment_found}. (A Logfile will be attached){formatted_log_entry}" 
-                        if len(keywords_found + keywords_with_attachment_found) > 1 
-                        else f"The Keyword '{keywords_found[0]}' was found in {self.container_name}{formatted_log_entry}"
+            logging.info(f"The following keywords were found in {self.container_name}: {keywords_with_attachment_found + keywords_found}. (A Logfile will be attached){formatted_log_entry}" 
+                        if len(keywords_with_attachment_found + keywords_found) > 1 
+                        else f"The Keyword '{keywords_with_attachment_found[0]}' was found in {self.container_name}{formatted_log_entry}"
                         )
             self._send_message(log_line, keywords_with_attachment_found, send_attachment=True)
         elif keywords_found:
@@ -311,19 +304,14 @@ class LogProcessor:
                          )
             self._send_message(log_line, keywords_found, send_attachment=False)
             
-            
-        if self.restart_cooldown is None or time.time() - self.last_restart_time >= max(int(self.restart_cooldown), 60):
+        # Keywords that trigger a restart
+        if self.last_restart_time is None or (self.last_restart_time is not None and time.time() - self.last_restart_time >= max(int(self.restart_cooldown), 60)):
             for keyword in self.container_keywords_restart:
-                keyword_found = None
-                if isinstance(keyword, dict) and keyword.get("regex") is not None:  
-                    regex_keyword = keyword["regex"]
-                    keyword_found = search_regex(log_line, regex_keyword)
-                else: 
-                    keyword_found = search_keyword(log_line, keyword)
-                if keyword_found:
+                found = self._search_keyword(log_line, keyword, ignore_keyword_time=True)
+                if found:
                     logging.debug(f"Cooldown: {self.restart_cooldown}, last restart time: {self.last_restart_time}")
-                    logging.info(f"Restarting {self.container_name} because Keyword: {keyword_found} was found in {formatted_log_entry}")
-                    self._send_message(log_line, keyword_found, send_attachment=False, restart=True)
+                    logging.info(f"Restarting {self.container_name} because Keyword: {found} was found in {formatted_log_entry}")
+                    self._send_message(log_line, found, send_attachment=False, restart=True)
                     self._restart_container()
                     self.last_restart_time = time.time()
                     break
@@ -343,8 +331,9 @@ class LogProcessor:
             file_name = find_available_name(base_name)
         else:
             file_name = base_name
+
         try:
-            file_name = f"last_{self.lines_number_attachment}_lines_from_{self.container_name}{number}.log"
+            file_name = f"last_{self.lines_number_attachment}_lines_from_{self.container_name}.log"
             log_tail = self.container.logs(tail=self.lines_number_attachment).decode("utf-8")
             with open(file_name, "w") as file:  
                 file.write(log_tail)
@@ -354,6 +343,7 @@ class LogProcessor:
             return None
 
     def _send_message(self, message, keyword_list, send_attachment=False, restart= False):
+       # logging.debug(f"{self.container.name}: keywords: {keyword_list}")
         if restart:
             message = f"Restarting {self.container_name} because the keyword '{keyword_list[0]}' was found in {message}"
             send_notification(self.config, self.container_name, message, keyword_list)
