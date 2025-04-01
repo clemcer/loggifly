@@ -131,12 +131,17 @@ class DockerLogMonitor:
             return new_count, current_time
     
     def monitor_container(self, container):
-        def check_if_running():
+        def check_container(container_start_time):
             container.reload()
-            if container.status == "running":
-                return True
-            else:
+            if container.status != "running":
+                logging.debug(f"Container {container.name} not running")
                 return False
+            if container.attrs['State']['StartedAt'] != container_start_time:
+                logging.debug(f"Container {container.name} not not same restart time")
+                return False
+            return True
+        
+
         def log_monitor():
             """
             I am using a buffer in case the logstream has an unfinished log line that can't be decoded correctly.
@@ -154,13 +159,6 @@ class DockerLogMonitor:
                 self.add_processor(processor, container.name)
             while not self.shutdown_event.is_set() and not self.restarting_event.is_set():
                 try:
-                    container.reload()
-                    if not check_if_running:
-                        logging.debug(f"Container {container.name} not running")
-                        break
-                    if container.attrs['State']['StartedAt'] != container_start_time:
-                        logging.debug(f"Container {container.name} not not same restart time")
-                        break
                     now = datetime.now()
                     last_chunk_time = time.time()
                     until_time = time.time() + 30
@@ -186,14 +184,9 @@ class DockerLogMonitor:
                                 logging.warning(f"{container.name}: Error while trying to decode a log line. Used errors='replace' for line: {log_line_decoded}")
                             if log_line_decoded: 
                                 processor.process_line(log_line_decoded)
-                        
-                        # logging.debug(f"End of for chunk loop for {container.name}")
-                    # if check_if_running is False:
-                    #     logging.info(f"Container {container} not running (2)")
-                    #     break
-                    # if container.attrs['State']['StartedAt'] != container_start_time:
-                    #     logging.debug(f"Container {container.name} not not same restart time (2=)")
-                    #     break
+                        if not check_container(container_start_time):
+                            break
+
                 except docker.errors.NotFound as e:
                     logging.error(F"Log Stream: Container {container} not found: {e}")
                     log_stream.close()   
@@ -211,35 +204,28 @@ class DockerLogMonitor:
                     error_count, last_error_time = self.handle_error(error_count, last_error_time)
                 finally:
                     logging.info(f"Finally block for container {container.name}")
-                    #time.sleep(3)
-                    container.reload()
-                    if container.status != "running":
+                    if not check_container(container_start_time):
                         try:
-                            logging.debug(f"Container {container.name} is not running. (2)")
+                            logging.debug(f"Trying to close old log stream for container {container.name}")
                             log_stream.close()
                             break
                         except Exception as e:
                             logging.error(f"Could not close Log Stream for container {container.name}")
                             break
-                    if container.attrs['State']['StartedAt'] != container_start_time:
+                    if self.shutdown_event.is_set() or self.restarting_event.is_set():
                         try:
-                            logging.debug(f"Container {container.name} not not same restart time (2=)")
-                            log_stream.close()
-                            break
-                        except Exception as e:
-                            logging.error(f"Could not close Log Stream for container {container.name}")
-                            break
-                    logging.debug(f"Monitoring stopped for Container: {container.name}. Trying to reconnect")
-                    try:
-                        if self.shutdown_event.is_set() or self.restarting_event.is_set():
                             logging.debug("Shutdown event or restart event is set. Closing log stream.")
-                            log_stream.close()   
-                    except Exception as e:
-                        logging.debug(f"Error closing stream: Container {container.name}: {str(e)}")
+                            log_stream.close()  
+                            break 
+                        except Exception as e:
+                            logging.debug(f"Error closing stream: Container {container.name}: {str(e)}")
+                            break
                     if error_count > 5:
                         logging.error(f"Error trying to establish Log Stream for {container.name}. Critical error threshold (6) reached.")
                         log_stream.close()  
-                    
+                        break
+                    logging.debug(f"Monitoring stopped for Container: {container.name}. Trying to reconnect")
+
                     
             logging.info("Monitoring stopped for Container: %s", container.name)
 

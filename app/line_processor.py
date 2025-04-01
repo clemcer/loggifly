@@ -193,8 +193,8 @@ class LogProcessor:
     def _start_flush_thread(self):
     # Every second the buffer which consists of log lines that are not new entries is flushed because there won't be a log entry that produces lines over one second
         def check_flush():
-            self.container.reload()
             while True:
+                self.container.reload()
                 if self.shutdown_event.is_set() or self.container.status != "running": #self.restart_event.is_set() or
                     logging.debug(f"Container: {self.container_name}: Stopping Flush Thraead.")
                     self.flush_thread_running = False
@@ -203,6 +203,8 @@ class LogProcessor:
                     if (time.time() - self.log_stream_last_updated > self.log_stream_timeout) and self.buffer:
                         self._handle_and_clear_buffer()
                 time.sleep(1)
+            logging.debug(f"Flush Thread stopped for Container {self.container.name}")
+
         self.flush_thread = Thread(target=check_flush, daemon=True)
         self.flush_thread.start()
         self.flush_thread_running = True
@@ -221,6 +223,7 @@ class LogProcessor:
                 self._find_pattern(clean_line)
             if self.valid_pattern == True:
                 if not self.flush_thread_running:
+                    logging.debug(f"Restarting flush_thread for container {self.container.name}")
                     self._start_flush_thread()
                 self._process_multi_line(clean_line)
             else:
