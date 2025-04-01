@@ -36,7 +36,7 @@ class DockerLogMonitor:
         self.stream_connections = {}
         self.stream_connections_lock = threading.Lock()
         self.restarting_event = threading.Event()
-        self.containers = {}
+        self.monitored_containers = {}
         self.selected_containers = []
         
         signal.signal(signal.SIGTERM, self.handle_signal)
@@ -84,7 +84,7 @@ class DockerLogMonitor:
         self.config = load_config()
         self._init_logging()
         self.client = docker.from_env()
-        self.containers = {}
+        self.monitored_containers = {}
         self.restarting_event.clear()
         self.start()
 
@@ -271,7 +271,7 @@ class DockerLogMonitor:
         
         for container in containers_to_monitor:
             self.monitor_container(container)
-            self.containers[container.id] = container
+            self.monitored_containers[container.id] = container
         
 
     def watch_events(self):
@@ -286,19 +286,26 @@ class DockerLogMonitor:
             while not self.shutdown_event.is_set() and not self.restarting_event.is_set():
                 until_time = time.time() + 1
                 try: 
-                    for event in self.client.events(decode=True, filters={"event": "start"}, until=until_time, since=last_event_time): #["start", "stop"]}):
+                    for event in self.client.events(decode=True, filters={"event": ["start", "stop"]}, until=until_time, since=last_event_time): #["start", "stop"]}):
                         if self.shutdown_event.is_set():
                             logging.debug("Shutdown event is set. Stopping event handler.")
                             break
+                        container = self.client.containers.get(event["Actor"]["ID"])
                         if event.get("Action") == "start":
-                            container = self.client.containers.get(event["Actor"]["ID"])
                             if container.name in self.selected_containers:
                                 logging.info("Monitoring new container: %s", container.name)
                                 send_notification(self.config, "Loggifly", f"Monitoring new container: {container.name}")
                                 self.monitor_container(container)
-                                self.containers[container.id] = container
-                            else:
-                                logging.debug("Container %s is not in the config, ignoring.", container.name)
+                                self.monitored_containers[container.id] = container
+                            # else:
+                            #     logging.debug("Container %s is not in the config, ignoring.", container.name)
+                        elif event.get("Action") == "stop":
+                            if container.id in self.monitored_containers:
+                                logging.debug(f"Event Handler: {container.name} stopped")
+                                self.close_stream_connecion(container.name)
+                                self.monitored_containers.pop(container.id)
+                            
+
                         last_event_time = event.get("time", last_event_time)
                 except docker.errors.NotFound as e:
                     logging.error(F"Event-Handler: Container {container} not found: {e}")

@@ -123,8 +123,8 @@ class LogProcessor:
             self.log_stream_last_updated = time.time()
             self.running = True
             # Start Background-Thread for Timeout
-            self.flush_thread = Thread(target=self._check_flush, daemon=True)
-            self.flush_thread.start()
+            self._start_flush_thread()
+            
 
     # def _refresh_pattern(self):
     #     counter = 0
@@ -145,7 +145,7 @@ class LogProcessor:
         try:
             logging.info(f"Restarting Container: {self.container.name}.")
             container = self.container
-            self.close_stream_connecion(container.name)
+           # self.close_stream_connecion(container.name)
             container.stop()
             time.sleep(3)
             container.start()
@@ -189,16 +189,26 @@ class LogProcessor:
 
         self.waiting_for_pattern = False
 
+
+    def _start_flush_thread(self):
     # Every second the buffer which consists of log lines that are not new entries is flushed because there won't be a log entry that produces lines over one second
-    def _check_flush(self):
-        while True:
-            if self.shutdown_event.is_set(): #self.restart_event.is_set() or
-                logging.debug(f"container: {self.container_name}: Stopping.")
-                break
-            with self.lock_buffer:
-                if (time.time() - self.log_stream_last_updated > self.log_stream_timeout) and self.buffer:
-                    self._handle_and_clear_buffer()
-            time.sleep(1)
+        def check_flush():
+            self.container.reload()
+            while True:
+                if self.shutdown_event.is_set() or self.container.status != "running": #self.restart_event.is_set() or
+                    logging.debug(f"Container: {self.container_name}: Stopping Flush Thraead.")
+                    self.flush_thread_running = False
+                    break
+                with self.lock_buffer:
+                    if (time.time() - self.log_stream_last_updated > self.log_stream_timeout) and self.buffer:
+                        self._handle_and_clear_buffer()
+                time.sleep(1)
+        self.flush_thread = Thread(target=check_flush, daemon=True)
+        self.flush_thread.start()
+        self.flush_thread_running = True
+
+
+
     # This is the only function that gets called from outside this class by the monitor_container_logs function in app.py
     # If the user disables it or if there are no patterns detected (yet) the programm switches to single-line mode
     # In single-line mode the line gets processed and searched for keywords instantly instead of going into the buffer first
@@ -210,6 +220,8 @@ class LogProcessor:
             if self.line_count < self.line_limit:
                 self._find_pattern(clean_line)
             if self.valid_pattern == True:
+                if not self.flush_thread_running:
+                    self._start_flush_thread()
                 self._process_multi_line(clean_line)
             else:
                 self._search_and_send(clean_line)
