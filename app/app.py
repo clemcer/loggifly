@@ -132,7 +132,9 @@ class DockerLogMonitor:
             return new_count, current_time
     
     def monitor_container(self, container):
-        def check_container(container_start_time):
+        container_start_time = container.attrs['State']['StartedAt']
+        
+        def check_container():
             container.reload()
             if container.status != "running":
                 logging.debug(f"Container {container.name} not running")
@@ -149,7 +151,6 @@ class DockerLogMonitor:
             """
             error_count = 0
             last_error_time = time.time()  
-            container_start_time = container.attrs['State']['StartedAt']
             logging.debug(f"Container {container.name} Start Time: {container_start_time}")
             if container.name in self.processors:
                 logging.debug(f"Re-Using old line processor")
@@ -271,10 +272,6 @@ class DockerLogMonitor:
         
 
     def watch_events(self):
-        """
-        This is the only thread that is not stopped when restarting on config change because it is always blocked and won't even stop when the docker client is closed.
-        Instead the thread seems to simply reconnect to the new docker client.
-        """
         def event_handler():
             error_count = 0
             last_error_time = time.time()
@@ -317,7 +314,7 @@ class DockerLogMonitor:
                         break
                     last_event_time = time.time()
                     if error_count > 5:
-                        logging.error(f"Error trying to establish Log Stream for {container.name}. Critical error threshold (6) reached.")
+                        logging.error(f"Error trying to read docker events. Critical error threshold (6) reached.")
                         break
             logging.debug("Event handler stopped.")
 
