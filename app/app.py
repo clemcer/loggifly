@@ -41,7 +41,7 @@ class DockerLogMonitor:
         
         signal.signal(signal.SIGTERM, self.handle_signal)
         signal.signal(signal.SIGINT, self.handle_signal)
-        atexit.register(self.cleanup)
+      #  atexit.register(self.cleanup)
         
         self.watch_events()
 
@@ -73,6 +73,7 @@ class DockerLogMonitor:
         if not self.config.settings.disable_shutdown_message:
             send_notification(self.config, "Loggifly:", "Shutting down")
         self.shutdown_event.set()
+        self.cleanup()
 
 
     def restart_loggifly(self):
@@ -167,6 +168,9 @@ class DockerLogMonitor:
                     logging.info(f"Monitoring for Container started: {container.name}")
                     buffer = b""
                     for chunk in log_stream:
+                        if container.name == "vg-backend":
+                            logging.debug(f"CHuNK FROM VG_BACKEND: {chunk}")
+
                         if self.shutdown_event.is_set() or self.restarting_event.is_set():
                             break
                         last_chunk_time = time.time()
@@ -184,6 +188,10 @@ class DockerLogMonitor:
                                 logging.warning(f"{container.name}: Error while trying to decode a log line. Used errors='replace' for line: {log_line_decoded}")
                             if log_line_decoded: 
                                 processor.process_line(log_line_decoded)
+
+                            if container.name == "vg-backend":
+                                logging.debug(f"LINE FROM VG_BACKEND: {log_line_decoded}")
+                        time.sleep(0.1)
                         if not check_container(container_start_time):
                             break
 
@@ -203,7 +211,9 @@ class DockerLogMonitor:
                     logging.debug(traceback.format_exc())
                     error_count, last_error_time = self.handle_error(error_count, last_error_time)
                 finally:
+                    
                     logging.info(f"Finally block for container {container.name}")
+                    time.sleep(0.1)
                     if not check_container(container_start_time):
                         try:
                             logging.debug(f"Trying to close old log stream for container {container.name}")
