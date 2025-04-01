@@ -9,6 +9,12 @@ from notifier import send_notification
 from load_config import GlobalConfig
 
 
+import cProfile
+import pstats
+import io
+
+
+
 
 class LogProcessor:
     """
@@ -70,6 +76,12 @@ class LogProcessor:
     COMPILED_FLEX_PATTERNS = [re.compile(pattern, re.ASCII) for pattern in FLEX_PATTERNS]
 
     def __init__(self, config: GlobalConfig, container, container_stop_event, shutdown_event, restart_event, timeout=1):
+
+        self.line_count = 0
+        self.total_process_time = 0.0
+        self.max_process_time = 0.0
+
+
         self.shutdown_event = shutdown_event
         self.restart_event = restart_event
         self.waiting_for_pattern = threading.Event()
@@ -212,6 +224,9 @@ class LogProcessor:
     # If the user disables it or if there are no patterns detected (yet) the programm switches to single-line mode
     # In single-line mode the line gets processed and searched for keywords instantly instead of going into the buffer first
     def process_line(self, line):
+        start_time = time.perf_counter()
+
+
         clean_line = re.sub(r"\x1b\[[0-9;]*m", "", line)
         if self.multi_line_config == False:
             self._search_and_send(clean_line)
@@ -225,6 +240,24 @@ class LogProcessor:
                     self._start_flush_thread()
             else:
                 self._search_and_send(clean_line)
+
+        exec_time = time.perf_counter() - start_time
+        self.line_count += 1
+        self.total_process_time += exec_time
+        self.max_process_time = max(self.max_process_time, exec_time)
+        
+        if self.line_count % 1000 == 0:  # Jede 1000. Zeile loggen
+            avg_time = self.total_process_time / self.line_count
+            logging.info(
+                "[PROFILING] Line processing stats - "
+                "Avg: %.4fms | Max: %.4fms | Total: %.2fs",
+                avg_time * 1000,
+                self.max_process_time * 1000,
+                self.total_process_time
+            )
+            self.line_count = 0
+            self.total_process_time = 0.0
+            self.max_process_time = 0.0
 
             
 

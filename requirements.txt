@@ -4,3 +4,6 @@ pyyaml
 watchdog
 apprise
 pydantic
+# cProfile
+# pstats
+# io

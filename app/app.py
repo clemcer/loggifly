@@ -13,6 +13,11 @@ from notifier import send_notification
 from line_processor import LogProcessor
 from load_config import load_config
 
+import cProfile
+import pstats
+import io
+
+
 logging.basicConfig(
     level="INFO",
     format="%(asctime)s - %(levelname)s - %(message)s",
@@ -24,6 +29,10 @@ logging.basicConfig(
 
 class DockerLogMonitor:
     def __init__(self):
+        self.profiler = cProfile.Profile()
+        self.profile_start_time = None
+
+
         self.config = load_config()
         self._init_logging()
         self.client = docker.from_env()
@@ -59,7 +68,57 @@ class DockerLogMonitor:
         logging.getLogger("urllib3.connectionpool").setLevel(logging.WARNING)        
         logging.info(f"Log-Level set to {log_level}")
 
+    def log_profile_stats(self):
+        if not self.profile_start_time:
+            return
             
+        self.profiler.disable()
+        s = io.StringIO()
+        ps = pstats.Stats(self.profiler, stream=s).sort_stats('cumulative')
+        ps.print_stats(15)  # Top 15 Funktionen
+        
+        logging.info(
+            "\n==== CPU Profiling Report (Last %.0fs) ====\n%s"
+            "\n==========================================\n",
+            time.time() - self.profile_start_time,
+            s.getvalue()
+        )
+        
+        self.profiler.enable()
+        self.profile_start_time = time.time()
+
+
+    
+    def start(self):
+        self.profiler.enable()
+        self.profile_start_time = time.time()
+
+
+        if self.config.settings.reload_config:
+            self.start_config_watcher()
+
+        containers = self.client.containers.list()
+        self.selected_containers = []
+        for container in self.config.containers:
+            self.selected_containers.append(container)
+        containers = self.client.containers.list()
+        containers_to_monitor = [c for c in containers if c.name in self.selected_containers]
+        containers_to_monitor_str = "\n - ".join(c.name for c in containers_to_monitor)
+        logging.info(f"These containers are being monitored:\n - {containers_to_monitor_str}")
+        unmonitored_containers = [c for c in self.selected_containers if c not in [c.name for c in containers_to_monitor]]
+        if unmonitored_containers:
+            unmonitored_containers_str = "\n - ".join(unmonitored_containers)
+            logging.info(f"These selected Containers are not running:\n - {unmonitored_containers_str}")
+        else:
+            unmonitored_containers_str = ""
+
+        if self.config.settings.disable_start_message is False:
+            send_notification(self.config, "Loggifly", f"The programm is running and monitoring these selected Containers:\n - {containers_to_monitor_str}\n\nThese selected Containers are not running:\n - {unmonitored_containers_str}")
+        
+        for container in containers_to_monitor:
+            self.monitor_container(container)
+            self.monitored_containers[container.id] = container
+        
     class ConfigHandler(FileSystemEventHandler):
         def __init__(self, monitor):
             self.monitor = monitor
@@ -235,32 +294,6 @@ class DockerLogMonitor:
         self.add_thread(thread)
         thread.start()
 
-    def start(self):
-        if self.config.settings.reload_config:
-            self.start_config_watcher()
-
-        containers = self.client.containers.list()
-        self.selected_containers = []
-        for container in self.config.containers:
-            self.selected_containers.append(container)
-        containers = self.client.containers.list()
-        containers_to_monitor = [c for c in containers if c.name in self.selected_containers]
-        containers_to_monitor_str = "\n - ".join(c.name for c in containers_to_monitor)
-        logging.info(f"These containers are being monitored:\n - {containers_to_monitor_str}")
-        unmonitored_containers = [c for c in self.selected_containers if c not in [c.name for c in containers_to_monitor]]
-        if unmonitored_containers:
-            unmonitored_containers_str = "\n - ".join(unmonitored_containers)
-            logging.info(f"These selected Containers are not running:\n - {unmonitored_containers_str}")
-        else:
-            unmonitored_containers_str = ""
-
-        if self.config.settings.disable_start_message is False:
-            send_notification(self.config, "Loggifly", f"The programm is running and monitoring these selected Containers:\n - {containers_to_monitor_str}\n\nThese selected Containers are not running:\n - {unmonitored_containers_str}")
-        
-        for container in containers_to_monitor:
-            self.monitor_container(container)
-            self.monitored_containers[container.id] = container
-        
 
     def watch_events(self):
         def event_handler():
@@ -325,9 +358,13 @@ class DockerLogMonitor:
             logging.debug(f"No Log Stream Connections left" if len(stream_connections) ==0 else f"{len(stream_connections)} Log Stream Connections remaining")
         
         with self.processors_lock:
-            for _, container_stop_event in self.line_processor_instances:
+            for container, instance in self.line_processor_instances.items():
+                _, container_stop_event = instance
                 if not container_stop_event.is_set():
-                    container_stop_event.set()
+                    try:
+                        container_stop_event.set()
+                    except Exception as e:
+                        logging.debug(f"Error trying to set container_stop_event")
         
         with self.threads_lock:
             alive_threads = []
