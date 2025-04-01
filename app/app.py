@@ -170,8 +170,8 @@ class DockerLogMonitor:
                     logging.info(f"Monitoring for Container started: {container.name}")
                     buffer = b""
                     for chunk in log_stream:
-                        if container.name == "vg-backend":
-                            logging.debug(f"CHuNK FROM VG_BACKEND: {chunk}")
+                        # if container.name == "vg-backend":
+                        #     logging.debug(f"CHuNK FROM VG_BACKEND: {chunk}")
 
                         if self.shutdown_event.is_set() or self.restarting_event.is_set():
                             break
@@ -191,8 +191,8 @@ class DockerLogMonitor:
                             if log_line_decoded: 
                                 processor.process_line(log_line_decoded)
 
-                            if container.name == "vg-backend":
-                                logging.debug(f"LINE FROM VG_BACKEND: {log_line_decoded}")
+                            # if container.name == "vg-backend":
+                            #     logging.debug(f"LINE FROM VG_BACKEND: {log_line_decoded}")
                        # time.sleep(0.1)
                         if not check_container(container_start_time):
                             break
