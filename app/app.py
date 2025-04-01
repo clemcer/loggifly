@@ -35,7 +35,6 @@ class DockerLogMonitor:
 
         self.stream_connections = {}
         self.stream_connections_lock = threading.Lock()
-        self.restarting_event = threading.Event()
         self.monitored_containers = {}
         self.selected_containers = []
         
@@ -67,7 +66,7 @@ class DockerLogMonitor:
         def on_modified(self, event):
             if not event.is_directory and event.src_path.endswith('config.yaml'):
                 logging.info("Config change detected, restarting...")
-                self.monitor.restart_loggifly()
+                self.monitor.reload_config()
 
     def handle_signal(self, signum, frame):
         if not self.config.settings.disable_shutdown_message:
@@ -76,19 +75,15 @@ class DockerLogMonitor:
         self.cleanup()
 
 
-    def restart_loggifly(self):
+    def reload_config(self):
         if not self.config.settings.disable_restart_message:
-            send_notification(self.config, "Loggifly:", "Config Change detected. The programm is restarting...")
-        self.restarting_event.set()
-        time.sleep(2.5) # Give _self.flush_threads() from line_processor.py some time to finish
-        self.cleanup()
+            send_notification(self.config, "Loggifly:", "Config Change detected. Reloading Config..")
         self.config = load_config()
         self._init_logging()
-        self.client = docker.from_env()
-        self.monitored_containers = {}
-        self.restarting_event.clear()
-        self.start()
-
+        for container, instance in self.line_processor_instances.items():
+            processor, _ = instance
+            processor.load_config_variables(self.config)
+        logging.info("Config file has been reloaded.")
 
     def start_config_watcher(self):
         observer = Observer()
@@ -164,7 +159,7 @@ class DockerLogMonitor:
                 processor = LogProcessor(self.config, container, container_stop_event)#, monitoring_stop_event)#, container_stop_event, self.shutdown_event, self.restarting_event)  
                 self.add_processor_instance(processor, container_stop_event, container.name)
             container_stop_event.clear()
-            while not self.shutdown_event.is_set() and not self.restarting_event.is_set():
+            while not self.shutdown_event.is_set():# and not self.restarting_event.is_set():
                 buffer = b""
                 try:
                     now = datetime.now()
@@ -174,7 +169,7 @@ class DockerLogMonitor:
                     self.add_stream_connection(container.name, log_stream)
                     logging.info(f"Monitoring for Container started: {container.name}")
                     for chunk in log_stream:
-                        if self.shutdown_event.is_set() or self.restarting_event.is_set():
+                        if self.shutdown_event.is_set():# or self.restarting_event.is_set():
                            # logging.debug(f"stopping 'for chunk loop' in {container.name}")
                             break
                         last_chunk_time = time.time()
@@ -218,7 +213,7 @@ class DockerLogMonitor:
                             logging.error(f"Could not close Log Stream for container {container.name}")
                         container_stop_event.set()
                         break
-                    if self.shutdown_event.is_set() or self.restarting_event.is_set():
+                    if self.shutdown_event.is_set():# or self.restarting_event.is_set():
                         try:
                             logging.debug("Shutdown event or restart event is set. Closing log stream.")
                             log_stream.close()  
@@ -272,7 +267,7 @@ class DockerLogMonitor:
             error_count = 0
             last_error_time = time.time()
             last_event_time = time.time()
-            while not self.shutdown_event.is_set() and not self.restarting_event.is_set():
+            while not self.shutdown_event.is_set():# and not self.restarting_event.is_set():
                # logging.debug(f"Restarted log stream for {container.name}")
                 until_time = time.time() + 2
                 try: 
@@ -305,7 +300,7 @@ class DockerLogMonitor:
                     logging.error(f"Event-Handler was stopped {e}. Trying to restart it.")
                     error_count, last_error_time = self.handle_error(error_count, last_error_time)
                 finally:
-                    if self.shutdown_event.is_set() or self.restarting_event.is_set():    
+                    if self.shutdown_event.is_set():# or self.restarting_event.is_set():    
                         logging.debug("Event handler is shutting down.")
                         break
                     last_event_time = time.time()

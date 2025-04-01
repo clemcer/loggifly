@@ -69,26 +69,41 @@ class LogProcessor:
     COMPILED_STRICT_PATTERNS = [re.compile(pattern, re.ASCII) for pattern in STRICT_PATTERNS]
     COMPILED_FLEX_PATTERNS = [re.compile(pattern, re.ASCII) for pattern in FLEX_PATTERNS]
 
-    def __init__(self, config: GlobalConfig, container, container_stop_event, timeout=1): # container_stop_event, shutdown_event, restart_event
+    def __init__(self, config: GlobalConfig, container, container_stop_event): # container_stop_event, shutdown_event, restart_event
         # self.shutdown_event = shutdown_event
         # self.restart_event = restart_event
+        
         self.container_stop_event = container_stop_event
-        self.waiting_for_pattern = False
-        self.config = config
         self.container = container
         self.container_name = container.name
 
-        self.container_keywords = config.global_keywords.keywords.copy()
-        self.container_keywords.extend(keyword for keyword in config.containers[self.container_name].keywords if keyword not in self.container_keywords)
-        self.container_keywords_with_attachment = config.global_keywords.keywords_with_attachment.copy()
-        self.container_keywords_with_attachment.extend(keyword for keyword in config.containers[self.container_name].keywords_with_attachment if keyword not in self.container_keywords_with_attachment)
-        self.container_keywords_restart = [keyword for keyword in config.containers[self.container_name].restart_keywords]
+        self.patterns = []
+        self.patterns_count = {pattern: 0 for pattern in self.__class__.COMPILED_STRICT_PATTERNS + self.__class__.COMPILED_FLEX_PATTERNS}
+        self.lock_buffer = Lock()
+        self.flush_thread_stopped = threading.Event()
+        self.flush_thread_stopped.set()
+        self.waiting_for_pattern = False
+        self.valid_pattern = False
+        
+        
+        self.load_config_variables(config)
 
-        self.lines_number_attachment = config.containers[self.container_name].attachment_lines or config.settings.attachment_lines
-        self.multi_line_config = config.settings.multi_line_entries
-        self.notification_cooldown = config.containers[self.container_name].notification_cooldown or config.settings.notification_cooldown
+        
+    
+    def load_config_variables(self, config):
+        logging.debug(f"Loading Config Variables for {self.container.name} in Line_processor Instance")
+        self.config = config
+        self.container_keywords = self.config.global_keywords.keywords.copy()
+        self.container_keywords.extend(keyword for keyword in self.config.containers[self.container_name].keywords if keyword not in self.container_keywords)
+        self.container_keywords_with_attachment = self.config.global_keywords.keywords_with_attachment.copy()
+        self.container_keywords_with_attachment.extend(keyword for keyword in self.config.containers[self.container_name].keywords_with_attachment if keyword not in self.container_keywords_with_attachment)
+        self.container_keywords_restart = [keyword for keyword in self.config.containers[self.container_name].restart_keywords]
+
+        self.lines_number_attachment = self.config.containers[self.container_name].attachment_lines or self.config.settings.attachment_lines
+        self.multi_line_config = self.config.settings.multi_line_entries
+        self.notification_cooldown = self.config.containers[self.container_name].notification_cooldown or self.config.settings.notification_cooldown
         self.time_per_keyword = {}  
-        self.restart_cooldown = config.containers[self.container_name].restart_cooldown or 300
+        self.restart_cooldown = self.config.containers[self.container_name].restart_cooldown or 300
         self.last_restart_time = None
 
         for keyword in self.container_keywords + self.container_keywords_with_attachment + self.container_keywords_restart:
@@ -96,50 +111,25 @@ class LogProcessor:
                 self.time_per_keyword[keyword["regex"]] = 0
             else:
                 self.time_per_keyword[keyword] = 0  
-
-        logging.debug(f"container: {self.container_name}: Keywords: {self.container_keywords}, Keywords with attachment: {self.container_keywords_with_attachment}")
-
+                    
         if self.multi_line_config is True:
-            self.lock_buffer = Lock()
-            self.patterns = []
-            self.patterns_count = {pattern: 0 for pattern in self.__class__.COMPILED_STRICT_PATTERNS + self.__class__.COMPILED_FLEX_PATTERNS}
-            time.sleep(2)
             self.line_count = 0
             self.line_limit = 300
-            try:
-                log_tail = self.container.logs(tail=100).decode("utf-8")
-                self._find_pattern(log_tail)
-            except Exception as e:
-                logging.error(f"Could not read logs of Container {self.container_name}: {e}")
-            # self.refresh_pattern_thread = Thread(target=self._refresh_pattern)
-            # self.refresh_pattern_thread.daemon = True
-            # self.refresh_pattern_thread.start()
-
+            if self.valid_pattern is False:
+                try:
+                    log_tail = self.container.logs(tail=100).decode("utf-8")
+                    self._find_pattern(log_tail)
+                except Exception as e:
+                    logging.error(f"Could not read logs of Container {self.container_name}: {e}")
+        
             self.buffer = []
-            self.log_stream_timeout = timeout
+            self.log_stream_timeout = 1 # self.config.settings.flush_timeout Not an supported setting (yet)
             self.log_stream_last_updated = time.time()
-            self.running = True
             # Start Background-Thread for Timeout
-            self.flush_thread_stopped = threading.Event()
-            self.flush_thread_stopped.set()
             self._start_flush_thread()
+                
+
             
-            
-
-    # def _refresh_pattern(self):
-    #     counter = 0
-    #     while not self.shutdown_event.wait(timeout=300) and counter < 12 and self.patterns == []:
-    #         counter += 1
-    #         logging.debug(f"Refreshing pattern")
-    #         self._find_pattern()
-    #         if self.patterns is not []:
-    #             logging.info(f"container: {self.container_name}: attern refreshed: {self.patterns}")
-    #         else:
-    #             logging.info(f"container: {self.container_name}: Pattern refreshed. No pattern found. Mode: single-line.")
-    #         logging.debug(f"container: {self.container_name}: Waiting 5 minutes to check again for patterns.")
-    #     logging.info(f"container: {self.container_name}: Stopping pattern-refreshing. No pattern found in log after 60 minutes. Mode: single-line.")
-
-
     def _restart_container(self):
       #  self.restart_event.set()
         try:
@@ -148,7 +138,6 @@ class LogProcessor:
             container.stop()
             time.sleep(3)
             container.start()
-            #container.start()
             logging.info(f"Container {self.container_name} has been restarted")
         except Exception as e:
             logging.error(f"Failed to restart container {self.container_name}: {e}")
@@ -190,7 +179,7 @@ class LogProcessor:
 
 
     def _start_flush_thread(self):
-    # Every second the buffer with all log lines that belong to the same entry gets flushed
+    # Every second the buffer (with log lines that should belong to the same entry) gets flushed
         def check_flush():
             while True:
                 if self.container_stop_event.is_set(): # self.shutdown_event.is_set() or 
