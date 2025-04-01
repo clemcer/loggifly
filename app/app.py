@@ -131,7 +131,9 @@ class DockerLogMonitor:
             return new_count, current_time
     
     def monitor_container(self, container):
-        def check_container(container_start_time):
+        container_start_time = container.attrs['State']['StartedAt']
+        
+        def check_container():
             container.reload()
             if container.status != "running":
                 logging.debug(f"Container {container.name} not running")
@@ -148,7 +150,6 @@ class DockerLogMonitor:
             """
             error_count = 0
             last_error_time = time.time()  
-            container_start_time = container.attrs['State']['StartedAt']
             logging.debug(f"Container {container.name} Start Time: {container_start_time}")
             if container.name in self.processors:
                 logging.debug(f"Re-Using old line processor")
@@ -184,7 +185,7 @@ class DockerLogMonitor:
                                 logging.warning(f"{container.name}: Error while trying to decode a log line. Used errors='replace' for line: {log_line_decoded}")
                             if log_line_decoded: 
                                 processor.process_line(log_line_decoded)
-                        if not check_container(container_start_time):
+                        if not check_container():
                             break
 
                 except docker.errors.NotFound as e:
@@ -204,7 +205,7 @@ class DockerLogMonitor:
                     error_count, last_error_time = self.handle_error(error_count, last_error_time)
                 finally:
                     logging.info(f"Finally block for container {container.name}")
-                    if not check_container(container_start_time):
+                    if not check_container():
                         try:
                             logging.debug(f"Trying to close old log stream for container {container.name}")
                             log_stream.close()
