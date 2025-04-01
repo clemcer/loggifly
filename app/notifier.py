@@ -86,6 +86,7 @@ def send_ntfy_notification(config, container_name, message, title, file_name=Non
 
 
 def send_notification(config: GlobalConfig, container_name, message, keyword_list=[], file_name=None):
+    logging.debug(f"sending notification for container {container_name}")
     if len(keyword_list) > 2:
         joined_keywords = ', '.join(f"'{word}'" for word in keyword_list)
         title = f"The following keywords were found in {container_name}: {joined_keywords}"
@@ -101,6 +102,7 @@ def send_notification(config: GlobalConfig, container_name, message, keyword_lis
     if (config.notifications and config.notifications.apprise and config.notifications.apprise.url):
         apprise_url = config.notifications.apprise.url.get_secret_value()
         send_apprise_notification(apprise_url, container_name, message, title, file_name)
-   
+    
+    logging.debug(f" notification senz for container {container_name}")
 
    

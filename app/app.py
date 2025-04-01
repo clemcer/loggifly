@@ -149,7 +149,8 @@ class DockerLogMonitor:
             I am using a buffer in case the logstream has an unfinished log line that can't be decoded correctly.
             """
             container_start_time = container.attrs['State']['StartedAt']
-
+            container_stop_event = threading.Event()
+            container_stop_event.clear()
             error_count = 0
             last_error_time = time.time()  
             logging.debug(f"Container {container.name} Start Time: {container_start_time}")
@@ -158,9 +159,10 @@ class DockerLogMonitor:
                 processor = self.processors[container.name]
             else:
                # logging.debug(f"Creating new line processor")
-                processor = LogProcessor(self.config, self.close_stream_connecion, container, self.shutdown_event, self.restarting_event)  
+                processor = LogProcessor(self.config, container, container_stop_event, self.shutdown_event, self.restarting_event)  
                 self.add_processor(processor, container.name)
             while not self.shutdown_event.is_set() and not self.restarting_event.is_set():
+                buffer = b""
                 try:
                     now = datetime.now()
                     last_chunk_time = time.time()
@@ -168,34 +170,38 @@ class DockerLogMonitor:
                     log_stream = container.logs(stream=True, follow=True, since=now)#, until=until_time)
                     self.add_stream_connection(container.name, log_stream)
                     logging.info(f"Monitoring for Container started: {container.name}")
-                    buffer = b""
                     for chunk in log_stream:
-                        # if container.name == "vg-backend":
-                        #     logging.debug(f"CHuNK FROM VG_BACKEND: {chunk}")
+                        if container.name == "vg-backend":
+                            logging.debug(f"CHuNK FROM VG_BACKEND: {chunk}")
 
                         if self.shutdown_event.is_set() or self.restarting_event.is_set():
+                            logging.debug(f"stopping for chunk loop in {container.name}")
                             break
                         last_chunk_time = time.time()
-                        MAX_BUFFER_SIZE = 10 * 1024 * 1024  # 10MB
+                        # MAX_BUFFER_SIZE = 10 * 1024 * 1024  # 10MB
                         buffer += chunk
-                        if len(buffer) > MAX_BUFFER_SIZE:
-                            logging.error("Buffer overflow detected, resetting")
-                            buffer = b""
+                        # if len(buffer) > MAX_BUFFER_SIZE:
+                        #     logging.error("Buffer overflow detected, resetting")
+                        #     buffer = b""
                         while b'\n' in buffer:
+                            if container.name == "vg-backend":
+                                logging.debug(f"'\\n' found in buffer {buffer} for vg-backend")
                             line, buffer = buffer.split(b'\n', 1)
                             try:
                                 log_line_decoded = str(line.decode("utf-8")).strip()
+                                if container.name == "vg-backend":
+                                    logging.debug(f"LINE FROM VG_BACKEND: {log_line_decoded} (1)")
                             except UnicodeDecodeError:
                                 log_line_decoded = line.decode("utf-8", errors="replace").strip()
                                 logging.warning(f"{container.name}: Error while trying to decode a log line. Used errors='replace' for line: {log_line_decoded}")
                             if log_line_decoded: 
                                 processor.process_line(log_line_decoded)
 
-                            # if container.name == "vg-backend":
-                            #     logging.debug(f"LINE FROM VG_BACKEND: {log_line_decoded}")
+                            if container.name == "vg-backend":
+                                logging.debug(f"LINE FROM VG_BACKEND: {log_line_decoded} (2)")
                        # time.sleep(0.1)
-                        if not check_container(container_start_time):
-                            break
+                        # if not check_container(container_start_time):
+                        #     break
 
                 except docker.errors.NotFound as e:
                     logging.error(F"Log Stream: Container {container} not found: {e}")
@@ -213,7 +219,6 @@ class DockerLogMonitor:
                     logging.debug(traceback.format_exc())
                     error_count, last_error_time = self.handle_error(error_count, last_error_time)
                 finally:
-                    
                     logging.info(f"Finally block for container {container.name}")
                     time.sleep(0.1)
                     if not check_container(container_start_time):
@@ -240,7 +245,7 @@ class DockerLogMonitor:
 
                     
             logging.info("Monitoring stopped for Container: %s", container.name)
-
+            container_stop_event.set()
         thread = threading.Thread(target=log_monitor, daemon=True)
         self.add_thread(thread)
         thread.start()

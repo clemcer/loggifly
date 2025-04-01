@@ -69,10 +69,11 @@ class LogProcessor:
     COMPILED_STRICT_PATTERNS = [re.compile(pattern, re.ASCII) for pattern in STRICT_PATTERNS]
     COMPILED_FLEX_PATTERNS = [re.compile(pattern, re.ASCII) for pattern in FLEX_PATTERNS]
 
-    def __init__(self, config: GlobalConfig, close_stream_connecion, container, shutdown_event, restart_event, timeout=1):
-        self.close_stream_connecion = close_stream_connecion
+    def __init__(self, config: GlobalConfig, container, container_stop_event, shutdown_event, restart_event, timeout=1):
         self.shutdown_event = shutdown_event
         self.restart_event = restart_event
+        self.waiting_for_pattern = threading.Event()
+        self.container_stop_event = container_stop_event
         self.config = config
         self.container = container
         self.container_name = container.name
@@ -145,7 +146,6 @@ class LogProcessor:
         try:
             logging.info(f"Restarting Container: {self.container.name}.")
             container = self.container
-           # self.close_stream_connecion(container.name)
             container.stop()
             time.sleep(3)
             container.start()
@@ -156,7 +156,10 @@ class LogProcessor:
         
 
     def _find_pattern(self, line_s):
-        self.waiting_for_pattern = True
+        if self.container.name == "vg-backend":
+                logging.debug(f"vg-backend: line_processor: SARCHING PATTERN")
+        
+        self.waiting_for_pattern.set()
         for line in line_s.splitlines():
             clean_line = re.sub(r"\x1b\[[0-9;]*m", "", line)
             self.line_count += 1
@@ -187,15 +190,15 @@ class LogProcessor:
                 logging.debug(f"Container: {self.container_name}: Found pattern(s) in logs. Stopping the search now after {self.line_limit}] lines. Mode: multi-line.")
                 logging.debug(f"Container: {self.container_name}: Patterns found: {self.patterns}")
 
-        self.waiting_for_pattern = False
-
+        self.waiting_for_pattern.clear()
+        if self.container.name == "vg-backend":
+                logging.debug(f"vg-backend: line_processor: SARCHING PATTERN FNINISHED")
 
     def _start_flush_thread(self):
     # Every second the buffer which consists of log lines that are not new entries is flushed because there won't be a log entry that produces lines over one second
         def check_flush():
             while True:
-                self.container.reload()
-                if self.shutdown_event.is_set() or self.container.status != "running": #self.restart_event.is_set() or
+                if self.shutdown_event.is_set() or self.container_stop_event.is_set():
                     logging.debug(f"Container: {self.container_name}: Stopping Flush Thraead.")
                     self.flush_thread_running = False
                     break
@@ -215,26 +218,45 @@ class LogProcessor:
     # If the user disables it or if there are no patterns detected (yet) the programm switches to single-line mode
     # In single-line mode the line gets processed and searched for keywords instantly instead of going into the buffer first
     def process_line(self, line):
+        if self.container.name == "vg-backend":
+            logging.debug(f"vg-backend: line_processor: {line}")
+
         clean_line = re.sub(r"\x1b\[[0-9;]*m", "", line)
         if self.multi_line_config == False:
             self._search_and_send(clean_line)
+            if self.container.name == "vg-backend":
+                logging.debug(f"vg-backend: line_processor: if self.multi_line_config == False {line}")
         else:
             if self.line_count < self.line_limit:
+                if self.container.name == "vg-backend":
+                    logging.debug(f"vg-backend: line_processor: if self.line_count > self.line_limit: {line}")
                 self._find_pattern(clean_line)
             if self.valid_pattern == True:
-                if self.flush_thread_running is False:
-                    logging.debug(f"Restarting flush_thread for container {self.container.name}")
-                    self._start_flush_thread()
+                if self.container.name == "vg-backend":
+                    logging.debug(f"vg-backend: line_processor: if self.valid_pattern == True: {line} (1)")
                 self._process_multi_line(clean_line)
+                # if self.flush_thread_running is False:
+                #     logging.debug(f"Restarting flush_thread for container {self.container.name}")
+                #     self._start_flush_thread()
+                if self.container.name == "vg-backend":
+                    logging.debug(f"vg-backend: line_processor: if self.valid_pattern == True: {line} (2)")
             else:
                 self._search_and_send(clean_line)
+        if self.container.name == "vg-backend":
+            logging.debug(f"vg-backend: line_processor: FINISHED ON LINE {line}")
+            
 
     def _process_multi_line(self, line):
         # When the pattern gets updated by _find_pattern() this function waits 
-        while self.waiting_for_pattern == True:
-            time.sleep(1)
+        while self.waiting_for_pattern.is_set():
+            time.sleep(0.2)
+            if self.container.name == "vg-backend":
+                logging.debug(f"vg-backend: line_processor: WAITING FOR self.waiting_for_pattern.is_set()")
 
         for pattern in self.patterns:
+            if self.container.name == "vg-backend":
+                logging.debug(f"vg-backend: line_processor: searching in line for pattern   {pattern}")
+
             # If there is a pattern in the line idicating a new log entry the buffer gets flushed and the line gets appended to the buffer           
             if pattern.search(line):
                 if self.buffer:
@@ -244,6 +266,8 @@ class LogProcessor:
                 break
             else:
                 match = False
+        if self.container.name == "vg-backend":
+            logging.debug(f"vg-backend: line_processor: match = {match}")
         # If the line is not a new entry (no pattern was found) it gets appended to the buffer
         if match is False:
             if self.buffer:
@@ -256,6 +280,8 @@ class LogProcessor:
     # This function is called either when the buffer is flushed every second 
     # or if a new log entry was found which means everything in the buffer is one complete log entry
     def _handle_and_clear_buffer(self):
+        if self.container.name == "vg-backend":
+            logging.debug(f"vg-backend: line_processor: _handle_and_clear_buffer")
         message = "\n".join(self.buffer)
         self._search_and_send(message)
         self.buffer.clear()
@@ -298,37 +324,42 @@ class LogProcessor:
                     keyword_with_attachment_found = search_keyword(log_line, keyword)
             if keyword_with_attachment_found:
                 keywords_with_attachment_found.append(keyword_with_attachment_found)      
+        
+        logging.debug(f"checking if keyowrds found in {self.container.name}")
 
         formatted_log_entry ="\n  -----  LOG-ENTRY  -----\n" + ' | ' + '\n | '.join(log_line.splitlines()) + "\n   -----------------------"
         if keywords_with_attachment_found:
-            self._send_message(log_line, keywords_with_attachment_found + keywords_found, send_attachment=True)
+            logging.debug(f"keywords with attachment found in {self.container.name}")
             logging.info(f"The following keywords were found in {self.container_name}: {keywords_found + keywords_with_attachment_found}. (A Logfile will be attached){formatted_log_entry}" 
                         if len(keywords_found + keywords_with_attachment_found) > 1 
                         else f"The Keyword '{keywords_found[0]}' was found in {self.container_name}{formatted_log_entry}"
                         )
+            self._send_message(log_line, keywords_with_attachment_found, send_attachment=True)
         elif keywords_found:
             self._send_message(log_line, keywords_found, send_attachment=False)
             logging.info(f"The following keywords were found in {self.container_name}: {keywords_found}{formatted_log_entry}"
                          if len(keywords_found + keywords_with_attachment_found) > 1 
                          else f"The Keyword '{keywords_found[0]}' was found in {self.container_name}{formatted_log_entry}"
                          )
+        logging.debug(f"after keywords check in {self.container.name}")
+        return
        # logging.debug(f"Container: {self.container.name} Time since last restart: {time.time() - self.last_restart_time}. Cooldown: {max(int(self.restart_cooldown), 60)}, Restart keywords: {self.container_keywords_restart}")
-        if time.time() - self.last_restart_time >= max(int(self.restart_cooldown), 60):
-            for keyword in self.container_keywords_restart:
-             #   logging.debug(f"Searching for {keyword}")
-                keyword_found = None
-                if isinstance(keyword, dict) and keyword.get("regex") is not None:  
-                    regex_keyword = keyword["regex"]
-                    keyword_found = search_regex(log_line, regex_keyword)
-                else: 
-                    keyword_found = search_keyword(log_line, keyword)
-                if keyword_found:
-                    logging.debug(f"Cooldown: {self.restart_cooldown}, last restart time: {self.last_restart_time}")
-                    logging.info(f"Restarting {self.container_name} because Keyword: {keyword_found} was found in {formatted_log_entry}")
-                    self._send_message(log_line, keyword_found, send_attachment=False, restart=True)
-                    self._restart_container()
-                    self.last_restart_time = time.time()
-                    break
+        # if time.time() - self.last_restart_time >= max(int(self.restart_cooldown), 60):
+        #     for keyword in self.container_keywords_restart:
+        #      #   logging.debug(f"Searching for {keyword}")
+        #         keyword_found = None
+        #         if isinstance(keyword, dict) and keyword.get("regex") is not None:  
+        #             regex_keyword = keyword["regex"]
+        #             keyword_found = search_regex(log_line, regex_keyword)
+        #         else: 
+        #             keyword_found = search_keyword(log_line, keyword)
+        #         if keyword_found:
+        #             logging.debug(f"Cooldown: {self.restart_cooldown}, last restart time: {self.last_restart_time}")
+        #             logging.info(f"Restarting {self.container_name} because Keyword: {keyword_found} was found in {formatted_log_entry}")
+        #             self._send_message(log_line, keyword_found, send_attachment=False, restart=True)
+        #             self._restart_container()
+        #             self.last_restart_time = time.time()
+        #             break
                 
 
     def _log_attachment(self):  
@@ -349,15 +380,14 @@ class LogProcessor:
             send_notification(self.config, self.container_name, message, keyword_list)
             return
         if send_attachment:
-            with self.lock_file_name:
-                file_name = self._log_attachment()
-                if file_name and isinstance(file_name, str) and os.path.exists(file_name):
-                    send_notification(self.config, self.container_name, message, keyword_list, file_name)     
-                    if os.path.exists(file_name):
-                        os.remove(file_name)
-                        logging.debug(f"The file {file_name} was deleted.")
-                    else:
-                        logging.debug(f"The file {file_name} does not exist.") 
+            file_name = self._log_attachment()
+            if file_name and isinstance(file_name, str) and os.path.exists(file_name):
+                send_notification(self.config, self.container_name, message, keyword_list, file_name)     
+                if os.path.exists(file_name):
+                    os.remove(file_name)
+                    logging.debug(f"The file {file_name} was deleted.")
+                else:
+                    logging.debug(f"The file {file_name} does not exist.") 
         else:
             send_notification(self.config, self.container_name, message, keyword_list)
 
