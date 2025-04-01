@@ -171,37 +171,27 @@ class DockerLogMonitor:
                     self.add_stream_connection(container.name, log_stream)
                     logging.info(f"Monitoring for Container started: {container.name}")
                     for chunk in log_stream:
-                        if container.name == "vg-backend":
-                            logging.debug(f"CHuNK FROM VG_BACKEND: {chunk}")
-
                         if self.shutdown_event.is_set() or self.restarting_event.is_set():
                             logging.debug(f"stopping for chunk loop in {container.name}")
                             break
                         last_chunk_time = time.time()
-                        # MAX_BUFFER_SIZE = 10 * 1024 * 1024  # 10MB
+                        MAX_BUFFER_SIZE = 10 * 1024 * 1024  # 10MB
                         buffer += chunk
-                        # if len(buffer) > MAX_BUFFER_SIZE:
-                        #     logging.error("Buffer overflow detected, resetting")
-                        #     buffer = b""
+                        if len(buffer) > MAX_BUFFER_SIZE:
+                            logging.error("Buffer overflow detected, resetting")
+                            buffer = b""
                         while b'\n' in buffer:
-                            if container.name == "vg-backend":
-                                logging.debug(f"'\\n' found in buffer {buffer} for vg-backend")
                             line, buffer = buffer.split(b'\n', 1)
                             try:
                                 log_line_decoded = str(line.decode("utf-8")).strip()
-                                if container.name == "vg-backend":
-                                    logging.debug(f"LINE FROM VG_BACKEND: {log_line_decoded} (1)")
                             except UnicodeDecodeError:
                                 log_line_decoded = line.decode("utf-8", errors="replace").strip()
                                 logging.warning(f"{container.name}: Error while trying to decode a log line. Used errors='replace' for line: {log_line_decoded}")
                             if log_line_decoded: 
                                 processor.process_line(log_line_decoded)
-
-                            if container.name == "vg-backend":
-                                logging.debug(f"LINE FROM VG_BACKEND: {log_line_decoded} (2)")
-                       # time.sleep(0.1)
-                        # if not check_container(container_start_time):
-                        #     break
+                        #time.sleep(0.1)
+                        if not check_container(container_start_time):
+                            break
 
                 except docker.errors.NotFound as e:
                     logging.error(F"Log Stream: Container {container} not found: {e}")
