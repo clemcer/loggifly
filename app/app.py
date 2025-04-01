@@ -261,10 +261,6 @@ class DockerLogMonitor:
         
 
     def watch_events(self):
-        """
-        This is the only thread that is not stopped when restarting on config change because it is always blocked and won't even stop when the docker client is closed.
-        Instead the thread seems to simply reconnect to the new docker client.
-        """
         def event_handler():
             error_count = 0
             last_error_time = time.time()
