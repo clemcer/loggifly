@@ -307,7 +307,7 @@ class DockerLogMonitor:
                         break
                     last_event_time = time.time()
                     if error_count > 5:
-                        logging.error(f"Error trying to establish Log Stream for {container.name}. Critical error threshold (6) reached.")
+                        logging.error(f"Error trying to read docker events. Critical error threshold (6) reached.")
                         break
             logging.debug("Event handler stopped.")
 
