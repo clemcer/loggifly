@@ -77,19 +77,22 @@ class DockerLogMonitor:
 
     def reload_config(self):
         if not self.config.settings.disable_config_reload_message:
-            send_notification(self.config, "Loggifly: Config Change detected", "Reloading Config...")
+            send_notification(self.config, "Loggifly", "Reloading Config...")
+        self.observer.stop()
         self.config = load_config()
         self._init_logging()
         for container, instance in self.line_processor_instances.items():
             processor, _ = instance
             processor.load_config_variables(self.config)
+        if self.config.settings.reload_config:
+            self.start_config_watcher()
         logging.info("Config file has been reloaded.")
 
     def start_config_watcher(self):
-        observer = Observer()
-        observer.schedule(self.ConfigHandler(self), path="/app/config.yaml", recursive=False)
-        observer.start()
-        self.add_thread(observer)
+        self.observer = Observer()
+        self.observer.schedule(self.ConfigHandler(self), path="/app/config.yaml", recursive=False)
+        self.observer.start()
+        self.add_thread(self.observer)
 
     def add_thread(self, thread):
         with self.threads_lock:
