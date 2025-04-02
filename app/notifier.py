@@ -85,8 +85,10 @@ def send_ntfy_notification(config, container_name, message, title, file_name=Non
         logging.error("Error while trying to connect to ntfy: %s", e)
 
 
-def send_notification(config: GlobalConfig, container_name, message, keyword_list=[], file_name=None):
-    if len(keyword_list) > 2:
+def send_notification(config: GlobalConfig, container_name, message, keyword_list=[], file_name=None, restart=False):
+    if restart:
+        title = f"Restarting {container_name} because keyword '{keyword_list[0]}' was found"
+    elif len(keyword_list) > 2:
         joined_keywords = ', '.join(f"'{word}'" for word in keyword_list)
         title = f"The following keywords were found in {container_name}: {joined_keywords}"
     elif len(keyword_list) == 2:
@@ -96,6 +98,7 @@ def send_notification(config: GlobalConfig, container_name, message, keyword_lis
         title = f"'{keyword_list[0]}' found in {container_name}"
     else:
         title = f"{container_name}"
+
     if (config.notifications and config.notifications.ntfy and config.notifications.ntfy.url and config.notifications.ntfy.topic):
         send_ntfy_notification(config, container_name, message, title, file_name)
     if (config.notifications and config.notifications.apprise and config.notifications.apprise.url):
@@ -103,4 +106,3 @@ def send_notification(config: GlobalConfig, container_name, message, keyword_lis
         send_apprise_notification(apprise_url, container_name, message, title, file_name)
     
 
-   
