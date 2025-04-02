@@ -115,7 +115,7 @@ class Settings(BaseConfigModel):
     multi_line_entries: bool = Field(True, description="Enable multi-line log detection")
     disable_start_message: bool = Field(False, description="Disable startup notification")
     disable_shutdown_message: bool = Field(False, description="Disable shutdown notification")
-    disable_restart_message: bool = Field(False, description="Disable config reload notification")
+    disable_config_reload_message: bool = Field(False, description="Disable config reload notification")
     reload_config: bool = Field(True, description="Disable restart on config change")
 
 class GlobalConfig(BaseConfigModel):
@@ -214,7 +214,7 @@ def load_config(path="/app/config.yaml"):
         "notification_cooldown": os.getenv("NOTIFICATION_COOLDOWN"),
         "reload_config": False if no_config_file is True else os.getenv("DISABLE_RESTART"),
         "disable_start_message": os.getenv("DISABLE_START_MESSAGE"),
-        "disable_restart_message": os.getenv("DISABLE_RESTART_MESSAGE"),
+        "disable_restart_message": os.getenv("DISABLE_CONFIG_RELOAD_MESSAGE"),
         "disable_shutdown_message": os.getenv("DISABLE_SHUTDOWN_MESSAGE")
         } 
     ntfy_values =  {

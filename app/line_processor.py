@@ -85,13 +85,12 @@ class LogProcessor:
         self.waiting_for_pattern = False
         self.valid_pattern = False
         
-        
         self.load_config_variables(config)
 
         
     
     def load_config_variables(self, config):
-        logging.debug(f"Loading Config Variables for {self.container.name} in Line_processor Instance")
+        #logging.debug(f"Loading Config Variables for {self.container.name} in Line_processor Instance")
         self.config = config
         self.container_keywords = self.config.global_keywords.keywords.copy()
         self.container_keywords.extend(keyword for keyword in self.config.containers[self.container_name].keywords if keyword not in self.container_keywords)
@@ -181,23 +180,27 @@ class LogProcessor:
     def _start_flush_thread(self):
     # Every second the buffer (with log lines that should belong to the same entry) gets flushed
         def check_flush():
+            self.flush_thread_stopped.clear()
             while True:
                 if self.container_stop_event.is_set(): # self.shutdown_event.is_set() or 
-                    logging.debug(f"Container: {self.container_name}: Container_stop_event: {self.container_stop_event.is_set()}. Waiting 15s until flush thread is stopped")
+                    #logging.debug(f"Container: {self.container_name}: Container_stop_event: {self.container_stop_event.is_set()}. Waiting 15s until flush thread is stopped")
                     time.sleep(15)
                     if self.container_stop_event.is_set():
-                        logging.debug(f"Container: {self.container_name}: Stopping Flush Thread. Container_stop_event: {self.container_stop_event.is_set()}")
-                        self.flush_thread_stopped.set()
+                        #logging.debug(f"Container: {self.container_name}: Stopping Flush Thread. Container_stop_event: {self.container_stop_event.is_set()}")
                         break
+                if self.multi_line_config is False:
+                    #logging.debug(f"Container: {self.container_name}: Stopping Flush Thread. multi_line: {self.multi_line_config}")
+                    break
                 with self.lock_buffer:
                     if (time.time() - self.log_stream_last_updated > self.log_stream_timeout) and self.buffer:
                         self._handle_and_clear_buffer()
                 time.sleep(1)
+            self.flush_thread_stopped.set()
             logging.debug(f"Flush Thread stopped for Container {self.container_name}")
+            
         if self.flush_thread_stopped.is_set():
             self.flush_thread = Thread(target=check_flush, daemon=True)
             self.flush_thread.start()
-            self.flush_thread_stopped.clear()
             logging.debug(f"Flush thread started for {self.container.name}")
         else:
             logging.debug(f"Flush thread already running for {self.container.name}")
