@@ -47,6 +47,7 @@ Get instant alerts for security breaches, system errors, or custom patterns thro
 
 - **🔍 Plain Text, Regex & Multi-Line Log Detection**: Catch simple keywords or complex patterns in log entries that span multiple lines.
 - **🚨 Ntfy/Apprise Alerts**: Send notifications directly to Ntfy or via Apprise to 100+ different services (Slack, Discord, Telegram).
+- **🔁 Auto-Restart Triggering Keywords**: A container restart of the monitored container can be triggered on specific critical keywords.
 - **⚙️ Fine-Grained Control**: Unique keywords and other settings (like ntfy topic/tags/priority) per container.
 - **📁 Log Attachments**: Automatically include a log file to the notification for context.
 - **⚡ Auto-Restart on Config Change**: The program restarts when it detects that the config file has been changed.
@@ -71,7 +72,7 @@ In this quickstart only the most essential settings are covered, [here](#-Config
 
 Choose your preferred setup method - simple environment variables for basic use, or a YAML config for advanced control.
 - Environment variables allow for a simple setup and let you spin this thing up in a minute
-- With YAML you can use complex Regex patterns and have different keywords & other settings per container. 
+- With YAML you can use complex Regex patterns, have different keywords & other settings per container and set auto-restart triggering keywords.
 
 <details><summary><em>Click to expand:</em> 🐋 <strong>Basic Setup: Docker Compose (Environment Variables)</strong></summary>
 Ideal for quick setup with minimal configuration
@@ -136,6 +137,9 @@ containers:
     # Attach a log file to the notification 
     keywords_with_attachment:
       - warn
+    # Caution advised! These keywords will trigger a restart of the container
+    restart_keywords:
+      - traceback
 
 # Optional. These keywords are being monitored for all configured containers
 global_keywords:
@@ -191,11 +195,11 @@ settings:
   log_level: INFO               # DEBUG, INFO, WARNING, ERROR
   notification_cooldown: 5      # Seconds between alerts for same keyword (per container)
   attachment_lines: 20          # Number of Lines to include in log attachments
-  multi_line_entries: true      # Monitor and catch multi-line log entries instead of going line by line. 
-  disable_restart: false        # Disable restart when a config change is detected 
-  disable_start_message: false  # Suppress startup notification
-  disable_shutdown_message: false  # Suppress shutdown notification
-  disable_restart_message: false   # Suppress config reload notification
+  multi_line_entries: True      # Monitor and catch multi-line log entries instead of going line by line. 
+  reload_config: True        # When the config file is changed the program reloads the config
+  disable_start_message: False  # Suppress startup notification
+  disable_shutdown_message: False  # Suppress shutdown notification
+  disable_config_reload_message: False   # Suppress config reload notification
 ```
 
 </details>
@@ -239,6 +243,9 @@ containers:
     # When one of these keywords is found a logfile is attached to the notification
     keywords_with_attachment:
       - critical
+    # Caution advised! These keywords will trigger a restart of the container
+    restart_keywords:
+      - traceback
 
 # If you have configured global_keywords and don't need container specific settings you can define the container name and leave the rest blank
   another-container-name:
@@ -266,7 +273,7 @@ global_keywords:
 
 ### 🍀 Environment Variables
 
-Except for container specific settings and regex patterns you can configure most settings via docker environment variables.
+Except for restart_keywords, container specific settings and regex patterns you can configure most settings via docker environment variables.
 
 <details><summary><em>Click to expand:</em><strong> Environment Variables </strong></summary><br>
 
@@ -286,12 +293,12 @@ Except for container specific settings and regex patterns you can configure most
 | `GLOBAL_KEYWORDS_WITH_ATTACHMENT`| Notifications triggered by these global keywords have a logfile attached. Overrides `global_keywords.keywords_with_attachment` from the config.yaml.| _N/A_     |
 | `NOTIFICATION_COOLDOWN`         | Cooldown period (in seconds) per container per keyword before a new message can be sent  | 5        |
 | `LOG_LEVEL`                     | Log Level for LoggiFly container logs.                    | INFO     |
-| `MULTI_LINE_ENTRIES`            | When enabled the program tries to catch log entries that span multiple log lines.<br>If you encounter bugs or you simply don't need it you can disable it.| True     |
+| `MULTI_LINE_ENTRIES`            | When enabled the program tries to catch log entries that span multiple lines.<br>If you encounter bugs or you simply don't need it you can disable it.| True     |
 | `ATTACHMENT_LINES`              | Define the number of Log Lines in the attachment file     | 20     |
-| `DISABLE_RESTART`               | Disable automatic restarts when the config file is changed.| False  |
+| `RELOAD_CONFIG`               | When the config file is changed the program reloads the config | True  |
 | `DISBLE_START_MESSAGE`          | Disable startup message.                                  | False     |
 | `DISBLE_SHUTDOWN_MESSAGE`       | Disable shutdown message.                                 | False     |
-| `DISABLE_RESTART_MESSAGE`       | Disable message on config change when program restarts.| False     |
+| `DISABLE_CONFIG_RELOAD_MESSAGE`       | Disable message when the config file is reloaded.| False     |
 
 </details>
 
@@ -299,12 +306,13 @@ Except for container specific settings and regex patterns you can configure most
 
 ## 💡 Tips
 
-1. If you want to **Protect Sensitive Credentials** like tokens or Apprise URLs, store them in environment variables (not in YAML).
-2. Ensure containers names **exactly match** your Docker **container names**. 
+1. Ensure containers names **exactly match** your Docker **container names**. 
     - Find out your containers names: ```docker ps --format "{{.Names}}" ```
-    - 💡 Pro Tip: Define the `container_name:` in your compose files. 
+    - 💡 Pro Tip: Define the `container_name:` in your compose files.
+2. **`restart_keywords`** can only be set in the config.yaml
 3. **Test Regex Patterns**: Validate patterns at [regex101.com](https://regex101.com) before adding them to your config.
-4. **Troubleshooting Multi-Line Log Entries**. If LoggiFly only catches single lines from log entries that span over multiple lines:
+4. When using a **Docker Socket Proxy** the log stream connection drops and reconnects every ~10 minutes. It is not officially recommended yet until I am sure everything works flawlessly. If you notice any bugs let me know!
+5. **Troubleshooting Multi-Line Log Entries**. If LoggiFly only catches single lines from log entries that span over multiple lines:
     - Wait for Patterns: LoggiFly needs to process a few lines in order to detect the pattern the log entries start with (e.g. timestamps/log formats)
     - Unrecognized Patterns: If issues persist, open an issue and share the affected log samples
 
