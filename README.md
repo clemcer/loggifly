@@ -22,6 +22,7 @@ Get instant alerts for security breaches, system errors, or custom patterns thro
 **Ideal For**:
 - ✅ Catching security breaches (e.g., failed logins in Vaultwarden)
 - ✅ Debugging crashes with attached log context
+- ✅ Restarting the container on specific errors 
 - ✅ Monitoring custom app behaviors (e.g., when a user downloads an audiobook on your Audiobookshelf server)
 
 
@@ -47,7 +48,7 @@ Get instant alerts for security breaches, system errors, or custom patterns thro
 
 - **🔍 Plain Text, Regex & Multi-Line Log Detection**: Catch simple keywords or complex patterns in log entries that span multiple lines.
 - **🚨 Ntfy/Apprise Alerts**: Send notifications directly to Ntfy or via Apprise to 100+ different services (Slack, Discord, Telegram).
-- **🔁 Auto-Restart Triggering Keywords**: A container restart of the monitored container can be triggered on specific critical keywords.
+- **🔁 Trigger Container Stop/Restart**: A container restart/stop of the monitored container can be triggered on specific critical keywords.
 - **⚙️ Fine-Grained Control**: Unique keywords and other settings (like ntfy topic/tags/priority) per container.
 - **📁 Log Attachments**: Automatically include a log file to the notification for context.
 - **⚡ Auto-Restart on Config Change**: The program restarts when it detects that the config file has been changed.
@@ -72,7 +73,7 @@ In this quickstart only the most essential settings are covered, [here](#-Config
 
 Choose your preferred setup method - simple environment variables for basic use, or a YAML config for advanced control.
 - Environment variables allow for a simple setup and let you spin this thing up in a minute
-- With YAML you can use complex Regex patterns, have different keywords & other settings per container and set auto-restart triggering keywords.
+- With YAML you can use complex Regex patterns, have different keywords & other settings per container and set keywords that trigger a restart/stop of the container.
 
 <details><summary><em>Click to expand:</em> 🐋 <strong>Basic Setup: Docker Compose (Environment Variables)</strong></summary>
 Ideal for quick setup with minimal configuration
@@ -245,10 +246,11 @@ containers:
     keywords_with_attachment:
       - critical
     # Caution advised! These keywords will trigger a restart of the container
+# restart & stop are the only supported actions and have to be specified before every keyword
     action_keywords:
       - stop: traceback
-      - restart: {regex: critical.*failed}
-     action_cooldown: 300 # 300s is default (minimum value is always 60)
+      - restart: {regex: critical.*failed} # looks weird but this is how to set regex patterns
+     action_cooldown: 300 # 300s is default time that has to pass until the next action can be triggered (minimum value is always 60)
 
 # If you have configured global_keywords and don't need container specific settings you can define the container name and leave the rest blank
   another-container-name:
@@ -312,11 +314,11 @@ Except for restart_keywords, container specific settings and regex patterns you 
 1. Ensure containers names **exactly match** your Docker **container names**. 
     - Find out your containers names: ```docker ps --format "{{.Names}}" ```
     - 💡 Pro Tip: Define the `container_name:` in your compose files.
-2. **`action_keywords`** can only be set in the config.yaml
+2. **`action_keywords`** can not be set globally and only in the config.yaml. `action_cooldown ` is set per container (defaults to 300s)
 3. **Test Regex Patterns**: Validate patterns at [regex101.com](https://regex101.com) before adding them to your config.
-4. When using a **Docker Socket Proxy** the log stream connection drops and reconnects every ~10 minutes. It is not officially recommended yet until I am sure everything works flawlessly. If you notice any bugs let me know!
+4. When using a **Docker Socket Proxy** the log stream connection drops every ~10 minutes for whatever reason. LoggiFly simply resets the connection. This works but using a proxy is not officially recommended yet until I am sure everything works flawlessly. If you notice any bugs let me know!
 5. **Troubleshooting Multi-Line Log Entries**. If LoggiFly only catches single lines from log entries that span over multiple lines:
-    - Wait for Patterns: LoggiFly needs to process a few lines in order to detect the pattern the log entries start with (e.g. timestamps/log formats)
+    - Wait for Patterns: LoggiFly needs to process a few lines in order to detect the pattern the log entries start with (e.g. timestamps/log level)
     - Unrecognized Patterns: If issues persist, open an issue and share the affected log samples
 
 ---
