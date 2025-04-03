@@ -137,11 +137,12 @@ containers:
     # Attach a log file to the notification 
     keywords_with_attachment:
       - warn
-    # Caution advised! These keywords will trigger a restart of the container
-    restart_keywords:
-      - traceback
+    # Caution advised! These keywords will trigger a restart/stop of the container
+    action_keywords:
+      - stop: traceback
+      - restart: {regex: critical.*failed}
 
-# Optional. These keywords are being monitored for all configured containers
+# Optional. These keywords are being monitored for all configured containers. There is an action_cooldown (see config deep dive)
 global_keywords:
   keywords:
     - failed
@@ -244,8 +245,10 @@ containers:
     keywords_with_attachment:
       - critical
     # Caution advised! These keywords will trigger a restart of the container
-    restart_keywords:
-      - traceback
+    action_keywords:
+      - stop: traceback
+      - restart: {regex: critical.*failed}
+     action_cooldown: 300 # 300s is default (minimum value is always 60)
 
 # If you have configured global_keywords and don't need container specific settings you can define the container name and leave the rest blank
   another-container-name:
@@ -309,7 +312,7 @@ Except for restart_keywords, container specific settings and regex patterns you 
 1. Ensure containers names **exactly match** your Docker **container names**. 
     - Find out your containers names: ```docker ps --format "{{.Names}}" ```
     - 💡 Pro Tip: Define the `container_name:` in your compose files.
-2. **`restart_keywords`** can only be set in the config.yaml
+2. **`action_keywords`** can only be set in the config.yaml
 3. **Test Regex Patterns**: Validate patterns at [regex101.com](https://regex101.com) before adding them to your config.
 4. When using a **Docker Socket Proxy** the log stream connection drops and reconnects every ~10 minutes. It is not officially recommended yet until I am sure everything works flawlessly. If you notice any bugs let me know!
 5. **Troubleshooting Multi-Line Log Entries**. If LoggiFly only catches single lines from log entries that span over multiple lines:
