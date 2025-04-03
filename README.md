@@ -131,7 +131,7 @@ Add this minimal example config to the file you just created and edit it accordi
 # You have to configure at least one container.
 containers:
   container-name:  # Exact container name
-  # You don't have to use both `keywords` and `keyword_with_attachment`. One is enough
+  # Configure at least one type of keywords or use global keywords
     keywords:
       - error
       - regex: (username|password).*incorrect  # Use regex patterns when you need them
@@ -238,7 +238,7 @@ containers:
     ntfy_priority: 4            
     attachment_lines: 10        
     notification_cooldown: 10   
-  # You don't have to use both `keywords` and `keyword_with_attachment`. One is enough. 
+  # # Configure at least one type of keywords or use global keywords
     keywords:                                 
       - error                                  # Simple text matches
       - regex: (username|password).*incorrect  # Use regex patterns when you need them
@@ -246,11 +246,11 @@ containers:
     keywords_with_attachment:
       - critical
     # Caution advised! These keywords will trigger a restart of the container
-# restart & stop are the only supported actions and have to be specified before every keyword
+    # restart & stop are the only supported actions and have to be specified before every keyword
     action_keywords:
       - stop: traceback
-      - restart: {regex: critical.*failed} # looks weird but this is how to set regex patterns
-     action_cooldown: 300 # 300s is default time that has to pass until the next action can be triggered (minimum value is always 60)
+      - restart: {regex: critical.*failed} # looks weird but this is how to set regex patterns for action_keywords
+    action_cooldown: 300 # 300s is the default time that has to pass until the next action can be triggered (minimum value is always 60)
 
 # If you have configured global_keywords and don't need container specific settings you can define the container name and leave the rest blank
   another-container-name:
@@ -278,7 +278,7 @@ global_keywords:
 
 ### 🍀 Environment Variables
 
-Except for restart_keywords, container specific settings and regex patterns you can configure most settings via docker environment variables.
+Except for `restart_keywords`, container specific settings and regex patterns you can configure most settings via docker environment variables.
 
 <details><summary><em>Click to expand:</em><strong> Environment Variables </strong></summary><br>
 
@@ -314,7 +314,7 @@ Except for restart_keywords, container specific settings and regex patterns you 
 1. Ensure containers names **exactly match** your Docker **container names**. 
     - Find out your containers names: ```docker ps --format "{{.Names}}" ```
     - 💡 Pro Tip: Define the `container_name:` in your compose files.
-2. **`action_keywords`** can not be set globally and only in the config.yaml. `action_cooldown ` is set per container (defaults to 300s)
+2. **`action_keywords`** can not be set globally and only in the config.yaml. `action_cooldown` is only set per container (defaults to 300s)
 3. **Test Regex Patterns**: Validate patterns at [regex101.com](https://regex101.com) before adding them to your config.
 4. When using a **Docker Socket Proxy** the log stream connection drops every ~10 minutes for whatever reason. LoggiFly simply resets the connection. This works but using a proxy is not officially recommended yet until I am sure everything works flawlessly. If you notice any bugs let me know!
 5. **Troubleshooting Multi-Line Log Entries**. If LoggiFly only catches single lines from log entries that span over multiple lines:
