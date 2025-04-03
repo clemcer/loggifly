@@ -48,7 +48,7 @@ Get instant alerts for security breaches, system errors, or custom patterns thro
 
 - **🔍 Plain Text, Regex & Multi-Line Log Detection**: Catch simple keywords or complex patterns in log entries that span multiple lines.
 - **🚨 Ntfy/Apprise Alerts**: Send notifications directly to Ntfy or via Apprise to 100+ different services (Slack, Discord, Telegram).
-- **🔁 Trigger Container Stop/Restart**: A container restart/stop of the monitored container can be triggered on specific critical keywords.
+- **🔁 Trigger Stop/Restart**: A restart/stop of the monitored container can be triggered on specific critical keywords.
 - **⚙️ Fine-Grained Control**: Unique keywords and other settings (like ntfy topic/tags/priority) per container.
 - **📁 Log Attachments**: Automatically include a log file to the notification for context.
 - **⚡ Auto-Restart on Config Change**: The program restarts when it detects that the config file has been changed.
