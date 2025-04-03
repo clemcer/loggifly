@@ -238,16 +238,17 @@ containers:
     ntfy_priority: 4            
     attachment_lines: 10        
     notification_cooldown: 10   
-  # # Configure at least one type of keywords or use global keywords
+    # Configure at least one type of keywords or use global keywords
     keywords:                                 
       - error                                  # Simple text matches
       - regex: (username|password).*incorrect  # Use regex patterns when you need them
     # When one of these keywords is found a logfile is attached to the notification
     keywords_with_attachment:
       - critical
-    # Caution advised! These keywords will trigger a restart of the container
-    # restart & stop are the only supported actions and have to be specified before every keyword
-    action_keywords:
+
+    # Caution advised! action_keywords will trigger a restart/stop of the container
+    # action_keywords and action_cooldown can only be set per container
+    action_keywords:    # restart & stop are the only supported actions and have to be specified before every keyword
       - stop: traceback
       - restart: {regex: critical.*failed} # looks weird but this is how to set regex patterns for action_keywords
     action_cooldown: 300 # 300s is the default time that has to pass until the next action can be triggered (minimum value is always 60)
