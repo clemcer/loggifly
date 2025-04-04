@@ -297,7 +297,8 @@ Except for `restart_keywords`, container specific settings and regex patterns yo
 | `CONTAINERS`                    | A comma separated list of containers. These are added to the containers from the config.yaml (if you are using one).| _N/A_     |
 | `GLOBAL_KEYWORDS`       | Keywords that will be monitored for all containers. Overrides `global_keywords.keywords` from the config.yaml.| _N/A_     |
 | `GLOBAL_KEYWORDS_WITH_ATTACHMENT`| Notifications triggered by these global keywords have a logfile attached. Overrides `global_keywords.keywords_with_attachment` from the config.yaml.| _N/A_     |
-| `NOTIFICATION_COOLDOWN`         | Cooldown period (in seconds) per container per keyword before a new message can be sent  | 5        |
+| `NOTIFICATION_COOLDOWN`         | Cooldown period (in seconds) per container per keyword before a new message can be sent  | 5        | 
+| `ACTION_COOLDOWN`         | Cooldown period (in seconds) before the next container action can be performed. Maximum is always at least 60s. (`action_keywords` are only configurable in YAML)  | 300        |
 | `LOG_LEVEL`                     | Log Level for LoggiFly container logs.                    | INFO     |
 | `MULTI_LINE_ENTRIES`            | When enabled the program tries to catch log entries that span multiple lines.<br>If you encounter bugs or you simply don't need it you can disable it.| True     |
 | `ATTACHMENT_LINES`              | Define the number of Log Lines in the attachment file     | 20     |
