@@ -129,10 +129,9 @@ If you want you can configure some of the settings or sensitive values like ntfy
 
 **Step 2: Configure Your config.yaml**
 
-If you mount the path `/config` a template file will be downloaded into that directory. You can edit the downloaded template file and rename it to `config.yaml` to use it.<br>
-Or you can edit and copy paste the following minimal config into a newly created `config.yaml` file in `/config`.<br>
-Note that there are more configuration options available that you can take a look at in the [Configuration-Deep-Dive](#-Configuration-Deep-Dive)
-
+If `/config` is mounted a [template file](/config_template.yaml) will be downloaded into that directory. You can edit the downloaded template file and rename it to `config.yaml` to use it.<br>
+You can also take a look at the [Configuration-Deep-Dive](#-Configuration-Deep-Dive) for all the configuration options.<br>
+Or you can edit and copy paste the following minimal config into a newly created `config.yaml` file in `/config`.
 ```yaml
 # You have to configure at least one container.
 containers:
@@ -375,6 +374,8 @@ services:
 ```
 
 </details>
+
+<br>
 
 >[!Note]
 `action_keywords` don't work when using a socket proxy.
