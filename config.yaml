@@ -1,48 +1,61 @@
 
+
+# Feel free to contribute to the containers section of this example config with use cases you have found helpful :)
+
 containers:        
     audiobookshelf:
+      ntfy_topic: abs
+      ntfy_tags: books, headphones
+      notification_cooldown: 5
       keywords:
+        - podcast
         - requested download
-        - failed login
-        
+        - downloaded item 
+        - regex: User.*logged in      # when a user logs in
+        - failed login                # Failed login to the web interface
+        - Error in openid callback    # Error when trying to login with OIDC
+
     vaultwarden:
-    # The next 6 settings override the global settings only for this container
       ntfy_tags: closed_lock_with_key   
       ntfy_priority: 5
       ntfy_topic: security
-      attachment_lines: 50     
-      notification_cooldown: 2  
-      action_cooldown: 300
-
+      notification_cooldown: 0
       keywords:
-        - login
-      keywords_with_attachment:                    
-        - critical
-    # action_keywords will trigger a restart/stop of the container and can only be set per container (vaultwarden might not be the best examle though)
-      action_keywords:    # restart & stop are the only supported actions and have to be specified before every keyword
-        - restart: traceback
-        - stop:
-            regex: (username|password).*incorrect # this is how to set regex patterns for action_keywords
-        - restart: critical
+        - regex: (username|password).*incorrect
 
-    # If you have configured global_keywords and don't need container specific settings you can define the container name and leave the rest blank
-    nextcloud:
+    ebook2audiobook:
+      attachment_lines: 300
+      keywords:
+        - 100%
+        - sentence
+        - converting
+      keywords_with_attachment:
+        - total audio parts saved to        
 
-# Global keywords are applied to all containers
+    adguard:
+      keywords: 
+        - failed
+        - error
+
+    kitchenowl:
+      action_keywords:
+        - stop: traceback   # I have had container restart loops because kitchenowl couldn't connect to my Authentik Server
+
 global_keywords:
   keywords:
-    - panic
+    - critical
   keywords_with_attachment:
     - fatal
+    - panic
+
 
 notifications:                       
-  # At least one of the two (Ntfy/Apprise) is required.
   ntfy:
     url: http://your-ntfy-server    # Required. The URL of your Ntfy instance
     topic: loggifly                 # Required. the topic for Ntfy
     token: ntfy-token               # Ntfy token in case you need authentication 
     username: john                  # Ntfy Username+Password in case you need authentication 
-    password: password                  # Ntfy Username+Password in case you need authentication 
+    password: password              # Ntfy Username+Password in case you need authentication 
     priority: 3                     # Ntfy priority (1-5)
     tags: kite,mag                  # Ntfy tags/emojis 
   apprise:
