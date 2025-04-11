@@ -41,7 +41,7 @@ Get instant alerts for security breaches, system errors, or custom patterns thro
   - [Basic config structure](#-basic-structure)
   - [Detailed Configuration Options](#-detailed-configuration-options)
   - [Environment Variables](#-environment-variables)
-- [Socket Proxy](#-socket-proxy)
+- [Socket Proxy](#%EF%B8%8F-socket-proxy)
 - [Tips](#-tips)
 
 ---
@@ -69,7 +69,7 @@ Get instant alerts for security breaches, system errors, or custom patterns thro
 ---
 
 >[!TIP]
-For better security use a [Docker Socket Proxy](#-socket-proxy). You won't be able to trigger container stops/restarts with a proxy, but if you don't need that and want to secure your setup I recommend you take a look at [this section](#-socket-proxy) before you finish the Quick Start Install process and think about using that compose file instead of the basic one in the Quick Start.
+For better security use a [Docker Socket Proxy](#%EF%B8%8F-socket-proxy). You won't be able to trigger container stops/restarts with a proxy, but if you don't need that and want to secure your setup I recommend you take a look at [this section](#%EF%B8%8F-socket-proxy) before you finish the Quick Start Install process and think about using that compose file instead of the basic one in the Quick Start.
 
 ## ⚡️ Quick start
 
