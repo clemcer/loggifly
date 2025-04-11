@@ -130,7 +130,7 @@ If you want you can configure some of the settings or sensitive values like ntfy
 **Step 2: Configure Your config.yaml**
 
 If you mount the path `/config` a template file will be downloaded into that directory. You can edit the downloaded template file and rename it to `config.yaml` to use it.<br>
-Or you can edit and copy paste the following minimal config into a newly created `config.yaml` file in that mounted `/config` directory.<br>
+Or you can edit and copy paste the following minimal config into a newly created `config.yaml` file in `/config`.<br>
 Note that there are more configuration options available that you can take a look at in the [Configuration-Deep-Dive](#-Configuration-Deep-Dive)
 
 ```yaml
@@ -298,8 +298,10 @@ global_keywords:
 
 </details>
 
+<br>
 
-[Here](/config.yaml) you can find a full example config.
+[Here](/config_template.yaml) you can find a config template with all available configuration options and explaining comments. When `/config` is mounted in the volumes section of your docker compose this template file will be downloaded. <br>
+[Here](/config.yaml) you can find an example config with some use cases.
 
 
 ### 🍀 Environment Variables
@@ -337,6 +339,7 @@ Except for `restart_keywords`, container specific settings/keywords and regex pa
 ---
 
 ## ⚠️ Socket Proxy
+
 A Docker Socket Proxy adds a security layer by controlling access to the Docker daemon — essentially letting LoggiFly only read container info and logs without giving it full control over the docker socket.<br>
 With the linuxserver Image I have had some connection and timeout problems while streaming logs so the recommended proxy is [Tecnativa/docker-socket-proxy](https://github.com/Tecnativa/docker-socket-proxy).<br>
 When using the Tecnativa Proxy the log stream connection drops every ~10 minutes for whatever reason, LoggiFly simply resets the connection.<br>
