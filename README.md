@@ -32,7 +32,7 @@ Get instant alerts for security breaches, system errors, or custom patterns thro
 
 ---
 
-## Content
+# Content
 
 - [Features](#-features)
 - [Screenshots](#-screenshots)
@@ -52,7 +52,7 @@ Get instant alerts for security breaches, system errors, or custom patterns thro
 
 ---
 
-## 🚀 Features
+# 🚀 Features
 
 - **🔍 Plain Text, Regex & Multi-Line Log Detection**: Catch simple keywords or complex patterns in log entries that span multiple lines.
 - **🚨 Ntfy/Apprise Alerts**: Send notifications directly to Ntfy or via Apprise to 100+ different services (Slack, Discord, Telegram).
@@ -61,7 +61,7 @@ Get instant alerts for security breaches, system errors, or custom patterns thro
 - **⚡ Automatic Reload on Config Change**: The program automatically reloads the `config.yaml` when it detects that the file has been changed.
 
 ---
-## 🖼 Screenshots
+# 🖼 Screenshots
 
 <div align="center">
    <img src="/images/abs_login.png" alt="Audiobookshelf Login" width="300" height="auto">
@@ -77,7 +77,7 @@ Get instant alerts for security breaches, system errors, or custom patterns thro
 >For better security use a **[Docker Socket Proxy](#-socket-proxy)**.
 You won't be able to trigger container stops/restarts with a proxy, but if you don't need that, consider taking a look at [this section](#-socket-proxy) before you wrap up the Quick Start install and consider using that compose file instead of the basic one.
 
-## ⚡️ Quick start
+# ⚡️ Quick start
 
 In this quickstart only the most essential settings are covered, [here](#Configuration-Deep-Dive) is a more detailed config walkthrough.<br>
 
@@ -186,12 +186,12 @@ docker compose up -d
 ---
 
 
-## 🤿 Configuration Deep Dive
+# 🤿 Configuration Deep Dive
 
 The Quick Start only covered the essential settings, here is a more detailed walktrough of all the configuration options.
 
 
-### 📁 Basic Structure
+## 📁 Basic Structure
 
 The `config.yaml` file is divided into four main sections:
 
@@ -209,12 +209,16 @@ For the program to function you need to configure:
 >
 >  The rest is optional or has default values.
 
+[Here](/config_template.yaml) you can find a **config template** with all available configuration options and explaining comments. When `/config` is mounted in the volumes section of your docker compose this template file will automatically be downloaded. <br>
 
-### 🔎 Detailed Configuration Options 
+[Here](/config_example.yaml) you can find an example config with some **use cases**.
 
-<details><summary><em>Click to expand:</em><strong> ⚙️ Settings </strong></summary>
-<br>
+
+## ⚙️ Settings
+
 These are the default values for the settings:
+
+<details><summary><em>Click to expand:</em><strong> Settings: </strong></summary>
   
 ```yaml
 settings:          
@@ -229,15 +233,10 @@ settings:
   disable_config_reload_message: False   # Suppress config reload notification
   disable_container_event_message: False # Suppress notification when monitoring of containers start/stop
 ```
-<br>
 
 </details>
 
-
-
-<details><summary><em>Click to expand:</em><strong> 📭 notifications </strong></summary>
-
-<br>
+## 📭 Notifications
 
 You can send notifications either directly to **Ntfy** or via **Apprise** to [most other  notification services](https://github.com/caronc/apprise/wiki). 
 
@@ -245,7 +244,9 @@ If you want the data to be sent to your own **custom endpoint** for integration 
 
 You can also set all three notification options at the same time
 
-**Ntfy**:
+### Ntfy:
+
+<details><summary><em>Click to expand:</em><strong> Ntfy: </strong></summary>
 
 ```yaml
 notifications:                       
@@ -259,7 +260,11 @@ notifications:
     tags: kite,mag                  # Ntfy tags/emojis 
 ```
 
-**Apprise:**
+</details>
+
+### Apprise:
+
+<details><summary><em>Click to expand:</em><strong> Apprise: </strong></summary>
 
 ```yaml
 notifications:
@@ -267,9 +272,11 @@ notifications:
     url: "discord://webhook-url"    # Any Apprise-compatible URL (https://github.com/caronc/apprise/wiki)
 ```
 
-<br>
+</details>
 
-**Custom Webhook**
+### Custom Webhook
+
+<details><summary><em>Click to expand:</em><strong> Custom Webhook: </strong></summary>
 
 ```yaml
 notifications:
@@ -286,31 +293,35 @@ If a **webhook** is configured LoggiFly will post a JSON to the URL with the fol
 {
   "container": container_name,
   "title": notification_title,
-  "message": message (usually log line),
+  "message": message (the log line unless it is a message coming from LoggiFly itself),
   "host": hostname (None unless LoggiFly is connected to multiple hosts)
 }
 ```
-<br>
 
 </details>
 
+## 🐳 Containers 
 
-<details><summary><em>Click to expand:</em><strong> 🐳 containers </strong></summary>
-<br>
   
 This is where you set containers and their respective keywords / regex patterns and optional settings.<br>
 The container names must match the exact container names you would get with `docker ps`.<br>
 
-This is how you set **keywords, regex patterns and action_keywords** per container. `action_keywords` trigger a start/stop of the monitored container:
+### Basic Container Config
+
+<details><summary><em>Click to expand:</em><strong> Container Config: </strong></summary>
+
+This is how you configure **keywords, regex patterns, action_keywords**. `action_keywords` trigger a start/stop of the monitored container:
 
 ```yaml
 containers:
   container1:
     keywords:
       - keyword1
-      - regex: regex-patern   # this is how to set regex patterns
+      - regex: regex-patern1   # this is how to set regex patterns
     keywords_with_attachment: # attach a logfile to the notification
       - keyword2
+      - regex: regex-pattern2
+        hide_pattern_in_title: true # Hide the regex pattern in the notification title. Useful when using very long regex patterns.
     action_keywords: # trigger a restart/stop of the container. can not be set globally
       - restart: keyword3
       - stop: 
@@ -321,6 +332,7 @@ containers:
 <br>
 
 Some of the **settings** from the `settings` section can also be set per container:
+
 
 ```yaml
 containers:
@@ -336,54 +348,101 @@ containers:
       - keyword1
 
 ```
+
 <br>
 
-If `global_keywords` are configured and you don't need additional keywords for a container you can leave it blank:
+If `global_keywords` are configured and you don't need additional keywords for a container you can **leave it blank**:
 
 ```yaml
 containers:
   container3:
   container4:
 ```
+
+</details>
+
+
+### Templating & Filtering Log Lines
+
+For the perfectionists: there's a feature to make your notifications even prettier by using a template and filtering log messages.
+
+
+
+<details><summary><em>Click to expand:</em><strong> Filter Logs and set custom template: </strong></summary>
+
 <br>
+The easiest way to filter log lines is when the container logs are in JSON format. However, there's also a solution for plain-text logs using named capturing groups in your regex pattern.
 
-Now for the perfectionists there is a feature to make your **notifications** even **prettier** by using a **template** and filtering the Log Mesage.
+#### Filter by using a JSON Template:
 
 
-Filtering the log line is easiest if the logs of the container in question are in JSON format but there is also a solution for normal log lines using Regex Named Capturing Groups. 
+Only works if Logs are in JSON Format. Authelia is one such example.<br>
+You can only use the placeholder variables that exist as keys in the log line you want to catch.<br>
 
-**Filter by using a JSON Template:**
+**Here is an Example with Authelia.**<br>
 
-Only works if Logs are in JSON Format. Authelia is one such example:
+I want to catch this log entry:
 
+```json
+{
+  "level": "error",
+  "method": "POST",
+  "msg": "Unsuccessful 1FA authentication attempt by user 'examole user'",
+  "path": "/api/firstfactor",
+  "remote_ip": "192.168.178.191",
+  "stack": [
+    {
+      "File": "github.com/authelia/authelia/v4/internal/handlers/response.go",
+      "Line": 276,
+      "Name": "doMarkAuthenticationAttemptWithRequest"
+    },
+     ...
+  "time": "2025-05-03T09:29:04+02:00"
+}
+```
+
+Here is an example with both a plain text keyword and a regex pattern in combination with a template that only uses two keys from the json:
 ```yaml
 containers:
   authelia:
     keywords:
-      - keyword: user not found
-        template: 'Somebody tried to log in with a username that does not exist\nError Message:\n{msg}'
-      - regex: unsuccessful.*authentication 
-        json_template: '{msg}\n🔎 IP: {remote_ip}\n{time}' 
+      - keyword: Unsuccessful 1FA authentication
+        json_template: '🚨 Failed Login Attempt:\n{msg}\n🔎 IP: {remote_ip}\n🕐{time}' 
+      - regex: Unsuccessful.*authentication
+        json_template: '🚨 Failed Login Attempt:\n{msg}\n🔎 IP: {remote_ip}\n🕐{time}' 
 ```
-<br> 
 
-**Filter by using a Template with Regex Named Capturing Groups:**
+#### Add original Log Entry to template
 
-To filter Log Lines for certain parts you have to use **Named Capturing Groups** in your regex pattern.<br>
+WIth both `json_template` and `template` you can add the key `original_log_line` to your template to add the full log entry to your notification.
+
+<br>
+
+
+#### Filter by using Regex Pattern with Named Capturing Groups:
+
+To filter non JSON Log Lines for certain parts you have to use **Named Capturing Groups** in your regex pattern.<br>
 `(?P<group_name>...)` is one example. 
 `P<group_name>` assigns the name `group_name` to the group.
 The part inside the parentheses `(...)` is the pattern to match.
 
 In the `template` you can insert the named capturing groups you defined in the regex pattern.
+<br>
 
-Example:
+Example Log Line:
+
+```
+[2025-05-03 10:16:53.154] INFO: [SocketAuthority] Socket VKrcSNa--FjwAqmSAAAU disconnected from client "example user" after 11696ms (Reason: transport close)
+```
+
+Regex pattern & Template:
 
 ```yaml
 containers:
   audiobookshelf:
     keywords:
       - regex: '(?P<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}.\d{3}).*Socket.*disconnected from client "(?P<user>\S+)"'
-        template: 'Time: {timestamp}\n🔎 The user {user} was seen!'
+        template: '🕐: {timestamp}\n🔎 The user {user} was seen!'
       
 ```
 <br>
@@ -391,10 +450,12 @@ containers:
 </details>
 
 
-<details><summary><em>Click to expand:</em><strong> 🌍 global_keywords </strong></summary>
-<br>
+## 🌍 Global Keywords
 
 When configured all containers are monitored for these keywords:
+
+<details><summary><em>Click to expand:</em><strong> Global Keywords: </strong></summary>
+
 ```yaml
 global_keywords:              
   keywords:
@@ -402,20 +463,11 @@ global_keywords:
   keywords_with_attachment: # attach a logfile
     - regex: (critical|error)
 ```
-
 <br>
-
 
 </details>
 
-<br>
-
-[Here](/config_template.yaml) you can find a **config template** with all available configuration options and explaining comments. When `/config` is mounted in the volumes section of your docker compose this template file will automatically be downloaded. <br>
-
-[Here](/config_example.yaml) you can find an example config with some **use cases**.
-
-
-### 🍀 Environment Variables
+## 🍀 Environment Variables
 
 Except for `restart_keywords`, container specific settings/keywords and regex patterns you can configure most settings via **Docker environment variables**.
 
@@ -451,7 +503,7 @@ Except for `restart_keywords`, container specific settings/keywords and regex pa
 
 ---
 
-## 📡 Remote Hosts
+# 📡 Remote Hosts
 
 LoggiFly supports connecting to **multiple remote hosts**.<br>
 Remote hosts can be configured by providing a **comma-separated list of addresses** in the `DOCKER_HOST` environment variable.<br>
@@ -462,13 +514,13 @@ You can also combine remote hosts with a mounted docker socket.<br>
 >[!NOTE]
 When the connection to a docker host is lost, LoggiFly will try to reconnect every 60s
 
-### Labels
+## Labels
 When multiple hosts are set LoggiFly will use **labels** to differentiate between them both in notifications and in logging.<br>
 You can set a **label** by appending it to the address with `"|"` ([_see example_](#remote-host-example)).<br>
 When no label is set LoggiFly will use the **hostname** retrieved via the docker daemon. If that fails, usually because `INFO=1` has to be set when using a proxy, the labels will just be `Host-{Nr}`.<br>
 If you want to set a label to the mounted docker socket you can do so by adding `unix://var/run/docker.sock|label` in the `DOCKER_HOST` environment variable (_the socket still has to be mounted_) or just set the address of a [socket proxy](#socket-proxy) with a label.
 
-### Remote Hosts Example
+## Remote Hosts Example
 
 In this example LoggiFly monitors container logs on the host it is running on via a mounted docker socket as well as two remote hosts set up with TLS.
 One remote host will be called '_foobar_'. The host mounted via the docker socket and the other remote host have no label set and will be called whatever the hostname is.
@@ -502,7 +554,7 @@ services:
 ```
 </details>
 
-### Socket Proxy
+## Socket Proxy
 
 You can also connect via a **Docker Socket Proxy**.<br>
 A Socket Proxy adds a security layer by **controlling access to the Docker daemon**, essentially letting LoggiFly only read certain info like container logs without giving it full control over the docker socket.<br>
@@ -547,7 +599,7 @@ services:
 <br>
 
 
-## Docker Swarm (_Experimental_)
+# Docker Swarm (_Experimental_)
 
 > [!Important] 
 Docker Swarm Support is still experimental because I have little to no experience with it and can not say for certain if it works flawlessly.
@@ -629,21 +681,23 @@ For all configuration options take a look at the containers section in the [Deta
 
 
 
-## 💡 Tips
+# 💡 Tips
 
 1. Ensure containers names **exactly match** your Docker **container names**. 
     - Find out your containers names: ```docker ps --format "{{.Names}}" ```
     - 💡 Pro Tip: Define the `container_name:` in your compose files.
 2. **`action_keywords`** can not be set via environment variables, they can only be set per container in the `config.yaml`. The `action_cooldown` is always at least 60s long and defaults to 300s
-3. **Test Regex Patterns**: Validate patterns at [regex101.com](https://regex101.com) before adding them to your config.
-4. **Troubleshooting Multi-Line Log Entries**. If LoggiFly only catches single lines from log entries that span over multiple lines:
+3. **Regex Patterns**:
+   - Validate patterns at [regex101.com](https://regex101.com) before adding them to your config.
+   - use `hide_pattern_in_title: true` when using very long regex patterns to have a cleaner notification title 
+5. **Troubleshooting Multi-Line Log Entries**. If LoggiFly only catches single lines from log entries that span over multiple lines:
     - Wait for Patterns: LoggiFly needs to process a few lines in order to detect the pattern the log entries start with (e.g. timestamps/log level)
     - Unrecognized Patterns: If issues persist, open an issue and share the affected log samples
 
 ---
 
 
-## Support
+# Support
 
 If you find LoggiFly useful, drop a ⭐️ on the repo
 
@@ -652,7 +706,7 @@ If you find LoggiFly useful, drop a ⭐️ on the repo
 </p>
 
 
-## Star History
+# Star History
 
 [![Star History Chart](https://api.star-history.com/svg?repos=clemcer/loggifly&type=Date)](https://www.star-history.com/#clemcer/loggifly&Date)
 
