@@ -398,7 +398,7 @@ You can only use the placeholder variables that exist as keys in the log line yo
 }
 ```
 
-In the config.yaml you can set a template for both plain text keywords and regex patterns (_see example_). Here I used a template that only has two keys from the JSON Log Entry:
+In the config.yaml you can set a template for both plain text keywords and regex patterns (_see example_). In the template I inserted three keys from the JSON Log Entry:
 ```yaml
 containers:
   authelia:
