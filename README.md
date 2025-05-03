@@ -292,6 +292,7 @@ If a **webhook** is configured LoggiFly will post a JSON to the URL with the fol
 ```
 {
   "container": container_name,
+  "keywords": the keywords that were found
   "title": notification_title,
   "message": message (the log line unless it is a message coming from LoggiFly itself),
   "host": hostname (None unless LoggiFly is connected to multiple hosts)
