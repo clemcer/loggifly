@@ -364,24 +364,21 @@ containers:
 
 ### Templates & Filtering Log Lines
 
-For the perfectionists: there's a feature to make your notifications even prettier by using a template and filtering log messages.
-
+For users who want more control over the appearance of their notifications, there’s a feature that allows you to apply a template and filter log messages to display only the relevant parts.
 
 
 <details><summary><em>Click to expand:</em><strong> Filter Logs and set custom template: </strong></summary>
 
 <br>
-The easiest way to filter log lines is when the container logs are in JSON format. However, there's also a solution for plain-text logs using named capturing groups in your regex pattern.
+Filtering is most straightforward with logs in JSON Format, but plain text logs can also be parsed by using named groups in the regex pattern.
 
-#### Filter by using a JSON Template:
+#### Template for JSON Logs:
 
 
-Only works if Logs are in JSON Format. Authelia is one such example.<br>
+`json_template` only works if the Logs are in JSON Format. Authelia is one such example.<br>
 You can only use the placeholder variables that exist as keys in the log line you want to catch.<br>
 
-**Here is an Example with Authelia.**<br>
-
-I want to catch this log entry:
+**Here is an Example where you want to catch this log entry from Authelia: 
 
 ```json
 {
@@ -401,7 +398,7 @@ I want to catch this log entry:
 }
 ```
 
-Here is an example with both a plain text keyword and a regex pattern in combination with a template that only uses two keys from the json:
+In the config.yaml you can set a template for both plain text keywords and regex patterns (_see example_). Here I used a template that only has two keys from the JSON Log Entry:
 ```yaml
 containers:
   authelia:
@@ -412,14 +409,14 @@ containers:
         json_template: '🚨 Failed Login Attempt:\n{msg}\n🔎 IP: {remote_ip}\n🕐{time}' 
 ```
 
-#### Filter by using Regex Pattern with named capturing groups:
+#### Template using named capturing groups in Regex Pattern:
 
-To filter non JSON Log Lines for certain parts you have to use **named capturing groups** in your regex pattern.<br>
-`(?P<group_name>...)` is one example. 
+To filter non JSON Log Lines for certain parts you have to use **named capturing groups** in your regex pattern.<br> 
+Lets take `(?P<group_name>...)` as an example. 
 `P<group_name>` assigns the name `group_name` to the group.
 The part inside the parentheses `(...)` is the pattern to match.
 
-In the `template` you can insert the named capturing groups you defined in the regex pattern.
+Them you can insert the named capturing groups you defined in the regex pattern into the `template`.
 <br>
 
 Example Log Line:
@@ -443,7 +440,7 @@ containers:
 
 #### Add original Log Entry to template
 
-WIth both `json_template` and `template` you can add the key `original_log_line` to your template to add the full log entry to your notification.
+WIth both `json_template` and `template` you can add the key `original_log_line` to your template to add the full log entry to your notification message.
 
 <br>
 </details>
