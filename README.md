@@ -321,7 +321,7 @@ containers:
     keywords_with_attachment: # attach a logfile to the notification
       - keyword2
       - regex: regex-pattern2
-        hide_pattern_in_title: true # Hide the regex pattern in the notification title. Useful when using very long regex patterns.
+        hide_pattern_in_title: true # Exclude the regex pattern from the notification title for a cleaner look. Useful when using very long regex patterns.
     action_keywords: # trigger a restart/stop of the container. can not be set globally
       - restart: keyword3
       - stop: 
@@ -436,6 +436,7 @@ containers:
     keywords:
       - regex: '(?P<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}.\d{3}).*Socket.*disconnected from client "(?P<user>\S+)"'
         template: '🕐: {timestamp}\n🔎 The user {user} was seen!'
+        hide_pattern_in_title: true  # Exclude the regex pattern from the notification title for a cleaner look.
       
 ```
 <br>
