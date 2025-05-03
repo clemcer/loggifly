@@ -362,7 +362,7 @@ containers:
 </details>
 
 
-### Templating & Filtering Log Lines
+### Templates & Filtering Log Lines
 
 For the perfectionists: there's a feature to make your notifications even prettier by using a template and filtering log messages.
 
@@ -371,12 +371,14 @@ For the perfectionists: there's a feature to make your notifications even pretti
 <details><summary><em>Click to expand:</em><strong> Filter Logs and set custom template: </strong></summary>
 
 <br>
-The easiest way to filter log lines is when the container logs are in JSON format. However, there's also a solution for plain-text logs using named capturing groups in your regex pattern.
+The easiest way to filter log lines is when the container logs are in JSON format. However, there's also a solution for plain-text logs using named capturing groups in your regex pattern.<br> 
+<br>
 
-#### Filter by using a JSON Template:
+
+**Filter by using a JSON Template:**
 
 
-Only works if Logs are in JSON Format. Authelia is one such example.<br>
+This only works if the Logs are in JSON Format. Authelia is one such example.<br>
 You can only use the placeholder variables that exist as keys in the log line you want to catch.<br>
 
 **Here is an Example with Authelia.**<br>
@@ -412,14 +414,10 @@ containers:
         json_template: '🚨 Failed Login Attempt:\n{msg}\n🔎 IP: {remote_ip}\n🕐{time}' 
 ```
 
-#### Add original Log Entry to template
-
-WIth both `json_template` and `template` you can add the key `original_log_line` to your template to add the full log entry to your notification.
-
 <br>
 
 
-#### Filter by using Regex Pattern with Named Capturing Groups:
+**Filter by using Regex Pattern with Named Capturing Groups:**
 
 To filter non JSON Log Lines for certain parts you have to use **Named Capturing Groups** in your regex pattern.<br>
 `(?P<group_name>...)` is one example. 
@@ -447,6 +445,10 @@ containers:
 ```
 <br>
 
+**Add original Log Entry to template:**
+
+WIth both `json_template` and `template` you can add the key `original_log_line` to your template to add the full log entry to your notification.
+
 </details>
 
 
@@ -466,6 +468,7 @@ global_keywords:
 <br>
 
 </details>
+
 
 ## 🍀 Environment Variables
 
