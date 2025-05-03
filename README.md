@@ -311,7 +311,7 @@ The container names must match the exact container names you would get with `doc
 
 <details><summary><em>Click to expand:</em><strong> Container Config: </strong></summary>
 
-This is how you configure **keywords, regex patterns, action_keywords**. `action_keywords` trigger a start/stop of the monitored container:
+This is how you configure **keywords, regex patterns and action_keywords**. `action_keywords` trigger a start/stop of the monitored container:
 
 ```yaml
 containers:
@@ -326,7 +326,7 @@ containers:
     action_keywords: # trigger a restart/stop of the container. can not be set globally
       - restart: keyword3
       - stop: 
-          regex: regex-pattern # this is how to set regex patterns for action_keywords
+          regex: regex-pattern3 # this is how to set regex patterns for action_keywords
   
 ```
 
@@ -365,7 +365,7 @@ containers:
 
 ### Templates & Filtering Log Lines
 
-For users who want more control over the appearance of their notifications, there’s a feature that allows you to apply a template and filter log messages to display only the relevant parts.
+For users who want more control over the appearance of their notifications, you can configure templates and filter log messages to display only the relevant parts.
 
 
 <details><summary><em>Click to expand:</em><strong> Filter Logs and set custom template: </strong></summary>
@@ -379,7 +379,7 @@ Filtering is most straightforward with logs in JSON Format, but plain text logs 
 `json_template` only works if the Logs are in JSON Format. Authelia is one such example.<br>
 You can only use the placeholder variables that exist as keys in the log line you want to catch.<br>
 
-**Here is an Example where you want to catch this log entry from Authelia: 
+Here is an example where you want to catch this log entry from Authelia: 
 
 ```json
 {
@@ -399,7 +399,7 @@ You can only use the placeholder variables that exist as keys in the log line yo
 }
 ```
 
-In the config.yaml you can set a template for both plain text keywords and regex patterns (_see example_). In the template I inserted three keys from the JSON Log Entry:
+In the config.yaml you can set a template for both plain text keywords and regex patterns. In the template I inserted three keys from the JSON Log Entry:
 ```yaml
 containers:
   authelia:
@@ -417,7 +417,7 @@ Lets take `(?P<group_name>...)` as an example.
 `P<group_name>` assigns the name `group_name` to the group.
 The part inside the parentheses `(...)` is the pattern to match.
 
-Them you can insert the named capturing groups you defined in the regex pattern into the `template`.
+Then you can insert the named capturing groups you defined in the regex pattern into the `template`.
 <br>
 
 Example Log Line:
@@ -434,7 +434,7 @@ containers:
     keywords:
       - regex: '(?P<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}.\d{3}).*Socket.*disconnected from client "(?P<user>\S+)"'
         template: '🕐: {timestamp}\n🔎 The user {user} was seen!'
-        hide_pattern_in_title: true  # Exclude the regex pattern from the notification title for a cleaner look.
+        hide_pattern_in_title: true  # Exclude the regex pattern from the notification title to make it look cleaner
       
 ```
 <br>
