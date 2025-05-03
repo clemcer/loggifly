@@ -240,7 +240,7 @@ settings:
 
 You can send notifications either directly to **Ntfy** or via **Apprise** to [most other  notification services](https://github.com/caronc/apprise/wiki). 
 
-If you want the data to be sent to your own **custom endpoint** for integration into a custom workflow, you can set custom webhook URLs. LoggiFly will send all data in JSON format.
+If you want the data to be sent to your own **custom endpoint** to integrate it into a custom workflow, you can set a custom webhook URL. LoggiFly will send all data in JSON format.
 
 You can also set all three notification options at the same time
 
