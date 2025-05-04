@@ -43,7 +43,8 @@ Get instant alerts for security breaches, system errors, or custom patterns thro
     - [Notifications](#-notifications)
     - [Containers](#-containers)
     - [Global Keywords](#-global-keywords)
-  - [Customise & Style Notifications](#-customise-and-filter-notification-using-templates)
+  - [Customize Notifications (Templates & Log Filtering)
+](#-customize-notifications-templates-&-log-filtering)
   - [Environment Variables](#-environment-variables)
 - [Remote Hosts](#-remote-hosts)
   - [Labels](#labels)
@@ -382,7 +383,8 @@ global_keywords:
 </details>
 
 
-## 📝 Customise and filter notification using Templates
+## 📝 Customize Notifications (Templates & Log Filtering)
+
 
 For users who want more control over the appearance of their notifications, you can configure templates and filter log messages to display only the relevant parts.<br>
 Filtering is most straightforward with logs in JSON Format, but plain text logs can also be parsed by using named groups in the regex pattern.<br>
