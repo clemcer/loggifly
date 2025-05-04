@@ -303,7 +303,7 @@ If a **webhook** is configured LoggiFly will post a JSON to the URL with the fol
 
 ### 🐳 Containers 
 
-  
+#### Container Config Explanation
 Here you can define containers and assign keywords, regex patterns, and optional settings to each one.<br>
 The container names must match the exact container names you would get with `docker ps`.<br>
 
@@ -433,7 +433,7 @@ containers:
   audiobookshelf:
     keywords:
       - regex: '(?P<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}.\d{3}).*Socket.*disconnected from client "(?P<user>\S+)"'
-        template: '\n🕐 {timestamp}\n🔎 The user {user} was seen!'
+        template: '\n🔎 The user {user} was seen!\n🕐 {timestamp}'
         hide_pattern_in_title: true  # Exclude the regex pattern from the notification title for a cleaner look
       
 ```
