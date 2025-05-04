@@ -81,7 +81,7 @@ Get instant alerts for security breaches, system errors, or custom patterns thro
 <br>
 
 
-<div style="display: flex; justify-content: center; gap: 10px;">
+<div style="display: flex; justify-content: center; gap: 5px;">
   <p><strong>Customize your notifications and filter the log lines for relevant information:</strong> </p>
   <img src="/images/audiobookshelf_download_custom.png" alt="Audiobookshelf Download" style="height: 150px; object-fit: contain;">
   <img src="/images/authelia_custom.png" alt="authelia failed login" style="height: 150px; object-fit: contain;">
