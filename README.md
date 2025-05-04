@@ -250,9 +250,11 @@ The setting `notification_title` requires a more detailed explanation:<br>
 When `notification_title: default` is set LoggiFly uses its own notification titles.<br>
 However, if you prefer something simpler or in another language, you can choose your own template for the notification title.
 
-You can insert these two keys into the template:<br>
+These are the two keys that can be inserted into the template:<br>
 `keywords`: _The keywords that were found in a log line_ <br>
 `container`: _The name of the container in which the keywords have been found_
+
+This setting can also be configured per container by the way.
 
 Here is an example:
 
@@ -369,7 +371,8 @@ containers:
     ntfy_tags: closed_lock_with_key   
     ntfy_priority: 5
     ntfy_topic: container3
-    attachment_lines: 50     
+    attachment_lines: 50
+    notification_title: 'Keywords {keywords} found in {container}'
     notification_cooldown: 2  
     action_cooldown: 60 
   
