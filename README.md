@@ -39,7 +39,6 @@ Get instant alerts for security breaches, system errors, or custom patterns thro
 - [Quick Start](#️-quick-start)
 - [Configuration Deep Dive](#-Configuration-Deep-Dive)
   - [Basic config structure](#-basic-structure)
-  - [Detailed Configuration Options](#-detailed-configuration-options)
   - [Environment Variables](#-environment-variables)
 - [Remote Hosts](#-remote-hosts)
   - [Labels](#labels)
@@ -292,7 +291,7 @@ If a **webhook** is configured LoggiFly will post a JSON to the URL with the fol
 ```
 {
   "container": container_name,
-  "keywords": the keywords that were found
+  "keywords": the keywords that were found,
   "title": notification_title,
   "message": message (the log line unless it is a message coming from LoggiFly itself),
   "host": hostname (None unless LoggiFly is connected to multiple hosts)
@@ -377,7 +376,7 @@ Filtering is most straightforward with logs in JSON Format, but plain text logs 
 
 
 `json_template` only works if the Logs are in JSON Format. Authelia is one such example.<br>
-You can only use the placeholder variables that exist as keys in the log line you want to catch.<br>
+You can only use the placeholder variables that exist as keys in the JSON from the log line you want to catch.<br>
 
 Here is an example where you want to catch this log entry from Authelia: 
 
@@ -385,7 +384,7 @@ Here is an example where you want to catch this log entry from Authelia:
 {
   "level": "error",
   "method": "POST",
-  "msg": "Unsuccessful 1FA authentication attempt by user 'examole user'",
+  "msg": "Unsuccessful 1FA authentication attempt by user 'example user'",
   "path": "/api/firstfactor",
   "remote_ip": "192.168.178.191",
   "stack": [
@@ -399,7 +398,7 @@ Here is an example where you want to catch this log entry from Authelia:
 }
 ```
 
-In the config.yaml you can set a template for both plain text keywords and regex patterns. In the template I inserted three keys from the JSON Log Entry:
+In the config.yaml you can set a `json_template` for both plain text keywords and regex patterns. In the template I inserted three keys from the JSON Log Entry:
 ```yaml
 containers:
   authelia:
@@ -412,7 +411,7 @@ containers:
 
 #### Template using named capturing groups in Regex Pattern:
 
-To filter non JSON Log Lines for certain parts you have to use **named capturing groups** in your regex pattern.<br> 
+To filter non JSON Log Lines for certain parts you have to use a regex pattern with **named capturing groups**.<br> 
 Lets take `(?P<group_name>...)` as an example. 
 `P<group_name>` assigns the name `group_name` to the group.
 The part inside the parentheses `(...)` is the pattern to match.
@@ -433,8 +432,8 @@ containers:
   audiobookshelf:
     keywords:
       - regex: '(?P<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}.\d{3}).*Socket.*disconnected from client "(?P<user>\S+)"'
-        template: '🕐: {timestamp}\n🔎 The user {user} was seen!'
-        hide_pattern_in_title: true  # Exclude the regex pattern from the notification title to make it look cleaner
+        template: '\n🕐 {timestamp}\n🔎 The user {user} was seen!'
+        hide_pattern_in_title: true  # Exclude the regex pattern from the notification title for a cleaner look
       
 ```
 <br>
@@ -448,7 +447,7 @@ WIth both `json_template` and `template` you can add the key `original_log_line`
 
 ## 🌍 Global Keywords
 
-When configured all containers are monitored for these keywords:
+When `global_keywords` are configured all containers are monitored for these keywords:
 
 <details><summary><em>Click to expand:</em><strong> Global Keywords: </strong></summary>
 
@@ -599,7 +598,7 @@ services:
 # Docker Swarm (_Experimental_)
 
 > [!Important] 
-Docker Swarm Support is still experimental because I have little to no experience with it and can not say for certain if it works flawlessly.
+Docker Swarm Support is still experimental because I have little to no experience with it and can not say for certain whether it works flawlessly.
 If you notice any bugs or have suggestions let me know.
 
 To use LoggiFly in swarm mode you have to set the environment variable `LOGGIFLY_MODE` to `swarm`.<br>
@@ -607,7 +606,7 @@ To use LoggiFly in swarm mode you have to set the environment variable `LOGGIFLY
 The `config.yaml` is passed to each worker via [Docker Configs](https://docs.docker.com/reference/cli/docker/config/) (_see example_).<br>
 It stays the same except that you set `swarm_services` instead of `containers` or use the `SWARM_SERVICES` environment variable. <br>
 
-If normal `containers` are set additionally to `swarm_services` LoggiFly will also look for these containers on every node.
+If normal `containers` are set instead of or additionally to `swarm_services` LoggiFly will also look for these containers on every node.
 
 **Docker Compose**
 
@@ -631,10 +630,10 @@ services:
       TZ: Europe/Berlin
       LOGGIFLY_MODE: swarm
       # Uncomment the next three variables if you are using a config.yaml
-      SWARM_SERVICES: nginx,redis
-      GLOBAL_KEYWORDS: keyword1,keyword2
-      GLOBAL_KEYWORDS_WITH_ATTACHMENT: keyword3
-# Uncomment the rest of this file if you are only using environment variables
+      # SWARM_SERVICES: nginx,redis
+      # GLOBAL_KEYWORDS: keyword1,keyword2
+      # GLOBAL_KEYWORDS_WITH_ATTACHMENT: keyword3
+# Comment out the rest of this file if you are only using environment variables
     configs:
       - source: loggifly-config
         target: /config/config.yaml  
@@ -672,7 +671,7 @@ swarm_services:
       - fatal
 ```
 
-For all configuration options take a look at the containers section in the [Detailed Configuration Options](#-detailed-configuration-options) as they work exactly the exact same.
+For all the possible configuration options take a look at the containers section in the [Detailed Configuration Options](#-detailed-configuration-options) as they work exactly the exact same.
 
 </details>
 
