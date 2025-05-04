@@ -39,7 +39,7 @@ Get instant alerts for security breaches, system errors, or custom patterns thro
 - [Quick Start](#️-quick-start)
 - [Configuration Deep Dive](#-Configuration-Deep-Dive)
   - [Basic config structure](#-basic-structure)
-  - [Containers section](#-containers)
+    - [Containers section](#-containers)
   - [Environment Variables](#-environment-variables)
 - [Remote Hosts](#-remote-hosts)
   - [Labels](#labels)
@@ -214,7 +214,7 @@ For the program to function you need to configure:
 [Here](/config_example.yaml) you can find an example config with some **use cases**.
 
 
-## ⚙️ Settings
+### ⚙️ Settings
 
 These are the default values for the settings:
 
@@ -236,7 +236,7 @@ settings:
 
 </details>
 
-## 📭 Notifications
+### 📭 Notifications
 
 You can send notifications either directly to **Ntfy** or via **Apprise** to [most other  notification services](https://github.com/caronc/apprise/wiki). 
 
@@ -244,7 +244,7 @@ If you want the data to be sent to your own **custom endpoint** to integrate it 
 
 You can also set all three notification options at the same time
 
-### Ntfy:
+#### Ntfy:
 
 <details><summary><em>Click to expand:</em><strong> Ntfy: </strong></summary>
 
@@ -262,7 +262,7 @@ notifications:
 
 </details>
 
-### Apprise:
+#### Apprise:
 
 <details><summary><em>Click to expand:</em><strong> Apprise: </strong></summary>
 
@@ -274,7 +274,7 @@ notifications:
 
 </details>
 
-### Custom Webhook
+#### Custom Webhook
 
 <details><summary><em>Click to expand:</em><strong> Custom Webhook: </strong></summary>
 
@@ -301,13 +301,13 @@ If a **webhook** is configured LoggiFly will post a JSON to the URL with the fol
 
 </details>
 
-## 🐳 Containers 
+### 🐳 Containers 
 
   
 This is where you set containers and their respective keywords / regex patterns and optional settings.<br>
 The container names must match the exact container names you would get with `docker ps`.<br>
 
-### Basic Container Config
+#### Basic Container Config
 
 <details><summary><em>Click to expand:</em><strong> Container Config: </strong></summary>
 
@@ -363,7 +363,7 @@ containers:
 </details>
 
 
-### Templates & Filtering Log Lines
+#### Templates & Filtering Log Lines
 
 For users who want more control over the appearance of their notifications, you can configure templates and filter log messages to display only the relevant parts.
 
@@ -373,7 +373,7 @@ For users who want more control over the appearance of their notifications, you 
 <br>
 Filtering is most straightforward with logs in JSON Format, but plain text logs can also be parsed by using named groups in the regex pattern.
 
-#### Template for JSON Logs:
+##### Template for JSON Logs:
 
 
 `json_template` only works if the Logs are in JSON Format. Authelia is one such example.<br>
@@ -410,7 +410,7 @@ containers:
         json_template: '🚨 Failed Login Attempt:\n{msg}\n🔎 IP: {remote_ip}\n🕐{time}' 
 ```
 
-#### Template using named capturing groups in Regex Pattern:
+##### Template using named capturing groups in Regex Pattern:
 
 To filter non JSON Log Lines for certain parts you have to use a regex pattern with **named capturing groups**.<br> 
 Lets take `(?P<group_name>...)` as an example. 
@@ -439,14 +439,14 @@ containers:
 ```
 <br>
 
-#### Add original Log Entry to template
+##### Add original Log Entry to template
 
 WIth both `json_template` and `template` you can add the key `original_log_line` to your template to add the full log entry to your notification message.
 
 <br>
 </details>
 
-## 🌍 Global Keywords
+### 🌍 Global Keywords
 
 When `global_keywords` are configured all containers are monitored for these keywords:
 
