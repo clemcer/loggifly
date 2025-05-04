@@ -39,6 +39,7 @@ Get instant alerts for security breaches, system errors, or custom patterns thro
 - [Quick Start](#️-quick-start)
 - [Configuration Deep Dive](#-Configuration-Deep-Dive)
   - [Basic config structure](#-basic-structure)
+  - [Containers section](#-containers)
   - [Environment Variables](#-environment-variables)
 - [Remote Hosts](#-remote-hosts)
   - [Labels](#labels)
@@ -671,7 +672,7 @@ swarm_services:
       - fatal
 ```
 
-For all the possible configuration options take a look at the containers section in the [Detailed Configuration Options](#-detailed-configuration-options) as they work exactly the exact same.
+For all the possible configuration options take a look at the [Containers section](#-containers) of the config walkthrough since the config of `swarm_services` works just with `containers`.
 
 </details>
 
