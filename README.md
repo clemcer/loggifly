@@ -257,8 +257,13 @@ You can insert these two keys into the template:<br>
 Here is an example:
 
 ```yaml
- notification_title: "The following keywords were found in {container}: {keywords}"
+notification_title: "The following keywords were found in {container}: {keywords}"
 ```
+Or keep it simple:
+```yaml
+notification_title: {container}
+```
+
 </details>
 
 
