@@ -72,11 +72,12 @@ Get instant alerts for security breaches, system errors, or custom patterns thro
 # 🖼 Screenshots
 
 <div style="display: flex; justify-content: center; gap: 10px;">
-  <img src="/images/abs_login.png" alt="Audiobookshelf Login" style="height: 150px; object-fit: contain;">
-  <img src="/images/vault_failed_login.png" alt="Vaultwarden Login" style="height: 150px; object-fit: contain;">
-  <img src="/images/abs_download.png" alt="Audiobookshelf Download" style="height: 150px; object-fit: contain;">
-  <img src="/images/ebook2audiobook.png" alt="Ebook2Audiobook conversion finished" style="height: 150px; object-fit: contain;">
+  <img src="/images/abs_login.png" alt="..." style="width: 150px; height: 150px; object-fit: cover;">
+  <img src="/images/vault_failed_login.png" alt="..." style="width: 150px; height: 150px; object-fit: cover;">
+  <img src="/images/abs_download.png" alt="..." style="width: 150px; height: 150px; object-fit: cover;">
+  <img src="/images/ebook2audiobook.png" alt="..." style="width: 150px; height: 150px; object-fit: cover;">
 </div>
+
 
 <br>
 
