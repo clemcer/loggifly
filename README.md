@@ -371,9 +371,10 @@ For users who want more control over the appearance of their notifications, you 
 <details><summary><em>Click to expand:</em><strong> Filter Logs and set custom template: </strong></summary>
 
 <br>
-Filtering is most straightforward with logs in JSON Format, but plain text logs can also be parsed by using named groups in the regex pattern.
+Filtering is most straightforward with logs in JSON Format, but plain text logs can also be parsed by using named groups in the regex pattern.<br>
+<br>
 
-##### Template for JSON Logs:
+<ins>**Template for JSON Logs:**</ins>
 
 
 `json_template` only works if the Logs are in JSON Format. Authelia is one such example.<br>
@@ -409,8 +410,9 @@ containers:
       - regex: Unsuccessful.*authentication
         json_template: '🚨 Failed Login Attempt:\n{msg}\n🔎 IP: {remote_ip}\n🕐{time}' 
 ```
+<br>
 
-##### Template using named capturing groups in Regex Pattern:
+<ins>**Template using named capturing groups in Regex Pattern:**</ins>
 
 To filter non JSON Log Lines for certain parts you have to use a regex pattern with **named capturing groups**.<br> 
 Lets take `(?P<group_name>...)` as an example. 
@@ -439,7 +441,7 @@ containers:
 ```
 <br>
 
-##### Add original Log Entry to template
+<ins>**Add original Log Entry to template**</ins>
 
 WIth both `json_template` and `template` you can add the key `original_log_line` to your template to add the full log entry to your notification message.
 
