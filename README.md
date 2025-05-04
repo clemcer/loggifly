@@ -453,7 +453,7 @@ Regex pattern & Template:
 containers:
   audiobookshelf:
     keywords:
-      - regex: '(?P<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}.\d{3}).*Socket.*disconnected from client "(?P<user>\S+)"'
+      - regex: '(?P<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}.\d{3}).*Socket.*disconnected from client "(?P<user>[A-Za-z\s]+)"'
         template: '\n🔎 The user {user} was seen!\n🕐 {timestamp}'
         hide_pattern_in_title: true  # Exclude the regex pattern from the notification title for a cleaner look
       
