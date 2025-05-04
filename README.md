@@ -39,7 +39,7 @@ Get instant alerts for security breaches, system errors, or custom patterns thro
 - [Quick Start](#️-quick-start)
 - [Configuration Deep Dive](#-Configuration-Deep-Dive)
   - [Basic config structure](#-basic-structure)
-    - [Settings](#-settings)
+    - [Settings](##%EF%B8%8F-settings)
     - [Notifications](#-notifications)
     - [Containers](#-containers)
     - [Global Keywords](#-global-keywords)
@@ -239,13 +239,11 @@ settings:
   disable_config_reload_message: False   # Suppress config reload notification
   disable_container_event_message: False # Suppress notification when monitoring of containers start/stop
 ```
+<br>
 
-This setting requires a more detailed explanation:
-```yaml
- notification_title: default
-```
+The setting `notification_title` requires a more detailed explanation:<br>
 When `default` is set LoggiFly uses its own notification titles.
-If you want to have a different title you can choose your own custom template for the notification title.
+However, if you prefer something simpler or in another language, you can choose your own template for the notification title.
 
 You can insert these two keys into the template:<br>
 `keywords`: _The keywords that were found in a log line_ <br>
