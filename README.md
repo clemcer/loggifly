@@ -229,14 +229,32 @@ These are the default values for the settings:
 settings:          
   log_level: INFO               # DEBUG, INFO, WARNING, ERROR
   notification_cooldown: 5      # Seconds between alerts for same keyword (per container)
+  notification_title: default   # configure a custom template for the notification title (see section below)
   action_cooldown: 300          # Cooldown period (in seconds) before the next container action can be performed. Maximum is always at least 60s.
   attachment_lines: 20          # Number of Lines to include in log attachments
   multi_line_entries: True      # Monitor and catch multi-line log entries instead of going line by line. 
-  reload_config: True        # When the config file is changed the program reloads the config
-  disable_start_message: False  # Suppress startup notification
-  disable_shutdown_message: False  # Suppress shutdown notification
+  reload_config: True           # When the config file is changed the program reloads the config
+  disable_start_message: False           # Suppress startup notification
+  disable_shutdown_message: False        # Suppress shutdown notification
   disable_config_reload_message: False   # Suppress config reload notification
   disable_container_event_message: False # Suppress notification when monitoring of containers start/stop
+```
+
+This setting requires a more detailed explanation:
+```yaml
+ notification_title: default
+```
+When `default` is set LoggiFly uses its own notification titles.
+If you want to have a different title you can choose your own custom template for the notification title.
+
+You can insert these two keys into the template:<br>
+`keywords`: _The keywords that were found in a log line_ <br>
+`container`: _The name of the container in which the keywords have been found_
+
+Here is an example:
+
+```yaml
+ notification_title: "The following keywords were found in {container}: {keywords}"
 ```
 
 </details>
