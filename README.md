@@ -43,7 +43,7 @@ Get instant alerts for security breaches, system errors, or custom patterns thro
     - [Notifications](#-notifications)
     - [Containers](#-containers)
     - [Global Keywords](#-global-keywords)
-  - [Customise & Style Notifications](#-customise-and-filter-notification-using-templates)
+  - [Customize & Style Notifications](#-customize-and-filter-notification-using-templates)
   - [Environment Variables](#-environment-variables)
 - [Remote Hosts](#-remote-hosts)
   - [Labels](#labels)
@@ -59,10 +59,13 @@ Get instant alerts for security breaches, system errors, or custom patterns thro
 # 🚀 Features
 
 - **🔍 Plain Text, Regex & Multi-Line Log Detection**: Catch simple keywords or complex patterns in log entries that span multiple lines.
-- **🚨 Ntfy/Apprise Alerts**: Send notifications directly to Ntfy or via Apprise to 100+ different services (Slack, Discord, Telegram).
+- **🚨 Ntfy/Apprise Alerts**: Send notifications directly to Ntfy or via Apprise to 100+ different services (Slack, Discord, Telegram) or even to your own custom endpoint.
 - **🔁 Trigger Stop/Restart**: A restart/stop of the monitored container can be triggered on specific critical keywords.
 - **📁 Log Attachments**: Automatically include a log file to the notification for context.
 - **⚡ Automatic Reload on Config Change**: The program automatically reloads the `config.yaml` when it detects that the file has been changed.
+- **📝 Configurable Alerts**: Filter log lines for relevant information and use templates for your messages and notification titles.
+- **🌐 Remote Access**: Connect and control multiple remote Docker hosts from a single interface.
+- **🐳 Docker Swarm Support**: Seamlessly manage Docker Swarm clusters and multiple remote hosts at the same time.
 
 ---
 # 🖼 Screenshots
@@ -74,6 +77,16 @@ Get instant alerts for security breaches, system errors, or custom patterns thro
   <img src="/images/ebook2audiobook.png" alt="Ebook2Audiobook conversion finished" width="300" height="auto">
 
 </div>
+
+**Customize your notifications and filter the log lines for relevant information:
+
+<div align="center">
+   <img src="/images/aaudiobookshelf_download_custom.png" alt="Audiobookshelf Dowanload" width="300" height="auto">
+   <img src="/images/authelia_custom.png" alt="authelia failed login" width="300" height="auto">
+   <img src="/images/vaultwarden_custom.png" alt="vaultwarden failed login" width="300" height="auto">
+
+</div>
+
 
 ---
 
@@ -382,7 +395,7 @@ global_keywords:
 </details>
 
 
-## 📝 Customise and filter notification using Templates
+## 📝 Customize and filter notification using Templates
 
 For users who want more control over the appearance of their notifications, you can configure templates and filter log messages to display only the relevant parts.<br>
 Filtering is most straightforward with logs in JSON Format, but plain text logs can also be parsed by using named groups in the regex pattern.<br>
