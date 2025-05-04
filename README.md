@@ -43,7 +43,7 @@ Get instant alerts for security breaches, system errors, or custom patterns thro
     - [Notifications](#-notifications)
     - [Containers](#-containers)
     - [Global Keywords](#-global-keywords)
-  - [Customise Notification](#-customise-and-filter-notification-using-templates)
+  - [Customise & Style Notifications](#-customise-and-filter-notification-using-templates)
   - [Environment Variables](#-environment-variables)
 - [Remote Hosts](#-remote-hosts)
   - [Labels](#labels)
