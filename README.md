@@ -43,6 +43,7 @@ Get instant alerts for security breaches, system errors, or custom patterns thro
     - [Notifications](#-notifications)
     - [Containers](#-containers)
     - [Global Keywords](#-global-keywords)
+  - [Customise Notification](#-customise-and-filter-notification-using-templates)
   - [Environment Variables](#-environment-variables)
 - [Remote Hosts](#-remote-hosts)
   - [Labels](#labels)
@@ -306,7 +307,6 @@ If a **webhook** is configured LoggiFly will post a JSON to the URL with the fol
 
 ### 🐳 Containers 
 
-#### Container Config Explanation
 Here you can define containers and assign keywords, regex patterns, and optional settings to each one.<br>
 The container names must match the exact container names you would get with `docker ps`.<br>
 
@@ -382,7 +382,7 @@ global_keywords:
 </details>
 
 
-### Customise and filter notification using Templates 
+## 📝 Customise and filter notification using Templates
 
 For users who want more control over the appearance of their notifications, you can configure templates and filter log messages to display only the relevant parts.<br>
 Filtering is most straightforward with logs in JSON Format, but plain text logs can also be parsed by using named groups in the regex pattern.<br>
@@ -393,7 +393,7 @@ Filtering is most straightforward with logs in JSON Format, but plain text logs 
 <br>
 
 
-#### Template for JSON Logs:
+### Template for JSON Logs:
 
 
 `json_template` only works if the Logs are in JSON Format. Authelia is one such example.<br>
@@ -431,7 +431,7 @@ containers:
 ```
 <br>
 
-#### Template using named capturing groups in Regex Pattern:
+### Template using named capturing groups in Regex Pattern:
 
 To filter non JSON Log Lines for certain parts you have to use a regex pattern with **named capturing groups**.<br> 
 Lets take `(?P<group_name>...)` as an example. 
@@ -460,7 +460,7 @@ containers:
 ```
 <br>
 
-#### Add original Log Entry to template:
+### Add original Log Entry to template:
 
 WIth both `json_template` and `template` you can add the key `original_log_line` to your template to add the full log entry to your notification message.
 
