@@ -78,8 +78,9 @@ Get instant alerts for security breaches, system errors, or custom patterns thro
   <img src="/images/ebook2audiobook.png" alt="Ebook2Audiobook conversion finished" width="300" height="auto">
 
 </div>
+<br>
 
-**Customize your notifications and filter the log lines for relevant information:
+**Customize your notifications and filter the log lines for relevant information:**<br>
 
 <div align="center">
    <img src="/images/aaudiobookshelf_download_custom.png" alt="Audiobookshelf Dowanload" width="300" height="auto">
