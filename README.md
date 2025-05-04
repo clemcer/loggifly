@@ -39,11 +39,12 @@ Get instant alerts for security breaches, system errors, or custom patterns thro
 - [Quick Start](#️-quick-start)
 - [Configuration Deep Dive](#-Configuration-Deep-Dive)
   - [Basic config structure](#-basic-structure)
-    - [Settings](#-settings)
+    - [Settings](#%EF%B8%8F-settings)
     - [Notifications](#-notifications)
     - [Containers](#-containers)
     - [Global Keywords](#-global-keywords)
-  - [Customize & Style Notifications](#-customize-and-filter-notification-using-templates)
+  - [Customize Notifications (Templates & Log Filtering)
+](#-customize-notifications-templates--log-filtering)
   - [Environment Variables](#-environment-variables)
 - [Remote Hosts](#-remote-hosts)
   - [Labels](#labels)
@@ -241,17 +242,45 @@ These are the default values for the settings:
 settings:          
   log_level: INFO               # DEBUG, INFO, WARNING, ERROR
   notification_cooldown: 5      # Seconds between alerts for same keyword (per container)
+  notification_title: default   # configure a custom template for the notification title (see section below)
   action_cooldown: 300          # Cooldown period (in seconds) before the next container action can be performed. Maximum is always at least 60s.
   attachment_lines: 20          # Number of Lines to include in log attachments
   multi_line_entries: True      # Monitor and catch multi-line log entries instead of going line by line. 
-  reload_config: True        # When the config file is changed the program reloads the config
-  disable_start_message: False  # Suppress startup notification
-  disable_shutdown_message: False  # Suppress shutdown notification
+  reload_config: True           # When the config file is changed the program reloads the config
+  disable_start_message: False           # Suppress startup notification
+  disable_shutdown_message: False        # Suppress shutdown notification
   disable_config_reload_message: False   # Suppress config reload notification
   disable_container_event_message: False # Suppress notification when monitoring of containers start/stop
 ```
+</details>
+
+The setting `notification_title` requires a more detailed explanation:<br>
+
+<details><summary><em>Click to expand:</em><strong> notification_title: </strong></summary>
+<br>
+
+
+When `notification_title: default` is set LoggiFly uses its own notification titles.<br>
+However, if you prefer something simpler or in another language, you can choose your own template for the notification title.
+
+These are the two keys that can be inserted into the template:<br>
+`keywords`: _The keywords that were found in a log line_ <br>
+`container`: _The name of the container in which the keywords have been found_
+
+This setting can also be configured per container by the way.
+
+Here is an example:
+
+```yaml
+notification_title: "The following keywords were found in {container}: {keywords}"
+```
+Or keep it simple:
+```yaml
+notification_title: {container}
+```
 
 </details>
+
 
 ### 📭 Notifications
 
@@ -355,7 +384,8 @@ containers:
     ntfy_tags: closed_lock_with_key   
     ntfy_priority: 5
     ntfy_topic: container3
-    attachment_lines: 50     
+    attachment_lines: 50
+    notification_title: 'Keywords {keywords} found in {container}'
     notification_cooldown: 2  
     action_cooldown: 60 
   
@@ -395,7 +425,8 @@ global_keywords:
 </details>
 
 
-## 📝 Customize and filter notification using Templates
+## 📝 Customize Notifications (Templates & Log Filtering)
+
 
 For users who want more control over the appearance of their notifications, you can configure templates and filter log messages to display only the relevant parts.<br>
 Filtering is most straightforward with logs in JSON Format, but plain text logs can also be parsed by using named groups in the regex pattern.<br>
@@ -449,12 +480,11 @@ containers:
 To filter non JSON Log Lines for certain parts you have to use a regex pattern with **named capturing groups**.<br> 
 Lets take `(?P<group_name>...)` as an example. 
 `P<group_name>` assigns the name `group_name` to the group.
-The part inside the parentheses `(...)` is the pattern to match.
-
-Then you can insert the named capturing groups you defined in the regex pattern into the `template`.
+The part inside the parentheses `(...)` is the pattern to match.<br>
+Then you can insert the `{group_name}` into your custom message `template`.
 <br>
 
-Example Log Line:
+Example Log Line from audiobookshelf:
 
 ```
 [2025-05-03 10:16:53.154] INFO: [SocketAuthority] Socket VKrcSNa--FjwAqmSAAAU disconnected from client "example user" after 11696ms (Reason: transport close)
@@ -466,7 +496,7 @@ Regex pattern & Template:
 containers:
   audiobookshelf:
     keywords:
-      - regex: '(?P<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}.\d{3}).*Socket.*disconnected from client "(?P<user>\S+)"'
+      - regex: '(?P<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}.\d{3}).*Socket.*disconnected from client "(?P<user>[A-Za-z\s]+)"'
         template: '\n🔎 The user {user} was seen!\n🕐 {timestamp}'
         hide_pattern_in_title: true  # Exclude the regex pattern from the notification title for a cleaner look
       
@@ -703,7 +733,7 @@ For all the possible configuration options take a look at the [Containers sectio
 2. **`action_keywords`** can not be set via environment variables, they can only be set per container in the `config.yaml`. The `action_cooldown` is always at least 60s long and defaults to 300s
 3. **Regex Patterns**:
    - Validate patterns at [regex101.com](https://regex101.com) before adding them to your config.
-   - use `hide_pattern_in_title: true` when using very long regex patterns to have a cleaner notification title 
+   - use `hide_pattern_in_title: true` when using very long regex patterns to have a cleaner notification title _(or hide found keywords from the title altogether with your own custom `notification_title` ([see settings](#%EF%B8%8F-settings))_
 5. **Troubleshooting Multi-Line Log Entries**. If LoggiFly only catches single lines from log entries that span over multiple lines:
     - Wait for Patterns: LoggiFly needs to process a few lines in order to detect the pattern the log entries start with (e.g. timestamps/log level)
     - Unrecognized Patterns: If issues persist, open an issue and share the affected log samples
