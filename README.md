@@ -72,20 +72,19 @@ Get instant alerts for security breaches, system errors, or custom patterns thro
 # 🖼 Screenshots
 
 <div align="center">
-   <img src="/images/abs_login.png" alt="Audiobookshelf Login" width="300" height="auto">
-   <img src="/images/vault_failed_login.png" alt="Vaultwarden Login" width="300" height="auto">
-   <img src="/images/abs_download.png" alt="Audiobookshelf Download" width="300" height="auto">
+  <img src="/images/abs_login.png" alt="Audiobookshelf Login" width="300" height="auto">
+  <img src="/images/vault_failed_login.png" alt="Vaultwarden Login" width="300" height="auto">
+  <img src="/images/abs_download.png" alt="Audiobookshelf Download" width="300" height="auto">
   <img src="/images/ebook2audiobook.png" alt="Ebook2Audiobook conversion finished" width="300" height="auto">
-
 </div>
 <br>
 
-**Customize your notifications and filter the log lines for relevant information:**<br>
 
 <div align="center">
-   <img src="/images/audiobookshelf_download_custom.png" alt="Audiobookshelf Download" width="300" height="auto">
-   <img src="/images/authelia_custom.png" alt="authelia failed login" width="300" height="auto">
-   <img src="/images/vaultwarden_custom.png" alt="vaultwarden failed login" width="300" height="auto">
+  <p>Customize your notifications and filter the log lines for relevant information:</p>
+  <img src="/images/audiobookshelf_download_custom.png" alt="Audiobookshelf Download" width="300" height="auto">
+  <img src="/images/authelia_custom.png" alt="authelia failed login" width="300" height="auto">
+  <img src="/images/vaultwarden_custom.png" alt="vaultwarden failed login" width="300" height="auto">
 
 </div>
 
