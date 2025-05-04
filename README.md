@@ -239,10 +239,15 @@ settings:
   disable_config_reload_message: False   # Suppress config reload notification
   disable_container_event_message: False # Suppress notification when monitoring of containers start/stop
 ```
-<br>
+</details>
 
 The setting `notification_title` requires a more detailed explanation:<br>
-When `default` is set LoggiFly uses its own notification titles.
+
+<details><summary><em>Click to expand:</em><strong> notification_title: </strong></summary>
+<br>
+
+
+When `notification_title: default` is set LoggiFly uses its own notification titles.<br>
 However, if you prefer something simpler or in another language, you can choose your own template for the notification title.
 
 You can insert these two keys into the template:<br>
@@ -254,8 +259,8 @@ Here is an example:
 ```yaml
  notification_title: "The following keywords were found in {container}: {keywords}"
 ```
-
 </details>
+
 
 ### 📭 Notifications
 
