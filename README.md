@@ -81,7 +81,7 @@ Get instant alerts for security breaches, system errors, or custom patterns thro
 
 
 <div align="center">
-  <p>Customize your notifications and filter the log lines for relevant information:</p>
+  <p><strong>Customize your notifications and filter the log lines for relevant information:</strong> </p>
   <img src="/images/audiobookshelf_download_custom.png" alt="Audiobookshelf Download" width="300" height="auto">
   <img src="/images/authelia_custom.png" alt="authelia failed login" width="300" height="auto">
   <img src="/images/vaultwarden_custom.png" alt="vaultwarden failed login" width="300" height="auto">
