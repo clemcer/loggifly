@@ -467,12 +467,11 @@ containers:
 To filter non JSON Log Lines for certain parts you have to use a regex pattern with **named capturing groups**.<br> 
 Lets take `(?P<group_name>...)` as an example. 
 `P<group_name>` assigns the name `group_name` to the group.
-The part inside the parentheses `(...)` is the pattern to match.
-
-Then you can insert the named capturing groups you defined in the regex pattern into the `template`.
+The part inside the parentheses `(...)` is the pattern to match.<br>
+Then you can insert the `{group_name}` into your custom message `template`.
 <br>
 
-Example Log Line:
+Example Log Line from audiobookshelf:
 
 ```
 [2025-05-03 10:16:53.154] INFO: [SocketAuthority] Socket VKrcSNa--FjwAqmSAAAU disconnected from client "example user" after 11696ms (Reason: transport close)
@@ -721,7 +720,7 @@ For all the possible configuration options take a look at the [Containers sectio
 2. **`action_keywords`** can not be set via environment variables, they can only be set per container in the `config.yaml`. The `action_cooldown` is always at least 60s long and defaults to 300s
 3. **Regex Patterns**:
    - Validate patterns at [regex101.com](https://regex101.com) before adding them to your config.
-   - use `hide_pattern_in_title: true` when using very long regex patterns to have a cleaner notification title 
+   - use `hide_pattern_in_title: true` when using very long regex patterns to have a cleaner notification title _(or hide found keywords from the title altogether with your own custom `notification_title` ([see settings](#%EF%B8%8F-settings))_
 5. **Troubleshooting Multi-Line Log Entries**. If LoggiFly only catches single lines from log entries that span over multiple lines:
     - Wait for Patterns: LoggiFly needs to process a few lines in order to detect the pattern the log entries start with (e.g. timestamps/log level)
     - Unrecognized Patterns: If issues persist, open an issue and share the affected log samples
