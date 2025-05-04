@@ -44,7 +44,7 @@ Get instant alerts for security breaches, system errors, or custom patterns thro
     - [Containers](#-containers)
     - [Global Keywords](#-global-keywords)
   - [Customize Notifications (Templates & Log Filtering)
-](#-customize-notifications-templates-&-log-filtering)
+](#-customize-notifications-templates--log-filtering)
   - [Environment Variables](#-environment-variables)
 - [Remote Hosts](#-remote-hosts)
   - [Labels](#labels)
