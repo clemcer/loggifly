@@ -364,18 +364,36 @@ containers:
 </details>
 
 
-#### Templates & Filtering Log Lines
+### 🌍 Global Keywords
 
-For users who want more control over the appearance of their notifications, you can configure templates and filter log messages to display only the relevant parts.
+When `global_keywords` are configured all containers are monitored for these keywords:
+
+<details><summary><em>Click to expand:</em><strong> Global Keywords: </strong></summary>
+
+```yaml
+global_keywords:              
+  keywords:
+    - error
+  keywords_with_attachment: # attach a logfile
+    - regex: (critical|error)
+```
+<br>
+
+</details>
+
+
+### Customise and filter notification using Templates 
+
+For users who want more control over the appearance of their notifications, you can configure templates and filter log messages to display only the relevant parts.<br>
+Filtering is most straightforward with logs in JSON Format, but plain text logs can also be parsed by using named groups in the regex pattern.<br>
 
 
 <details><summary><em>Click to expand:</em><strong> Filter Logs and set custom template: </strong></summary>
 
 <br>
-Filtering is most straightforward with logs in JSON Format, but plain text logs can also be parsed by using named groups in the regex pattern.<br>
-<br>
 
-<ins>**Template for JSON Logs:**</ins>
+
+#### Template for JSON Logs:
 
 
 `json_template` only works if the Logs are in JSON Format. Authelia is one such example.<br>
@@ -413,7 +431,7 @@ containers:
 ```
 <br>
 
-<ins>**Template using named capturing groups in Regex Pattern:**</ins>
+#### Template using named capturing groups in Regex Pattern:
 
 To filter non JSON Log Lines for certain parts you have to use a regex pattern with **named capturing groups**.<br> 
 Lets take `(?P<group_name>...)` as an example. 
@@ -442,28 +460,11 @@ containers:
 ```
 <br>
 
-<ins>**Add original Log Entry to template**</ins>
+#### Add original Log Entry to template:
 
 WIth both `json_template` and `template` you can add the key `original_log_line` to your template to add the full log entry to your notification message.
 
 <br>
-</details>
-
-### 🌍 Global Keywords
-
-When `global_keywords` are configured all containers are monitored for these keywords:
-
-<details><summary><em>Click to expand:</em><strong> Global Keywords: </strong></summary>
-
-```yaml
-global_keywords:              
-  keywords:
-    - error
-  keywords_with_attachment: # attach a logfile
-    - regex: (critical|error)
-```
-<br>
-
 </details>
 
 
