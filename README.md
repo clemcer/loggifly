@@ -441,6 +441,7 @@ global_keywords:
 
 
 For users who want more control over the appearance of their notifications, there is an option to configure templates and filter log entries to display only the relevant parts.<br>
+Here are some [examples](#-customize-notifications-and-filter-log-lines-for-relevant-information).<br>
 Filtering is most straightforward with logs in JSON Format, but plain text logs can also be parsed by using named groups in the regex pattern.<br>
 
 > [!Note]
