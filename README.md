@@ -65,7 +65,7 @@ Get instant alerts for security breaches, system errors, or custom patterns thro
 - **📁 Log Attachments**: Automatically include a log file to the notification for context.
 - **⚡ Automatic Reload on Config Change**: The program automatically reloads the `config.yaml` when it detects that the file has been changed.
 - **📝 Configurable Alerts**: Filter log lines for relevant information and use templates for your messages and notification titles.
-- **🌐 Remote Hosts**: Connect and monitor multiple remote Docker hosts.
+- **🌐 Remote Hosts**: Connect to multiple remote Docker hosts.
 
 
 ---
