@@ -72,21 +72,20 @@ Get instant alerts for security breaches, system errors, or custom patterns thro
 # 🖼 Screenshots
 
 <div style="display: flex; justify-content: center; gap: 10px;">
+  <img src="/images/abs_download.png" alt="Audiobookshelf Download" style="height: 150px; object-fit: contain;">
   <img src="/images/abs_login.png" alt="Audiobookshelf Login" style="height: 150px; object-fit: contain;">
   <img src="/images/vault_failed_login.png" alt="Vaultwarden Login" style="height: 150px; object-fit: contain;">
-  <img src="/images/abs_download.png" alt="Audiobookshelf Download" style="height: 150px; object-fit: contain;">
-  <img src="/images/ebook2audiobook.png" alt="Ebook2Audiobook conversion finished" style="height: 150px; object-fit: contain;">
+  <img src="/images/ebook2audiobook.png" alt="Ebook2Audiobook conversion finished" style="height: 125px; object-fit: contain;">
 </div>
 
 <br>
 
+### 🎯 Customize notifications and filter log lines for relevant information:
 
 <div style="display: flex; justify-content: center; gap: 10px;">
-  <p><strong>Customize your notifications and filter log lines for relevant information:</strong> </p>
-  <img src="/images/audiobookshelf_download_custom.png" alt="Audiobookshelf Download" style="height: 100px; object-fit: contain;">
-  <img src="/images/authelia_custom.png" alt="authelia failed login" style="height: 100px; object-fit: contain;">
-  <img src="/images/vaultwarden_custom.png" alt="vaultwarden failed login" style="height: 100px; object-fit: contain;">
-
+  <img src="/images/vaultwarden_custom.png" alt="vaultwarden failed login" style="height: 125px; object-fit: contain;">
+  <img src="/images/audiobookshelf_download_custom.png" alt="Audiobookshelf Download" style="height: 125px; object-fit: contain;">
+  <img src="/images/authelia_custom.png" alt="authelia failed login" style="height: 125px; object-fit: contain;">
 </div>
 
 
