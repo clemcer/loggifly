@@ -61,7 +61,7 @@ global_keywords:
     - global_keyword2
 
 notifications:                       
-  # At least one of the two (Ntfy/Apprise) is required.
+  # At least one of these (Ntfy/Apprise/Webhook) is required.
   ntfy:
     url: http://your-ntfy-server    # Required. The URL of your Ntfy instance
     topic: loggifly                 # Required. the topic for Ntfy
