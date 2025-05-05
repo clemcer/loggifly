@@ -440,8 +440,11 @@ global_keywords:
 ## 📝 Customize Notifications (Templates & Log Filtering)
 
 
-For users who want more control over the appearance of their notifications, you can configure templates and filter log messages to display only the relevant parts.<br>
+For users who want more control over the appearance of their notifications, there is an option to configure templates and filter log entries to display only the relevant parts.<br>
 Filtering is most straightforward with logs in JSON Format, but plain text logs can also be parsed by using named groups in the regex pattern.<br>
+
+> [!Note]
+> If you want to modify the notification title take a look at the setting `notification_title` in the [settings section](#%EF%B8%8F-settings). 
 
 
 <details><summary><em>Click to expand:</em><strong> Filter Logs and set custom template: </strong></summary>
@@ -455,24 +458,10 @@ Filtering is most straightforward with logs in JSON Format, but plain text logs 
 `json_template` only works if the Logs are in JSON Format. Authelia is one such example.<br>
 You can only use the placeholder variables that exist as keys in the JSON from the log line you want to catch.<br>
 
-Here is an example where you want to catch this log entry from Authelia: 
+Here is an example where you want to catch this very log entry from Authelia: 
 
-```json
-{
-  "level": "error",
-  "method": "POST",
-  "msg": "Unsuccessful 1FA authentication attempt by user 'example user'",
-  "path": "/api/firstfactor",
-  "remote_ip": "192.168.178.191",
-  "stack": [
-    {
-      "File": "github.com/authelia/authelia/v4/internal/handlers/response.go",
-      "Line": 276,
-      "Name": "doMarkAuthenticationAttemptWithRequest"
-    },
-     ...
-  "time": "2025-05-03T09:29:04+02:00"
-}
+```
+{"level":"error","method":"POST","msg":"Unsuccessful 1FA authentication attempt by user 'example_user' and they are banned until 12:23:00PM on May 1 2025 (+02:00)","path":"/api/firstfactor","remote_ip":"192.168.178.191","stack":[{"File":"github.com/authelia/authelia/v4/internal/handlers/response.go","Line":274,"Name":"doMarkAuthenticationAttemptWithRequest"},{"File":"github.com/authelia/authelia/v4/internal/handlers/response.go","Line":258,"Name":"doMarkAuthenticationAttempt"},{"File":"github.com/authelia/authelia/v4/internal/handlers/handler_firstfactor_password.go","Line":51,"Name":"handlerMain.FirstFactorPasswordPOST.func14"},{"File":"github.com/authelia/authelia/v4/internal/middlewares/bridge.go","Line":66,"Name":"handlerMain.(*BridgeBuilder).Build.func7.1"},{"File":"github.com/authelia/authelia/v4/internal/middlewares/headers.go","Line":65,"Name":"SecurityHeadersCSPNone.func1"},{"File":"github.com/authelia/authelia/v4/internal/middlewares/headers.go","Line":105,"Name":"SecurityHeadersNoStore.func1"},{"File":"github.com/authelia/authelia/v4/internal/middlewares/headers.go","Line":30,"Name":"SecurityHeadersBase.func1"},{"File":"github.com/fasthttp/router@v1.5.4/router.go","Line":441,"Name":"(*Router).Handler"},{"File":"github.com/authelia/authelia/v4/internal/middlewares/log_request.go","Line":14,"Name":"handlerMain.LogRequest.func31"},{"File":"github.com/authelia/authelia/v4/internal/middlewares/errors.go","Line":38,"Name":"RecoverPanic.func1"},{"File":"github.com/valyala/fasthttp@v1.59.0/server.go","Line":2380,"Name":"(*Server).serveConn"},{"File":"github.com/valyala/fasthttp@v1.59.0/workerpool.go","Line":225,"Name":"(*workerPool).workerFunc"},{"File":"github.com/valyala/fasthttp@v1.59.0/workerpool.go","Line":197,"Name":"(*workerPool).getCh.func1"},{"File":"runtime/asm_amd64.s","Line":1700,"Name":"goexit"}],"time":"2025-05-01T14:19:29+02:00"}
 ```
 
 In the config.yaml you can set a `json_template` for both plain text keywords and regex patterns. In the template I inserted three keys from the JSON Log Entry:
