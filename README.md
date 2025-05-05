@@ -516,13 +516,13 @@ containers:
 
 **Result:**
 
-- with template:
+- with `template` and `hide_pattern_in_title`:
 
 <div style="display: flex; justify-content: center; gap: 10px;">
   <img src="/images/abs_with_template.png">
 </div>
 
-- without template for comparison:
+- without comparison:
 
 <div style="display: flex; justify-content: center; gap: 10px;">
   <img src="/images/abs_without_template.png">
