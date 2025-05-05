@@ -99,9 +99,9 @@ You won't be able to trigger container stops/restarts with a proxy, but if you d
 
 In this quickstart only the most essential settings are covered, [here](#Configuration-Deep-Dive) is a more detailed config walkthrough.<br>
 
-Choose your preferred setup method - simple environment variables for basic use or a YAML config for advanced control.
+Choose your preferred setup method - a simple docker compose with environment variables for basic use or a YAML config for advanced control.
 - Environment variables allow for a **simple** and **much quicker** setup
-- With YAML you can use complex **Regex patterns**, have different keywords & other settings **per container** and set keywords that trigger a **restart/stop** of the container.
+- With a `config.yaml ` you can use complex **Regex patterns**, have different keywords & other settings **per container** and set keywords that trigger a **restart/stop** of the container.
 
 > [!Note]
 In previous versions the default location for the `config.yaml` file was `/app/config.yaml`. The old path still works (so not a breaking change) but the new official path is now `/config/config.yaml`.<br>
@@ -109,7 +109,8 @@ LoggiFly will first look in `/config/config.yaml`, and fall back to `/app/config
 When `/config` is mounted a config template will be downloaded into that directory. 
 
 <details><summary><em>Click to expand:</em> 🐋 <strong>Basic Setup: Docker Compose (Environment Variables)</strong></summary>
-Ideal for quick setup with minimal configuration
+<br>
+Ideal for quick setup with minimal configuration:
 
 ```yaml
 version: "3.8"
@@ -135,14 +136,20 @@ services:
       GLOBAL_KEYWORDS: "error,failed login,password"  # Basic keyword monitoring
       GLOBAL_KEYWORDS_WITH_ATTACHMENT: "critical"     # Attaches a log file to the notification
     restart: unless-stopped 
+
 ```
+
+[Here](#-environment-variables) you can find some more environment variables that you could set.
+
+
 </details>
 
 
 <details><summary><em>Click to expand:</em><strong> 📜 Advanced Setup: YAML Configuration</strong></summary>
-
-Recommended for granular control, regex patterns and action_keywords. <br>
-
+<br>
+Recommended for granular control, regex patterns and action_keywords: <br>
+<br>
+  
 **Step 1: Docker Compose**
 
 Use this [docker compose](/docker-compose.yaml) and edit this line:
@@ -156,7 +163,8 @@ If you want you can configure some of the settings or sensitive values like ntfy
 
 If `/config` is mounted a **[template file](/config_template.yaml) will be downloaded** into that directory. You can edit the downloaded template file and rename it to `config.yaml` to use it.<br>
 You can also take a look at the [Configuration-Deep-Dive](#-Configuration-Deep-Dive) for all the configuration options.<br>
-Or you can edit and copy paste the following **minimal config** into a newly created `config.yaml` file in `/config`.
+
+Or you can just edit and copy paste the following **minimal config** into a newly created `config.yaml` file in the mounted `/config` directory:
 ```yaml
 # You have to configure at least one container.
 containers:
@@ -169,11 +177,12 @@ containers:
     keywords_with_attachment:
       - warn
     # Caution advised! These keywords will trigger a restart/stop of the container
+    # There is an action_cooldown (see config deep dive)
     action_keywords:
       - stop: traceback
       - restart: critical
 
-# Optional. These keywords are being monitored for all configured containers. There is an action_cooldown (see config deep dive)
+# Optional. These keywords are being monitored for all configured containers. 
 global_keywords:
   keywords:
     - failed
@@ -214,7 +223,7 @@ The Quick Start only covered the essential settings, here is a more detailed wal
 The `config.yaml` file is divided into four main sections:
 
 1. **`settings`**: Global settings like cooldowns and log levels. (_Optional since they all have default values_)
-2. **`notifications`**: Configure Ntfy (_URL, Topic, Token, Priority and Tags_) and/or your Apprise URL
+2. **`notifications`**: Ntfy (_URL, Topic, Token, Priority and Tags_), your Apprise URL and/or a custom webhook url 
 3. **`containers`**: Define which Containers to monitor and their specific Keywords (_plus optional settings_).
 4. **`global_keywords`**: Keywords that apply to _all_ monitored Containers.
 
@@ -261,13 +270,14 @@ The setting `notification_title` requires a more detailed explanation:<br>
 
 
 When `notification_title: default` is set LoggiFly uses its own notification titles.<br>
-However, if you prefer something simpler or in another language, you can choose your own template for the notification title.
+However, if you prefer something simpler or in another language, you can choose your own template for the notification title. <br>
+This setting can also be configured per container by the way (_see [containers](#-containers) section_).
 
 These are the two keys that can be inserted into the template:<br>
 `keywords`: _The keywords that were found in a log line_ <br>
 `container`: _The name of the container in which the keywords have been found_
 
-This setting can also be configured per container by the way.
+
 
 Here is an example:
 
@@ -339,7 +349,7 @@ If a **webhook** is configured LoggiFly will post a JSON to the URL with the fol
 {
   "container": container_name,
   "keywords": the keywords that were found,
-  "title": notification_title,
+  "title": notification title,
   "message": message (the log line unless it is a message coming from LoggiFly itself),
   "host": hostname (None unless LoggiFly is connected to multiple hosts)
 }
@@ -366,8 +376,9 @@ containers:
       - keyword2
       - regex: regex-pattern2
         hide_pattern_in_title: true # Exclude the regex pattern from the notification title for a cleaner look. Useful when using very long regex patterns.
+      - keyword3
     action_keywords: # trigger a restart/stop of the container. can not be set globally
-      - restart: keyword3
+      - restart: keyword4
       - stop: 
           regex: regex-pattern3 # this is how to set regex patterns for action_keywords
   
@@ -385,12 +396,13 @@ containers:
     ntfy_priority: 5
     ntfy_topic: container3
     attachment_lines: 50
-    notification_title: 'Keywords {keywords} found in {container}'
+    notification_title: '{keywords} found in {container}'
     notification_cooldown: 2  
     action_cooldown: 60 
   
     keywords:
       - keyword1
+      - regex: regex-pattern1
 
 ```
 
