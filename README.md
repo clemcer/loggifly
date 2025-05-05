@@ -688,10 +688,11 @@ services:
     environment:
       TZ: Europe/Berlin
       LOGGIFLY_MODE: swarm
-      # Uncomment the next three variables if you are using a config.yaml
+      # Uncomment the next three variables if you want to only use environment variables instead of a config.yaml
       # SWARM_SERVICES: nginx,redis
       # GLOBAL_KEYWORDS: keyword1,keyword2
       # GLOBAL_KEYWORDS_WITH_ATTACHMENT: keyword3
+      # For more environment variables see the environment variables section in the README 
 # Comment out the rest of this file if you are only using environment variables
     configs:
       - source: loggifly-config
