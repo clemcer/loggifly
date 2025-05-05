@@ -83,7 +83,7 @@ Get instant alerts for security breaches, system errors, or custom patterns thro
 ### 🎯 Customize notifications and filter log lines for relevant information:
 
 <div style="display: flex; justify-content: center; gap: 10px; align-items: center;">
-  <img src="/images/template_collage.png" alt="Custom Tepmplates Collage" style="height: 300px; object-fit: contain;">
+  <img src="/images/template_collage_rounded.png" alt="Custom Tepmplates Collage" style="height: 300px; object-fit: contain;">
   </div>
 </div>
 
