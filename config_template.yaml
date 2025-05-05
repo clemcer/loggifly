@@ -11,6 +11,10 @@
 # If you want to use this file after editing it make sure to rename it to config.yaml
 #
 # With every container exaample you can see some more available configuration options
+#
+# I did not include the option to customize notifications in this template but:
+#   - Here is a detailed explanation on that: https://github.com/clemcer/loggifly/main#-customize-notifications-templates--log-filtering
+#   - And here are some examples: https://github.com/clemcer/loggifly/blob/main/config_example.yaml
 
 containers:
 
@@ -35,6 +39,7 @@ containers:
     ntfy_tags: closed_lock_with_key   
     ntfy_priority: 5
     ntfy_topic: container4
+    notification_title: '{keywords} found in {container}' # modify the notification title for this container
     attachment_lines: 50     
     notification_cooldown: 2  
     action_cooldown: 300
@@ -47,7 +52,7 @@ containers:
       - stop: keyword3
       - restart: 
           regex: regex-pattern # this is how to set regex patterns for action_keywords
-
+          
 # Global keywords are applied to all containers
 global_keywords:
   keywords:
@@ -67,16 +72,21 @@ notifications:
     tags: kite,mag                  # Ntfy tags/emojis 
   apprise:
     url: "discord://webhook-url"    # Any Apprise-compatible URL (https://github.com/caronc/apprise/wiki)
-
+  webhook: 
+    url: https://custom.endpoint.com/post
+    headers:                        # add headers if needed
+      Authorization: "Bearer token"
+      X-Custom-Header": "Test123"  
 
 # These are the default settings
 settings:          
   log_level: INFO               # DEBUG, INFO, WARNING, ERROR
   notification_cooldown: 5      # Seconds between alerts for same keyword (per container)
   action_cooldown: 300          # Cooldown period (in seconds) before the next container action can be performed. Maximum is always at least 60s.
-  attachment_lines: 20          # Number of Lines to include in log attachments
+  notification_title: default   # configure a custom template for the notification title (see section below)  attachment_lines: 20          # Number of Lines to include in log attachments
   multi_line_entries: True      # Monitor and catch multi-line log entries instead of going line by line. 
   reload_config: True           # When the config file is changed the program reloads the config
   disable_start_message: False  # Suppress startup notification
   disable_shutdown_message: False        # Suppress shutdown notification
   disable_config_reload_message: False   # Suppress config reload notification
+  disable_container_event_message: False # Suppress notification when monitoring of containers start/stop
