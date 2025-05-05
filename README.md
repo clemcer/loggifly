@@ -730,7 +730,7 @@ swarm_services:
       - fatal
 ```
 
-For all the possible configuration options take a look at the [Containers section](#-containers) of the config walkthrough since the configuration of `swarm_services` is exactly the same as of `containers`.
+For all available configuration options, refer to the [Containers section](#-containers) of the configuration walkthrough — the `swarm_services` configuration is identical to that of `containers`.
 
 </details>
 
