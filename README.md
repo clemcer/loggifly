@@ -513,6 +513,22 @@ containers:
         hide_pattern_in_title: true  # Exclude the regex pattern from the notification title for a cleaner look
       
 ```
+
+**Result:**
+
+- with template:
+
+<div style="display: flex; justify-content: center; gap: 10px;">
+  <img src="/images/abs_with_template.png">
+</div>
+
+- without template for comparison:
+
+<div style="display: flex; justify-content: center; gap: 10px;">
+  <img src="/images/abs_without_template.png">
+</div>
+
+
 <br>
 
 ### Add original Log Entry to template:
