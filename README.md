@@ -525,7 +525,7 @@ WIth both `json_template` and `template` you can add the key `original_log_line`
 
 ## 🍀 Environment Variables
 
-Except for `restart_keywords`, container specific settings/keywords and regex patterns you can configure most settings via **Docker environment variables**.
+Except for `action_keywords`, container specific settings/keywords and regex patterns you can configure most settings via **Docker environment variables**.
 
 <details><summary><em>Click to expand:</em><strong> Environment Variables </strong></summary><br>
 
@@ -574,12 +574,12 @@ When the connection to a docker host is lost, LoggiFly will try to reconnect eve
 When multiple hosts are set LoggiFly will use **labels** to differentiate between them both in notifications and in logging.<br>
 You can set a **label** by appending it to the address with `"|"` ([_see example_](#remote-host-example)).<br>
 When no label is set LoggiFly will use the **hostname** retrieved via the docker daemon. If that fails, usually because `INFO=1` has to be set when using a proxy, the labels will just be `Host-{Nr}`.<br>
+
 If you want to set a label to the mounted docker socket you can do so by adding `unix://var/run/docker.sock|label` in the `DOCKER_HOST` environment variable (_the socket still has to be mounted_) or just set the address of a [socket proxy](#socket-proxy) with a label.
 
 ## Remote Hosts Example
 
-In this example LoggiFly monitors container logs on the host it is running on via a mounted docker socket as well as two remote hosts set up with TLS.
-One remote host will be called '_foobar_'. The host mounted via the docker socket and the other remote host have no label set and will be called whatever the hostname is.
+In this example, LoggiFly monitors container logs from the **local host** via a mounted Docker socket, as well as from **two remote Docker hosts** configured with TLS. One of the remote hosts is referred to as ‘foobar’. The local host and the second remote host have no custom label and are identified by their respective hostnames.
 
 <details><summary><em>Click to expand:</em> <strong>Remote Hosts: Docker Compose </strong></summary>
 
@@ -616,8 +616,8 @@ You can also connect via a **Docker Socket Proxy**.<br>
 A Socket Proxy adds a security layer by **controlling access to the Docker daemon**, essentially letting LoggiFly only read certain info like container logs without giving it full control over the docker socket.<br>
 With the linuxserver image I have had some connection and timeout problems so the recommended proxy is **[Tecnativa/docker-socket-proxy](https://github.com/Tecnativa/docker-socket-proxy)**.<br>
 When using the Tecnativa Proxy the log stream connection drops every ~10 minutes for whatever reason, LoggiFly simply resets the connection.<br>
-Here is a sample **docker compose** file:
 
+Here is a sample **docker compose** file:
 
 <details><summary><em>Click to expand:</em> <strong>Socket Proxy: Docker Compose </strong></summary>
 
@@ -648,7 +648,6 @@ services:
 
 ```
 </details>
-
 
 >[!Note]
 `action_keywords` don't work when using a socket proxy.
@@ -731,7 +730,7 @@ swarm_services:
       - fatal
 ```
 
-For all the possible configuration options take a look at the [Containers section](#-containers) of the config walkthrough since the config of `swarm_services` works just with `containers`.
+For all the possible configuration options take a look at the [Containers section](#-containers) of the config walkthrough since the configuration of `swarm_services` is exactly the same as of `containers`.
 
 </details>
 
