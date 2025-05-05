@@ -82,10 +82,12 @@ Get instant alerts for security breaches, system errors, or custom patterns thro
 
 ### 🎯 Customize notifications and filter log lines for relevant information:
 
-<div style="display: flex; justify-content: center; gap: 10px;">
-    <img src="/images/abs_template_examples.png" alt="Audiobookshelf Download" style="height: 250px; object-fit: contain;">
-  <img src="/images/vaultwarden_custom.png" alt="vaultwarden failed login" style="height: 125px; object-fit: contain;">
-  <img src="/images/authelia_custom.png" alt="authelia failed login" style="height: 125px; object-fit: contain;">
+<div style="display: flex; justify-content: center; gap: 10px; align-items: center;">
+  <img src="/images/abs_template_examples.png" alt="Audiobookshelf Download" style="height: 250px; object-fit: contain;">
+  <div style="display: flex; flex-direction: column; gap: 10px;">
+    <img src="/images/vaultwarden_custom.png" alt="Vaultwarden failed login" style="height: 125px; object-fit: contain;">
+    <img src="/images/authelia_custom.png" alt="Authelia failed login" style="height: 125px; object-fit: contain;">
+  </div>
 </div>
 
 
