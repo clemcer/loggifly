@@ -449,7 +449,7 @@ Filtering is most straightforward with logs in JSON Format, but plain text logs 
 <br>
 
 
-### Template for JSON Logs:
+#### Template for JSON Logs:
 
 
 `json_template` only works if the Logs are in JSON Format. Authelia is one such example.<br>
@@ -487,7 +487,7 @@ containers:
 ```
 <br>
 
-### Template using named capturing groups in Regex Pattern:
+#### Template using named capturing groups in Regex Pattern:
 
 To filter non JSON Log Lines for certain parts you have to use a regex pattern with **named capturing groups**.<br> 
 Lets take `(?P<group_name>...)` as an example. 
@@ -519,13 +519,13 @@ containers:
 - with `template` and `hide_pattern_in_title`:
 
 <div style="display: flex; justify-content: center; gap: 10px;">
-  <img src="/images/abs_with_template.png">
+  <img src="/images/abs_with_template.png" style="height: 100px; object-fit: contain;">
 </div>
 
 - without for comparison:
 
 <div style="display: flex; justify-content: center; gap: 10px;">
-  <img src="/images/abs_without_template.png">
+  <img src="/images/abs_without_template.png" style="height: 200px; object-fit: contain;">
 </div>
 
 
