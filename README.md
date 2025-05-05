@@ -522,7 +522,7 @@ containers:
   <img src="/images/abs_with_template.png">
 </div>
 
-- without comparison:
+- without for comparison:
 
 <div style="display: flex; justify-content: center; gap: 10px;">
   <img src="/images/abs_without_template.png">
