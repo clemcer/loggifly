@@ -340,14 +340,15 @@ notifications:
 ```
 
 If a **webhook** is configured LoggiFly will post a JSON to the URL with the following data:
-```
+```yaml
 {
-  "container": container_name,
-  "keywords": the keywords that were found,
-  "title": notification title,
-  "message": message (the log line unless it is a message coming from LoggiFly itself),
-  "host": hostname (None unless LoggiFly is connected to multiple hosts)
+  "container": "...",
+  "keywords": [...],
+  "title": "...",
+  "message": "...", 
+  "host": "..."   # None unless multiple hosts are monitored
 }
+
 ```
 
 </details>
