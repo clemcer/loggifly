@@ -8,7 +8,8 @@ from load_config import GlobalConfig
 
 logging.getLogger(__name__)
 
-def get_ntfy_config(config, container_name):
+def get_ntfy_config(config, container_name, message_config):
+
     ntfy_config = {}
     ntfy_config["url"] = config.notifications.ntfy.url
     if container_name in [c for c in config.containers]:
@@ -19,6 +20,14 @@ def get_ntfy_config(config, container_name):
         ntfy_config["topic"] = config.notifications.ntfy.topic
         ntfy_config["tags"] = config.notifications.ntfy.tags
         ntfy_config["priority"] = config.notifications.ntfy.priority
+
+    if message_config:
+        if message_config.get("ntfy_topic"):
+            ntfy_config["topic"] = message_config.get("ntfy_topic")
+        if message_config.get("ntfy_tags"):
+            ntfy_config["tags"] = message_config.get("ntfy_tags")
+        if message_config.get("ntfy_priority"):
+            ntfy_config["priority"] = message_config.get("ntfy_priority")
 
     if config.notifications.ntfy.token:
         ntfy_config["authorization"] = f"Bearer {config.notifications.ntfy.token.get_secret_value()}"
@@ -109,13 +118,13 @@ def send_webhook(json_data, url, headers):
         logging.error(f"Error trying to send webhook to url: {url}, headers: {headers}: %s", e)
 
 
-def send_notification(config: GlobalConfig, container_name, title, message, keywords=None, hostname=None, file_path=None):
+def send_notification(config: GlobalConfig, container_name, title, message, message_config=None, keywords=None, hostname=None, file_path=None):
     message = message.replace(r"\n", "\n").strip()
     # When multiple hosts are set the hostname is added to the title, when only one host is set the hostname is an empty string
     title = f"[{hostname}] - {title}" if hostname else title
 
     if (config.notifications and config.notifications.ntfy and config.notifications.ntfy.url and config.notifications.ntfy.topic):
-        ntfy_config = get_ntfy_config(config, container_name)
+        ntfy_config = get_ntfy_config(config, container_name, message_config)
         send_ntfy_notification(ntfy_config, message=message, title=title, file_path=file_path)
 
     if (config.notifications and config.notifications.apprise and config.notifications.apprise.url):

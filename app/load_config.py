@@ -22,13 +22,54 @@ because I needed env to override yaml data and yaml to override default values a
 So now I first load the yaml config and the environment variables, merge them and then I validate the merged config with pydantic
 """
 
+
+
+
 class BaseConfigModel(BaseModel):
     model_config = ConfigDict(extra="ignore", validate_default=True)
 
-class KeywordBase(BaseModel):
-    keywords: List[Union[str, Dict[str, str]]] = []
-    keywords_with_attachment: List[Union[str, Dict[str, str]]] = []
 
+
+class Settings(BaseConfigModel):    
+    log_level: str = Field("INFO", description="Logging level (DEBUG, INFO, WARNING, ERROR)")
+    notification_cooldown: int = Field(5, description="Cooldown in seconds for repeated alerts")
+    notification_title: str = Field("default", description="Set a template for the notification title")
+    action_cooldown: Optional[int] = Field(300)
+    attachment_lines: int = Field(20, description="Number of log lines to include in attachments")
+    multi_line_entries: bool = Field(True, description="Enable multi-line log detection")
+    disable_start_message: bool = Field(False, description="Disable startup notification")
+    disable_shutdown_message: bool = Field(False, description="Disable shutdown notification")
+    disable_config_reload_message: bool = Field(False, description="Disable config reload notification")
+    disable_container_event_message: bool = Field(False, description="Disable notification on container stops/starts")
+    reload_config: bool = Field(True, description="Disable config reaload on config change")
+
+
+class ModularSettings(BaseConfigModel):
+    ntfy_tags: Optional[str] = None
+    ntfy_topic: Optional[str] = None
+    ntfy_priority: Optional[int] = None
+    attachment_lines: Optional[int] = None
+    notification_cooldown: Optional[int] = None
+    notification_title: Optional[str] = None
+    hide_pattern_in_title: Optional[bool] = None
+    action_cooldown: Optional[int] = None
+    attach_logfile: Optional[bool] = None
+
+class RegexItem(ModularSettings):
+    regex: str
+    json_template: Optional[str] = None
+    template: Optional[str] = None
+
+class KeywordItem(ModularSettings):
+    keyword: str
+    json_template: Optional[str] = None
+
+
+class KeywordBase(BaseModel):
+    keywords: List[Union[str, KeywordItem, RegexItem]] = []
+    keywords_with_attachment: List[Union[str, KeywordItem, RegexItem]] = []
+
+    # for sorting out misconfigured keywords, providing warnings and converting integers to strings (before validation)
     @model_validator(mode="before")
     def int_to_string(cls, values):
         for field in ["keywords", "keywords_with_attachment"]:
@@ -37,18 +78,17 @@ class KeywordBase(BaseModel):
                 for kw in values[field]:
                     if isinstance(kw, dict):
                         keys = list(kw.keys())
-
-                        if "regex" in keys:
-                            if any(key not in ["regex", "template", "json_template", "hide_pattern_in_title"] for key in keys):
-                                logging.warning(f"Ignoring Error in config for {field}: '{kw}'. Only 'json_template', 'template' and 'hide_pattern_in_title' are allowed as additional keys for regex pattern.")
-                                continue
-                        elif "keyword" in keys:
-                            if any(key not in ["keyword", "json_template"] for key in keys):
-                                logging.warning(f"Ignoring Error in config for {field}: '{kw}'. Only 'json_template' and 'hide_pattern_in_title' are allowed as additional keys for 'keyword'.")
-                                continue
-                        else:
-                            logging.warning(f"Ignoring Error in config for {field}: '{kw}'. Only 'keyword' or 'regex' are allowed as keys.")
-                            continue
+                        # if "regex" in keys:
+                        #     if any(key not in ["regex", "template", "json_template", "hide_pattern_in_title"] for key in keys):
+                        #         logging.warning(f"Ignoring Error in config for {field}: '{kw}'. Only 'json_template', 'template' and 'hide_pattern_in_title' are allowed as additional keys for regex pattern.")
+                        #         continue
+                        # elif "keyword" in keys:
+                        #     if any(key not in ["keyword", "json_template"] for key in keys):
+                        #         logging.warning(f"Ignoring Error in config for {field}: '{kw}'. Only 'json_template' and 'hide_pattern_in_title' are allowed as additional keys for 'keyword'.")
+                        #         continue
+                        # else:
+                        #     logging.warning(f"Ignoring Error in config for {field}: '{kw}'. Only 'keyword' or 'regex' are allowed as keys.")
+                        #     continue
                         for key in keys:
                             if isinstance(kw[key], int):
                                 kw[key] = str(kw[key])
@@ -62,7 +102,7 @@ class KeywordBase(BaseModel):
                 values[field] = converted
         return values
     
-class ActionKeywords(BaseModel):
+class ActionKeywords(BaseConfigModel):
     action_keywords: List[Union[str, Dict[str, Union[str, Dict[str, str]]]]] = []
 
     @field_validator("action_keywords", mode="before")
@@ -97,15 +137,8 @@ class ActionKeywords(BaseModel):
         return converted
     
 
-class ContainerConfig(BaseConfigModel, KeywordBase, ActionKeywords):    
-    ntfy_tags: Optional[str] = None
-    ntfy_topic: Optional[str] = None
-    ntfy_priority: Optional[int] = None
-    attachment_lines: Optional[int] = None
-    notification_cooldown: Optional[int] = None
-    action_cooldown: Optional[int] = None
-    notification_title: Optional[str] = None
-
+class ContainerConfig(KeywordBase, ActionKeywords, ModularSettings):    
+    pass 
 
     @field_validator("ntfy_priority")
     def validate_priority(cls, v):
@@ -173,18 +206,6 @@ class NotificationsConfig(BaseConfigModel):
             raise ValueError("At least on of these has to be configured: 'apprise' / 'ntfy' / 'webhook'")
         return self
 
-class Settings(BaseConfigModel):    
-    log_level: str = Field("INFO", description="Logging level (DEBUG, INFO, WARNING, ERROR)")
-    notification_cooldown: int = Field(5, description="Cooldown in seconds for repeated alerts")
-    notification_title: str = Field("default", description="Set a template for the notification title")
-    action_cooldown: Optional[int] = Field(300)
-    attachment_lines: int = Field(20, description="Number of log lines to include in attachments")
-    multi_line_entries: bool = Field(True, description="Enable multi-line log detection")
-    disable_start_message: bool = Field(False, description="Disable startup notification")
-    disable_shutdown_message: bool = Field(False, description="Disable shutdown notification")
-    disable_config_reload_message: bool = Field(False, description="Disable config reload notification")
-    disable_container_event_message: bool = Field(False, description="Disable notification on container stops/starts")
-    reload_config: bool = Field(True, description="Disable config reaload on config change")
 
 class GlobalConfig(BaseConfigModel):
     containers: Optional[Dict[str, ContainerConfig]] = Field(default=None)
