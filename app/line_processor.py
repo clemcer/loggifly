@@ -123,10 +123,10 @@ class LogProcessor:
 
         if self.swarm_service:
             container_config = self.config.swarm_services[self.swarm_service]
-            self.container_action_keywords = []
+           # self.container_action_keywords = []
         else:
             container_config = self.config.containers[self.container_name]
-            self.container_action_keywords = [keyword for keyword in container_config.action_keywords]
+            #self.container_action_keywords = [keyword for keyword in container_config.action_keywords]
         self.keywords.extend(self.get_keywords(container_config.keywords))
         # keywords = self.get_keywords(container_config.keywords.copy())
         # self.keywords.extend(keywords)       
@@ -366,16 +366,21 @@ class LogProcessor:
         # Trigger notification if keywords have been found
         if keywords_found:   
             message_config["keywords_found"] = keywords_found
+            action = message_config.get("action")
+            if action is not None:
+                 self._container_action(action)
+
             self.logger.debug(f"MESSAGE_CONFIG:\n{json.dumps(message_config, indent=2)}\n")
             formatted_log_entry ="\n  -----  LOG-ENTRY  -----\n" + ' | ' + '\n | '.join(log_line.splitlines()) + "\n   -----------------------"
-            self.logger.info(f"The following keywords were found in {self.container_name}: {keywords_found}."
+            self.logger.info(f"{'Stopping' if action == 'stop' else 'Restarting'} {self.container_name}" if action else ""
+                        + f"The following keywords were found in {self.container_name}: {keywords_found}."
                         + (f" (A Log FIle will be attached)" if send_attachment else "")
                         + f"{formatted_log_entry}"
                         )
             if send_attachment:
-                self._send_message(message_config, send_attachment=True)
+                self._send_message(message_config, send_attachment=True, action=None)
             else:
-                self._send_message(message_config, send_attachment=False)
+                self._send_message(message_config, send_attachment=False, action=None)
 
 
         # Keywords that trigger a restart
@@ -398,17 +403,23 @@ class LogProcessor:
         #             break
             
 
-    def _send_message(self, message_config, keywords_found, send_attachment=False, action=None):
+    def _send_message(self, message_config, send_attachment=False, action=None):
         """Adapt the notification title and call the send_notification function from notifier.py"""
-        title = self.get_notification_title(keywords_found, message_config, action)
+        title = self.get_notification_title(message_config, action)
+        if action:
+            title = f"{'Stopping' if action == 'stop' else 'Restarting'} {self.container_name}!" + title
         file_path = None
         if send_attachment:
-            file_path = self._log_attachment()
+            if message_config.get("attachment_lines") is not None:
+                number_attachment_lines = message_config["attachment_lines"]
+            else:
+                number_attachment_lines = self.config.settings.attachment_lines
+            file_path = self._log_attachment(number_attachment_lines)
         send_notification(self.config, 
                         container_name=self.container_name, 
                         title=title, 
                         message=message_config["message"], 
-                        message_config=self.message_config, 
+                        message_config=message_config, 
                         hostname=self.hostname, 
                         file_path=file_path)  
         
@@ -421,8 +432,8 @@ class LogProcessor:
 
     def get_notification_title(self, message_config, action):
         keywords_found = message_config.get("keywords_found", "")
-        if message_config["notification_title"]:
-            notification_title = self.message_config["notification_title"].strip().lower()
+        if message_config.get("notification_title"):
+            notification_title = self.message_config["notification_title"]
         else:
             notification_title = self.notification_title
 
@@ -498,11 +509,11 @@ class LogProcessor:
                     self.logger.error(f"Error applying template {template}: {e}")
         return message
 
-    def _log_attachment(self):  
+    def _log_attachment(self, number_attachment_lines):  
         """Tail the last lines of the container logs and save them to a file"""
         base_name = f"last_{self.number_attachment_lines}_lines_from_{self.container_name}.log"
         folder = "/tmp/"
-        number_attachment_lines = self.message_config["attachment_lines"] if self.message_config["attachment_lines"] else self.number_attachment_lines
+
         def find_available_name(filename, number=1):
             """Create different file name with number if it already exists (in case of many notifications at same time)"""
             new_name = f"{filename.rsplit('.', 1)[0]}_{number}.log"
