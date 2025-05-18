@@ -335,7 +335,7 @@ class LogProcessor:
             found = self._search_keyword(log_line, keyword, item)
             if found:
                 if isinstance(item, (RegexItem, KeywordItem)):
-                    if item.template or item.json_template:
+                    if getattr(item, "template", None) or getattr(item, "json_template", None):
                         message_config["message"] = self.message_from_template(item, log_line)
                     if item.attach_logfile is True:
                         send_attachment = True
@@ -343,25 +343,6 @@ class LogProcessor:
                         if message_config.get(key) is None and value is not None:
                             message_config[key] = value
                 keywords_found.append(found)
-        # if message_config.get("template") or message_config.get("json_template"):
-        #     message_config["message"] = self._ge
-        # self._update_message_config("finish")
-        # # Search for normal keywords
-        # for keyword in self.container_keywords:
-        #     found = self._search_keyword(log_line, keyword)
-        #     if found:
-        #         keywords_found.append(found)
-        #         if isinstance(keyword, dict) and (keyword.get("template") is not None or keyword.get("json_template") is not None):
-        #             message = self.message_from_template(keyword, log_line)
-
-        # # Search for Keywords with attachment
-        # for keyword in self.container_keywords_with_attachment:
-        #     found = self._search_keyword(log_line, keyword)
-        #     if found:
-        #         keywords_found.append(found)    
-        #         send_attachment = True
-        #         if isinstance(keyword, dict) and (keyword.get("template") is not None or keyword.get("json_template") is not None):
-        #             message = self.message_from_template(keyword, log_line)
 
         # Trigger notification if keywords have been found
         if keywords_found:   
@@ -371,6 +352,7 @@ class LogProcessor:
                  self._container_action(action)
 
             self.logger.debug(f"MESSAGE_CONFIG:\n{json.dumps(message_config, indent=2)}\n")
+
             formatted_log_entry ="\n  -----  LOG-ENTRY  -----\n" + ' | ' + '\n | '.join(log_line.splitlines()) + "\n   -----------------------"
             self.logger.info(f"{'Stopping' if action == 'stop' else 'Restarting'} {self.container_name}" if action else ""
                         + f"The following keywords were found in {self.container_name}: {keywords_found}."
@@ -383,31 +365,11 @@ class LogProcessor:
                 self._send_message(message_config, send_attachment=False, action=None)
 
 
-        # Keywords that trigger a restart
-        # for keyword in self.container_action_keywords:
-        #     if self.last_action_time is None or (self.last_action_time is not None and time.time() - self.last_action_time >= max(int(self.action_cooldown), 60)):
-        #         if isinstance(keyword, dict) and keyword.get("stop") is not None:
-        #             action_keyword = keyword.get("stop")
-        #             found = self._search_keyword(log_line, action_keyword, None, ignore_keyword_time=True)
-        #             action = ("stop") if found else None
-        #         elif isinstance(keyword, dict) and keyword.get("restart") is not None:
-        #             action_keyword = keyword.get("restart")
-        #             found = self._search_keyword(log_line, action_keyword, None, ignore_keyword_time=True)
-        #             action = ("restart") if found else None
-        #         if found:
-        #             formatted_log_entry ="\n  -----  LOG-ENTRY  -----\n" + ' | ' + '\n | '.join(log_line.splitlines()) + "\n   -----------------------"
-        #             self.logger.info(f"{'Stopping' if action == 'stop' else 'Restarting'} {self.container_name} because {found} was found in {formatted_log_entry}")
-        #             self._send_message(log_line, found, send_attachment=False, action=action)
-        #             self._container_action(action, log_line, found)
-        #             self.last_action_time = time.time()
-        #             break
-            
-
     def _send_message(self, message_config, send_attachment=False, action=None):
         """Adapt the notification title and call the send_notification function from notifier.py"""
         title = self.get_notification_title(message_config, action)
         if action:
-            title = f"{'Stopping' if action == 'stop' else 'Restarting'} {self.container_name}!" + title
+            title = f"{'Stopping' if action == 'stop' else 'Restarting'} {self.container_name}! - " + title
         file_path = None
         if send_attachment:
             if message_config.get("attachment_lines") is not None:

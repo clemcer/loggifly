@@ -2,35 +2,28 @@ import requests
 import base64
 import logging
 import urllib.parse
-import json
-import re
-import string
-import apprise
 from load_config import GlobalConfig
 
 logging.getLogger(__name__)
 
 def get_ntfy_config(config, container_name, message_config):
 
-    ntfy_config = {}
-    ntfy_config["url"] = config.notifications.ntfy.url
-    if container_name in [c for c in config.containers]:
-        container_config = config.containers[container_name]
-        ntfy_config["topic"] = container_config.ntfy_topic or config.notifications.ntfy.topic
-        ntfy_config["tags"] = container_config.ntfy_tags or config.notifications.ntfy.tags
-        ntfy_config["priority"] = container_config.ntfy_priority or config.notifications.ntfy.priority
+    ntfy_config = {"topic": None, "tags": None, "priority": None}
+    global_config = config.notifications.ntfy.model_dump(exclude_none=True)
+    if container_name in config.containers and getattr(config.containers[container_name], "ntfy", None):
+        container_config = config.containers[container_name].ntfy.model_dump(exclude_none=True) 
     else:
-        ntfy_config["topic"] = config.notifications.ntfy.topic
-        ntfy_config["tags"] = config.notifications.ntfy.tags
-        ntfy_config["priority"] = config.notifications.ntfy.priority
+        container_config = {}
+    message_config = message_config if message_config else {}
+    for key in ntfy_config.keys():
+        if message_config.get(key) is not None:
+            ntfy_config[key] = message_config.get(key)
+        elif container_config.get(key) is not None:
+            ntfy_config[key] = container_config.get(key)
+        elif global_config.get(key) is not None:
+            ntfy_config[key] = global_config.get(key)
 
-    if message_config:
-        if message_config.get("ntfy_topic"):
-            ntfy_config["topic"] = message_config.get("ntfy_topic")
-        if message_config.get("ntfy_tags"):
-            ntfy_config["tags"] = message_config.get("ntfy_tags")
-        if message_config.get("ntfy_priority"):
-            ntfy_config["priority"] = message_config.get("ntfy_priority")
+    ntfy_config["url"] = config.notifications.ntfy.url
 
     if config.notifications.ntfy.token:
         ntfy_config["authorization"] = f"Bearer {config.notifications.ntfy.token.get_secret_value()}"

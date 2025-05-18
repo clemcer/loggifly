@@ -23,8 +23,22 @@ because I needed env to override yaml data and yaml to override default values a
 So now I first load the yaml config and the environment variables, merge them and then I validate the merged config with pydantic
 """
 
-
-
+def validate_priority(v):
+    if isinstance(v, str):
+        try:
+            v = int(v)
+        except ValueError:
+            pass
+    if isinstance(v, int):
+        if not 1 <= int(v) <= 5:
+            logging.warning(f"Error in config for ntfy.priority. Must be between 1-5, '{v}' is not allowed. Using default: '3'")
+            return 3
+    if isinstance(v, str):
+        options = ["max", "urgent", "high", "default", "low", "min"]
+        if v not in options:
+            logging.warning(f"Error in config for ntfy.priority:'{v}'. Only 'max', 'urgent', 'high', 'default', 'low', 'min' are allowed. Using default: '3'")
+            return 3
+    return v
 
 class BaseConfigModel(BaseModel):
     model_config = ConfigDict(extra="ignore", validate_default=True, use_enum_values=True)
@@ -55,41 +69,25 @@ class ModularSettings(BaseConfigModel):
     action_cooldown: Optional[int] = None
     attach_logfile: Optional[bool] = None
 
-class ActionConfig():
-    action: Optional[str] = None
-
-    @field_validator("action", mode="before")
-    def validate_action(cls, v):
-        if v is not None:
-            if not isinstance(v, str):
-                raise ValueError("Action must be a string")
-            if v not in ["restart", "stop"]:
-                raise ValueError("Action must be 'restart' or 'stop'")
-        return v
 class ActionEnum(str, Enum):
     RESTART = "restart"
     STOP = "stop"
-class RegexItem(ModularSettings, ActionConfig):
+class RegexItem(ModularSettings):
     regex: str
     json_template: Optional[str] = None
     template: Optional[str] = None
     hide_pattern_in_title: Optional[bool] = None
     action: Optional[ActionEnum] = None
 
-class KeywordItem(ModularSettings, ActionConfig):
+class KeywordItem(ModularSettings):
     keyword: str
     json_template: Optional[str] = None
     action: Optional[ActionEnum] = None
 
 
-
-
-
-
 class KeywordBase(BaseModel):
     keywords: List[Union[str, KeywordItem, RegexItem]] = []
     keywords_with_attachment: List[Union[str, KeywordItem, RegexItem]] = []
-    # action_keywords: List[Union[str, Union[KeywordItem, RegexItem]]] = []
 
     # for sorting out misconfigured keywords, providing warnings and converting integers to strings (before validation)
     @model_validator(mode="before")
@@ -100,17 +98,9 @@ class KeywordBase(BaseModel):
                 for kw in values[field]:
                     if isinstance(kw, dict):
                         keys = list(kw.keys())
-                        # if "regex" in keys:
-                        #     if any(key not in ["regex", "template", "json_template", "hide_pattern_in_title"] for key in keys):
-                        #         logging.warning(f"Ignoring Error in config for {field}: '{kw}'. Only 'json_template', 'template' and 'hide_pattern_in_title' are allowed as additional keys for regex pattern.")
-                        #         continue
-                        # elif "keyword" in keys:
-                        #     if any(key not in ["keyword", "json_template"] for key in keys):
-                        #         logging.warning(f"Ignoring Error in config for {field}: '{kw}'. Only 'json_template' and 'hide_pattern_in_title' are allowed as additional keys for 'keyword'.")
-                        #         continue
-                        # else:
-                        #     logging.warning(f"Ignoring Error in config for {field}: '{kw}'. Only 'keyword' or 'regex' are allowed as keys.")
-                        #     continue
+                        if not any(key in keys for key in ["keyword", "regex"]):
+                            logging.warning(f"Ignoring Error in config for {field}: '{kw}'. You have to set 'keyword' or 'regex' as a key.")
+                            continue
                         for key in keys:
                             if isinstance(kw[key], int):
                                 kw[key] = str(kw[key])
@@ -124,62 +114,10 @@ class KeywordBase(BaseModel):
                 values[field] = converted
         return values
     
-# class ActionKeywords(BaseConfigModel):
-#     action_keywords: List[Union[str, Dict[str, Union[str, Dict[str, str]]]]] = []
-
-#     @field_validator("action_keywords", mode="before")
-#     def convert_int_to_str(cls, value):
-#         allowed_keys = {"restart", "stop"}
-#         converted = []
-#         for kw in value:
-#             if isinstance(kw, dict):
-#                 if any(key not in allowed_keys for key in kw.keys()):
-#                     logging.warning(f"Ignoring Error in config for action_keywords: Key not allowed for restart_keywords. Wrong Input: '{kw}'. Allowed Keys: {allowed_keys}.")
-#                     continue
-#                 for key, val in kw.items():
-#                     if not val:
-#                         logging.warning(f"Ignoring Error in config for action_keywords: Wrong Input: '{key}: {val}'.") 
-#                         continue
-#                     # convert Integer to String
-#                     if isinstance(val, int):
-#                         converted.append({key: str(val)})
-#                     elif isinstance(val, dict):
-#                         if val.get("regex"):
-#                             # Convert regex-value, if Integer
-#                             if isinstance(val["regex"], (int, str)):
-#                                 converted.append({key: str(val["regex"])})
-#                             else:
-#                                 logging.warning(f"Ignoring Error in config for action_keywords: Wrong Input: '{key}: {val}' regex keyword is not a valid value.")
-#                         else:
-#                             logging.warning(f"Ignoring Error in config for action_keywords: Wrong Input: '{key}: {val}'. If you put a dictionary after 'restart'/'stop' only 'regex' is allowed as a key.") 
-#                     else:
-#                         converted.append({key: val})
-#             else:
-#                 logging.warning(f"Ignoring Error in config for action_keywords: Wrong Input: '{kw}'. You have to set a dictionary with 'restart' or 'stop' as key.")
-#         return converted
-    
-
 class ContainerConfig(KeywordBase, ModularSettings):    
     pass 
 
-    @field_validator("ntfy_priority")
-    def validate_priority(cls, v):
-        if isinstance(v, str):
-            try:
-                v = int(v)
-            except ValueError:
-                pass
-        if isinstance(v, int):
-            if not 1 <= int(v) <= 5:
-                logging.warning(f"Error in config for ntfy_priority. Must be between 1-5, '{v}' is not allowed. Using default: '3'")
-                return 3
-        if isinstance(v, str):
-            options = ["max", "urgent", "high", "default", "low", "min"]
-            if v not in options:
-                logging.warning(f"Error in config for ntfy_priority:'{v}'. Only 'max', 'urgent', 'high', 'default', 'low', 'min' are allowed. Using default: '3'")
-                return 3
-        return v
-    
+    _validate_priority = field_validator("ntfy_priority", mode="before")(validate_priority)
 class GlobalKeywords(BaseConfigModel, KeywordBase):
     pass
 
@@ -192,24 +130,7 @@ class NtfyConfig(BaseConfigModel):
     priority: Union[str, int] = 3 # Field(default=3, description="Message priority 1-5")
     tags: Optional[str] = Field("kite,mag", description="Comma-separated tags")
 
-    @field_validator("priority", mode="before")
-    def validate_priority(cls, v):
-        if isinstance(v, str):
-            try:
-                v = int(v)
-            except ValueError:
-                pass
-        if isinstance(v, int):
-            if not 1 <= int(v) <= 5:
-                logging.warning(f"Error in config for ntfy.priority. Must be between 1-5, '{v}' is not allowed. Using default: '3'")
-                return 3
-        if isinstance(v, str):
-            options = ["max", "urgent", "high", "default", "low", "min"]
-            if v not in options:
-                logging.warning(f"Error in config for ntfy.priority:'{v}'. Only 'max', 'urgent', 'high', 'default', 'low', 'min' are allowed. Using default: '3'")
-                return 3
-        return v
-
+    _validate_priority = field_validator("priority", mode="before")(validate_priority)
 class AppriseConfig(BaseConfigModel):  
     url: SecretStr = Field(..., description="Apprise compatible URL")
 
@@ -227,7 +148,6 @@ class NotificationsConfig(BaseConfigModel):
         if self.ntfy is None and self.apprise is None and self.webhook is None:
             raise ValueError("At least on of these has to be configured: 'apprise' / 'ntfy' / 'webhook'")
         return self
-
 
 class GlobalConfig(BaseConfigModel):
     containers: Optional[Dict[str, ContainerConfig]] = Field(default=None)
