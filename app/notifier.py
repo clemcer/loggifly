@@ -3,6 +3,8 @@ import base64
 import logging
 import urllib.parse
 import json
+import re
+import string
 import apprise
 from load_config import GlobalConfig
 
@@ -13,9 +15,10 @@ def get_ntfy_config(config, container_name, message_config):
     ntfy_config = {}
     ntfy_config["url"] = config.notifications.ntfy.url
     if container_name in [c for c in config.containers]:
-        ntfy_config["topic"] = config.containers[container_name].ntfy_topic or config.notifications.ntfy.topic
-        ntfy_config["tags"] = config.containers[container_name].ntfy_tags or config.notifications.ntfy.tags
-        ntfy_config["priority"] = config.containers[container_name].ntfy_priority or config.notifications.ntfy.priority
+        container_config = config.containers[container_name]
+        ntfy_config["topic"] = container_config.ntfy_topic or config.notifications.ntfy.topic
+        ntfy_config["tags"] = container_config.ntfy_tags or config.notifications.ntfy.tags
+        ntfy_config["priority"] = container_config.ntfy_priority or config.notifications.ntfy.priority
     else:
         ntfy_config["topic"] = config.notifications.ntfy.topic
         ntfy_config["tags"] = config.notifications.ntfy.tags
@@ -118,7 +121,7 @@ def send_webhook(json_data, url, headers):
         logging.error(f"Error trying to send webhook to url: {url}, headers: {headers}: %s", e)
 
 
-def send_notification(config: GlobalConfig, container_name, title, message, message_config=None, keywords=None, hostname=None, file_path=None):
+def send_notification(config: GlobalConfig, container_name, title=None, message=None, message_config=None, hostname=None, file_path=None):
     message = message.replace(r"\n", "\n").strip()
     # When multiple hosts are set the hostname is added to the title, when only one host is set the hostname is an empty string
     title = f"[{hostname}] - {title}" if hostname else title
@@ -132,7 +135,9 @@ def send_notification(config: GlobalConfig, container_name, title, message, mess
         send_apprise_notification(apprise_url, message=message, title=title, file_path=file_path)
 
     if (config.notifications and config.notifications.webhook and config.notifications.webhook.url):
+        keywords = message_config.get("keywords_found", None)
         json_data = {"container": container_name, "keywords": keywords, "title": title, "message": message, "host": hostname}
         webhook_url = config.notifications.webhook.url
         webhook_headers = config.notifications.webhook.headers
         send_webhook(json_data, webhook_url, webhook_headers)
+
