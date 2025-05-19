@@ -12,6 +12,7 @@ from enum import Enum
 from typing import Dict, List, Optional, Union
 import os
 import logging
+import copy
 import yaml
 
 logging.getLogger(__name__)
@@ -43,8 +44,6 @@ def validate_priority(v):
 class BaseConfigModel(BaseModel):
     model_config = ConfigDict(extra="ignore", validate_default=True, use_enum_values=True)
 
-
-
 class Settings(BaseConfigModel):    
     log_level: str = Field("INFO", description="Logging level (DEBUG, INFO, WARNING, ERROR)")
     notification_cooldown: int = Field(5, description="Cooldown in seconds for repeated alerts")
@@ -72,6 +71,7 @@ class ModularSettings(BaseConfigModel):
 class ActionEnum(str, Enum):
     RESTART = "restart"
     STOP = "stop"
+
 class RegexItem(ModularSettings):
     regex: str
     json_template: Optional[str] = None
@@ -87,7 +87,7 @@ class KeywordItem(ModularSettings):
 
 class KeywordBase(BaseModel):
     keywords: List[Union[str, KeywordItem, RegexItem]] = []
-    keywords_with_attachment: List[Union[str, KeywordItem, RegexItem]] = []
+   # keywords_with_attachment: List[Union[str, KeywordItem, RegexItem]] = []
 
     # for sorting out misconfigured keywords, providing warnings and converting integers to strings (before validation)
     @model_validator(mode="before")
@@ -131,6 +131,7 @@ class NtfyConfig(BaseConfigModel):
     tags: Optional[str] = Field("kite,mag", description="Comma-separated tags")
 
     _validate_priority = field_validator("priority", mode="before")(validate_priority)
+
 class AppriseConfig(BaseConfigModel):  
     url: SecretStr = Field(..., description="Apprise compatible URL")
 
@@ -158,34 +159,15 @@ class GlobalConfig(BaseConfigModel):
 
     @model_validator(mode="before")
     def transform_legacy_format(cls, values):
-        # Convert list global_keywords format into dict
-        if isinstance(values.get("global_keywords"), list):
-            values["global_keywords"] = {
-                "keywords": values["global_keywords"],
-                "keywords_with_attachment": []
-            }
         # Convert list containers to dict format
         if isinstance(values.get("containers"), list):
-            values["containers"] = {
-                name: {} for name in values["containers"]
-            }
-         # Convert list keywords format per container into dict
-        for container in values.get("containers"):
-            if isinstance(values.get("containers").get(container), list):
-                values["containers"][container] = {
-                    "keywords": values["containers"][container],
-                    "keywords_with_attachment": []
-                }
-            elif values.get("containers").get(container) is None:
-                values["containers"][container] = {
-                    "keywords": [],
-                    "keywords_with_attachment": []
-                }
+            values["containers"] = {name: {} for name in values["containers"]}
+
         return values
     
     @model_validator(mode="after")
     def check_at_least_one(self) -> "GlobalConfig":
-        tmp_list = self.global_keywords.keywords + self.global_keywords.keywords_with_attachment
+        tmp_list = self.global_keywords.keywords #+ self.global_keywords.keywords_with_attachment
         if not tmp_list:
             for k in self.containers:
                 tmp_list.extend(self.containers[k].keywords)
@@ -227,45 +209,7 @@ def merge_yaml_and_env(yaml, env_update):
     return yaml
 
 
-def load_config(official_path="/config/config.yaml"):
-    """
-    Load the configuration from a YAML file and environment variables.
-    The config.yaml is expected in /config/config.yaml or /app/config.yaml (older version)
-    """
-    config_path = None
-    required_keys = ["containers", "notifications", "settings", "global_keywords"]
-    yaml_config = None
-    legacy_path = "/app/config.yaml"
-    paths = [official_path, legacy_path]
-    for path in paths: 
-        logging.info(f"Trying path: {path}")
-        if os.path.isfile(path):
-            try:
-                with open(path, "r") as file:
-                    yaml_config = yaml.safe_load(file)
-                    config_path = path
-                    break
-            except FileNotFoundError:
-                logging.info(f"Error loading the config.yaml file from {path}")
-            except yaml.YAMLError as e:
-                logging.error(f"Error parsing the YAML file: {e}")
-            except Exception as e:
-                logging.error(f"Unexpected error loading the config.yaml file: {e}")
-        else:
-            logging.info(f"The path {path} does not exist.")
-
-    if yaml_config is None:
-        logging.warning(f"The config.yaml could not be loaded.")
-        yaml_config = {}
-    else:
-        logging.info(f"The config.yaml file was found in {path}.")
-
-    for key in required_keys:
-        if key not in yaml_config or yaml_config[key] is None:
-            yaml_config[key] = {}
-    """
-    -------------------------LOAD ENVIRONMENT VARIABLES---------------------
-    """
+def load_env_config(config_path=None): 
     env_config = { "notifications": {}, "settings": {}, "global_keywords": {}, "containers": {}}
     settings_values = {
         "log_level": os.getenv("LOG_LEVEL"),
@@ -314,22 +258,97 @@ def load_config(official_path="/config/config.yaml"):
 
     if any(ntfy_values.values()):
         env_config["notifications"]["ntfy"] = ntfy_values
-        yaml_config["notifications"]["ntfy"] = {} if yaml_config["notifications"].get("ntfy") is None else yaml_config["notifications"]["ntfy"]
     if apprise_values["url"]: 
         env_config["notifications"]["apprise"] = apprise_values
-        yaml_config["notifications"]["apprise"] = {} if yaml_config["notifications"].get("apprise") is None else yaml_config["notifications"]["apprise"]
     if webhook_values.get("url"):
         env_config["notifications"]["webhook"] = webhook_values
-        yaml_config["notifications"]["webhook"] = {} if yaml_config["notifications"].get("webhook") is None else yaml_config["notifications"]["webhook"]
 
     for k, v in global_keywords_values.items():
         if v:
             env_config["global_keywords"][k]= v
+
     for key, value in settings_values.items(): 
         if value is not None:
             env_config["settings"][key] = value
+    return env_config
+
+def convert_legacy_formats(config):
+    config_copy = copy.deepcopy(config)
+    global_with_attachment = config_copy.get("global_keywords").get("keywords_with_attachment") 
+    if global_with_attachment is not None:
+        config_copy["global_keywords"].setdefault("keywords", [])
+        print("TEST")
+        for kw in global_with_attachment:
+            if isinstance(kw, (str, int)):
+                config_copy["global_keywords"]["keywords"].append({"keyword": kw, "attach_logfile": True})
+            if isinstance(kw, dict):
+                kw["attach_logfile"] = True
+                config_copy["global_keywords"]["keywords"].append(kw)
+        del config_copy["global_keywords"]["keywords_with_attachment"]
+
+    for container in config_copy.get("containers", {}):
+        container_config = config_copy["containers"][container]
+        keywords_with_attachment = container_config.get("keywords_with_attachment")
+        action_keywords = container_config.get("action_keywords")
+        if keywords_with_attachment is not None:
+            container_config.setdefault("keywords", [])
+            for kw in keywords_with_attachment:
+                if isinstance(kw, (str, int)):
+                    container_config["keywords"].append({"keyword": kw, "attach_logfile": True})
+                if isinstance(kw, dict):
+                    kw["attach_logfile"] = True
+                    container_config["keywords"].append(kw)
+        # if action_keywords is not None:
+        #     del container_config["keywords_with_attachment"]
+
+    print(f"CONVERTED (FUNCTION): {config}")
+    return config_copy
+
+
+def load_config(official_path="/config/config.yaml"):
+    """
+    Load the configuration from a YAML file and environment variables.
+    The config.yaml is expected in /config/config.yaml or /app/config.yaml (older version)
+    """
+    config_path = None
+    required_keys = ["containers", "notifications", "settings", "global_keywords"]
+    yaml_config = None
+    legacy_path = "/app/config.yaml"
+    paths = [official_path, legacy_path]
+    for path in paths: 
+        logging.info(f"Trying path: {path}")
+        if os.path.isfile(path):
+            try:
+                with open(path, "r") as file:
+                    yaml_config = yaml.safe_load(file)
+                    config_path = path
+                    break
+            except FileNotFoundError:
+                logging.info(f"Error loading the config.yaml file from {path}")
+            except yaml.YAMLError as e:
+                logging.error(f"Error parsing the YAML file: {e}")
+            except Exception as e:
+                logging.error(f"Unexpected error loading the config.yaml file: {e}")
+        else:
+            logging.info(f"The path {path} does not exist.")
+
+    if yaml_config is None:
+        logging.warning(f"The config.yaml could not be loaded.")
+        yaml_config = {}
+    else:
+        logging.info(f"The config.yaml file was found in {path}.")
+
+    for key in required_keys:
+        if key not in yaml_config or yaml_config[key] is None:
+            yaml_config[key] = {}
+
+    env_config = load_env_config(config_path)
+
     # Merge environment variables and yaml config
     merged_config = merge_yaml_and_env(yaml_config, env_config)
+    print(f"MERGED: {merged_config}\n\n")
+    merged_config = convert_legacy_formats(merged_config)
+    print(f"CONVERTED: {merged_config}\n\n")
     # Validate the merged configuration with Pydantic
     config = GlobalConfig.model_validate(merged_config)
 

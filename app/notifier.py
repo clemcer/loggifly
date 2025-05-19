@@ -9,12 +9,14 @@ logging.getLogger(__name__)
 def get_ntfy_config(config, container_name, message_config):
 
     ntfy_config = {"topic": None, "tags": None, "priority": None}
+    
     global_config = config.notifications.ntfy.model_dump(exclude_none=True)
     if container_name in config.containers and getattr(config.containers[container_name], "ntfy", None):
         container_config = config.containers[container_name].ntfy.model_dump(exclude_none=True) 
     else:
         container_config = {}
     message_config = message_config if message_config else {}
+
     for key in ntfy_config.keys():
         if message_config.get(key) is not None:
             ntfy_config[key] = message_config.get(key)
