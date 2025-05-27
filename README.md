@@ -238,7 +238,7 @@ For the program to function you need to configure:
 
 ### ⚙️ Settings
 
-These are the default values for the settings:
+Here you can see how to define the settings in the config.yaml. These are the default values:
 
 <details><summary><em>Click to expand:</em><strong> Settings: </strong></summary>
   
@@ -257,6 +257,35 @@ settings:
   disable_container_event_message: False # Suppress notification when monitoring of containers start/stop
 ```
 </details>
+
+
+However some of these settings that can also be set per container and per keyword.<br>
+This is the order in which they are applied: keyword > container > global settings. Some other settings can only be set per keyword. This is an Overview of all the settings and where you can set them:
+
+<details><summary><em>Click to expand:</em><strong> Overviw of all the setings: </strong></summary>
+
+
+| Setting                         | Global (`settings`) | Per Container (`containers`) | Per Keyword (`keywords`, etc.) | Description |
+|----------------------------------|:--------------------:|:-----------------------------:|:-------------------------------:|-------------|
+| `log_level`                      | ✅                   | –                             | –                               | Logging level: `DEBUG`, `INFO`, `WARNING`, `ERROR` |
+| `notification_cooldown`         | ✅                   | ✅                            | ✅                              | Seconds between repeated alerts per container or keyword |
+| `notification_title`            | ✅                   | ✅                            | ✅                              | Template for the notification title (`{container}`, `{keywords}`) |
+| `action_cooldown`               | ✅                   | ✅                            | –                               | Cooldown before triggering container actions (restart/stop) |
+| `attachment_lines`              | ✅                   | ✅                            | ✅                              | Number of log lines to include in attachments |
+| `multi_line_entries`            | ✅                   | –                             | –                               | Enable detection of multi-line log entries |
+| `reload_config`                 | ✅                   | –                             | –                               | Automatically reload config on changes |
+| `disable_start_message`         | ✅                   | –                             | –                               | Disable startup notification |
+| `disable_shutdown_message`      | ✅                   | –                             | –                               | Disable shutdown notification |
+| `disable_config_reload_message` | ✅                   | –                             | –                               | Disable notification when config is reloaded |
+| `disable_container_event_message`| ✅                  | –                             | –                               | Disable notification when container monitoring starts/stops |
+| `ntfy_topic`                    | –                    | ✅                            | ✅                              | Override global topic per container or keyword |
+| `ntfy_priority`                 | –                    | ✅                            | ✅                              | Ntfy priority (1–5) per container or keyword |
+| `ntfy_tags`                     | –                    | ✅                            | ✅                              | Tags/emojis for ntfy notifications |
+| `attach_logfile`                | –                    | ✅                            | ✅                              | Attach log output to the notification (true/false) |
+
+> ✅ = supported · – = not supported
+</details>
+
 
 The setting `notification_title` requires a more detailed explanation:<br>
 
@@ -382,7 +411,7 @@ containers:
 
 <br>
 
-Some of the **settings** from the `settings` section can also be set per container:
+Some of the **settings** from the `settings` section can also be set per container or per keyword.<br>
 
 
 ```yaml
@@ -394,11 +423,22 @@ containers:
     attachment_lines: 50
     notification_title: '{keywords} found in {container}'
     notification_cooldown: 2  
+    attach_logfile: true
     action_cooldown: 60 
   
     keywords:
       - keyword1
+      - keyword2
       - regex: regex-pattern1
+            ntfy_tags: closed_lock_with_key   
+            ntfy_priority: 5
+            ntfy_topic: regex-pattern1
+            attachment_lines: 10
+            notification_title: 'custom title'
+            notification_cooldown: 10
+            attach_logfile: true
+            action_cooldown: 60 
+ 
 
 ```
 
