@@ -238,7 +238,7 @@ For the program to function you need to configure:
 
 ### ⚙️ Settings
 
-Here you can see how to define the settings in the config.yaml. These are the default values:
+Here you can see how to define global settings in the config.yaml. These are the default values:
 
 <details><summary><em>Click to expand:</em><strong> Settings: </strong></summary>
   
@@ -259,10 +259,14 @@ settings:
 </details>
 
 
-However some of these settings that can also be set per container and per keyword.<br>
-This is the order in which they are applied: keyword > container > global settings. Some other settings can only be set per keyword. This is an Overview of all the settings and where you can set them:
+However, some settings can also — or only — be configured per container or even per keyword.
+Settings are applied in the following order of priority:<br>
+`keyword > container > global settings`.
 
-<details><summary><em>Click to expand:</em><strong> Overviw of all the setings: </strong></summary>
+Below is an overview of all available settings and where they can be configured.
+(For a detailed explanation of per-container and per-keyword settings, refer to the [Containers](#-containers) section.
+
+<details><summary><em>Click to expand:</em><strong> Overview of all the setings: </strong></summary>
 
 
 | Setting                         | Global (`settings`) | Per Container (`containers`) | Per Keyword (`keywords`, etc.) | Description |
