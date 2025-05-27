@@ -58,6 +58,7 @@ class Settings(BaseConfigModel):
     notification_title: str = Field("default", description="Set a template for the notification title")
     action_cooldown: Optional[int] = Field(300)
     attachment_lines: int = Field(20, description="Number of log lines to include in attachments")
+    hide_pattern_in_title: Optional[bool] = False
 
 
 class ModularSettings(BaseConfigModel):
@@ -69,6 +70,8 @@ class ModularSettings(BaseConfigModel):
     notification_title: Optional[str] = None
     action_cooldown: Optional[int] = None
     attach_logfile: Optional[bool] = None
+    hide_pattern_in_title: Optional[bool] = None
+
 
 class ActionEnum(str, Enum):
     RESTART = "restart"
@@ -78,7 +81,6 @@ class RegexItem(ModularSettings):
     regex: str
     json_template: Optional[str] = None
     template: Optional[str] = None
-    hide_pattern_in_title: Optional[bool] = None
     action: Optional[ActionEnum] = None
 
 class KeywordItem(ModularSettings):
@@ -266,7 +268,9 @@ def load_env_config(config_path=None):
         "disable_restart_message": os.getenv("DISABLE_CONFIG_RELOAD_MESSAGE"),
         "disable_shutdown_message": os.getenv("DISABLE_SHUTDOWN_MESSAGE"),
         "disable_container_event_message": os.getenv("DISABLE_CONTAINER_EVENT_MESSAGE"),
-        "action_cooldown": os.getenv("ACTION_COOLDOWN")
+        "action_cooldown": os.getenv("ACTION_COOLDOWN"),
+        "attach_logfile": os.getenv("ATTACH_LOGFILE"),
+        "hide_pattern_in_title": os.getenv("HIDE_PATTERN_IN_TITLE")
         } 
     ntfy_values =  {
         "url": os.getenv("NTFY_URL"),

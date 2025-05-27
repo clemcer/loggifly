@@ -236,6 +236,51 @@ For the program to function you need to configure:
 [Here](/config_example.yaml) you can find an example config with some **use cases**.
 
 
+### Settings Overview & Hierarchy Explained
+
+Before we dive into the four main sections of the config.yaml, it's important to understand how settings can be applied on three different levels:
+- Global (`settings`)
+- Per container (`containers`)
+- Per keyword or regex (`keyword` / `regex`)
+
+When the same setting is defined in multiple places, the following priority applies:
+
+`keyword > container > global`
+
+The table below shows which settings are available and where they can be configured.
+(Detailled explanations and examples for these settings can be found in the sections below.)
+
+<details><summary><em>Click to expand:</em><strong> Overview of all the setings: </strong></summary>
+
+
+| Setting                         | Global (`settings`) | Per Container (`containers`) | Per Keyword (`keywords`) | Description |
+|---------------------------------|--------------------|-------------------------------|--------------------------|-------------|
+| `log_level`                      | ✅                   | –                             | –                     | Logging level: `DEBUG`, `INFO`, `WARNING`, `ERROR` |
+| `multi_line_entries`            | ✅                   | –                             | –                      | Enable detection of multi-line log entries |
+| `reload_config`                 | ✅                   | –                             | –                      | Automatically reload config on changes |
+| `disable_start_message`         | ✅                   | –                             | –                      | Disable startup notification |
+| `disable_shutdown_message`      | ✅                   | –                             | –                      | Disable shutdown notification |
+| `disable_config_reload_message` | ✅                   | –                             | –                      | Disable notification when config is reloaded |
+| `disable_container_event_message`| ✅                  | –                             | –                      | Disable notification when container monitoring starts/stops |
+| `hide_pattern_in_title`         | ✅                   | ✅                            | ✅                     | Exclude regex pattern from notification title for cleaner look | 
+| `ntfy_topic`                    | – (under `notifications`)| ✅                            | ✅                 | Override global topic per container or keyword |
+| `ntfy_priority`                 | – (under `notifications`)| ✅                            | ✅                 | Ntfy priority (1–5) per container or keyword |
+| `ntfy_tags`                     | – (under `notifications`)| ✅                            | ✅                 | Tags/emojis for ntfy notifications |
+| `notification_cooldown`         | ✅                   | ✅                            | ✅                     | Seconds between repeated alerts per container or keyword |
+| `notification_title`            | ✅                   | ✅                            | ✅                     | Template for the notification title (`{container}`, `{keywords}`) |
+| `attachment_lines`              | ✅                   | ✅                            | ✅                     | Number of log lines to include in attachments |
+| `attach_logfile`                | –                    | ✅                            | ✅                     | Attach log output to the notification (true/false) |
+| `action`                        | –                    | ✅                            | –                      | Trigger container actions (restart/stop) |
+| `action_cooldown`               | ✅                   | ✅                            | –                      | Cooldown before triggering container actions (restart/stop) |
+| `json_template`                 | –                    | -                            | ✅                      | Template for JSON log entries (e.g., Authelia) |
+| `template`                      | –                    | -                            | ✅                      | Template for plain text log entries using named capturing groups |
+
+
+> ✅ = supported 
+> – = not supported
+</details>
+
+
 ### ⚙️ Settings
 
 Here you can see how to define global settings in the config.yaml. These are the default values:
@@ -256,38 +301,6 @@ settings:
   disable_config_reload_message: False   # Suppress config reload notification
   disable_container_event_message: False # Suppress notification when monitoring of containers start/stop
 ```
-</details>
-
-
-However, some settings can also — or only — be configured per container or even per keyword.
-Settings are applied in the following order of priority:<br>
-`keyword > container > global settings`.
-
-Below is an overview of all available settings and where they can be configured.
-(For a detailed explanation of per-container and per-keyword settings, refer to the [Containers](#-containers) section.
-
-<details><summary><em>Click to expand:</em><strong> Overview of all the setings: </strong></summary>
-
-
-| Setting                         | Global (`settings`) | Per Container (`containers`) | Per Keyword (`keywords`, etc.) | Description |
-|----------------------------------|:--------------------:|:-----------------------------:|:-------------------------------:|-------------|
-| `log_level`                      | ✅                   | –                             | –                               | Logging level: `DEBUG`, `INFO`, `WARNING`, `ERROR` |
-| `notification_cooldown`         | ✅                   | ✅                            | ✅                              | Seconds between repeated alerts per container or keyword |
-| `notification_title`            | ✅                   | ✅                            | ✅                              | Template for the notification title (`{container}`, `{keywords}`) |
-| `action_cooldown`               | ✅                   | ✅                            | –                               | Cooldown before triggering container actions (restart/stop) |
-| `attachment_lines`              | ✅                   | ✅                            | ✅                              | Number of log lines to include in attachments |
-| `multi_line_entries`            | ✅                   | –                             | –                               | Enable detection of multi-line log entries |
-| `reload_config`                 | ✅                   | –                             | –                               | Automatically reload config on changes |
-| `disable_start_message`         | ✅                   | –                             | –                               | Disable startup notification |
-| `disable_shutdown_message`      | ✅                   | –                             | –                               | Disable shutdown notification |
-| `disable_config_reload_message` | ✅                   | –                             | –                               | Disable notification when config is reloaded |
-| `disable_container_event_message`| ✅                  | –                             | –                               | Disable notification when container monitoring starts/stops |
-| `ntfy_topic`                    | –                    | ✅                            | ✅                              | Override global topic per container or keyword |
-| `ntfy_priority`                 | –                    | ✅                            | ✅                              | Ntfy priority (1–5) per container or keyword |
-| `ntfy_tags`                     | –                    | ✅                            | ✅                              | Tags/emojis for ntfy notifications |
-| `attach_logfile`                | –                    | ✅                            | ✅                              | Attach log output to the notification (true/false) |
-
-> ✅ = supported · – = not supported
 </details>
 
 
@@ -590,12 +603,14 @@ Except for `action_keywords`, container specific settings/keywords and regex pat
 | `SWARM_SERVICES`              |  A comma separated list of docker swarm services to monitor. | _N/A_     |
 | `LOGGIFLY_MODE`              | Set this variable to `swarm` when wanting to use LoggiFly in swarm mode | _N/A_     |
 | `GLOBAL_KEYWORDS`       | Keywords that will be monitored for all containers. Overrides `global_keywords.keywords` from the config.yaml.| _N/A_     |
-| `GLOBAL_KEYWORDS_WITH_ATTACHMENT`| Notifications triggered by these global keywords have a logfile attached. Overrides `global_keywords.keywords_with_attachment` from the config.yaml.| _N/A_     |
+| `GLOBAL_KEYWORDS_WITH_ATTACHMENT`| Notifications triggered by these global keywords have a logfile attached. (These are converted into normal keywords with `attach_logfile`set to `True`| _N/A_     |
+| `ATTACH_LOGFILE`                | Attach a Logfile to *all* notifications. | True    |
+| `ATTACHMENT_LINES`              | Define the number of Log Lines in the attachment file     | 20     |
 | `NOTIFICATION_COOLDOWN`         | Cooldown period (in seconds) per container per keyword before a new message can be sent  | 5        | 
 | `ACTION_COOLDOWN`         | Cooldown period (in seconds) before the next container action can be performed. Always at least 60s. (`action_keywords` are only configurable in YAML)  | 300        |
 | `LOG_LEVEL`                     | Log Level for LoggiFly container logs.                    | INFO     |
 | `MULTI_LINE_ENTRIES`            | When enabled the program tries to catch log entries that span multiple lines.<br>If you encounter bugs or you simply don't need it you can disable it.| True     |
-| `ATTACHMENT_LINES`              | Define the number of Log Lines in the attachment file     | 20     |
+| `HIDE_PATTERN_IN_TITLE`         | Exclude regex pattern from the notification title for a cleaner look. Useful when using very long regex patterns.| False     |
 | `RELOAD_CONFIG`               | When the config file is changed the program reloads the config | True  |
 | `DISBLE_START_MESSAGE`          | Disable startup message.                                  | False     |
 | `DISBLE_SHUTDOWN_MESSAGE`       | Disable shutdown message.                                 | False     |
