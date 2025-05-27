@@ -71,8 +71,8 @@ Get instant alerts for security breaches, system errors, or custom patterns thro
 ---
 # 🖼 Screenshots
 
-<div style="display: flex; justify-content: center; gap: 10px;">
-  <img src="/images/collage.png" alt="Audiobookshelf Download" style="height: 300px; object-fit: contain;">
+<div style="display: flex; justify-content: center; gap: 10px; align-items: center;">
+  <img src="/images/collage.png" alt="collage of screenshots" object-fit: contain;">
 </div>
 
 <br>
