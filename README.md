@@ -263,20 +263,20 @@ The table below shows which settings are available and where they can be configu
 | `disable_config_reload_message` | ✅                   | –                             | –                      | Disable notification when config is reloaded |
 | `disable_container_event_message`| ✅                  | –                             | –                      | Disable notification when container monitoring starts/stops |
 | `hide_pattern_in_title`         | ✅                   | ✅                            | ✅                     | Exclude regex pattern from notification title for cleaner look | 
-| `ntfy_topic`                    | – (under `notifications`)| ✅                            | ✅                 | Override global topic per container or keyword |
-| `ntfy_priority`                 | – (under `notifications`)| ✅                            | ✅                 | Ntfy priority (1–5) per container or keyword |
-| `ntfy_tags`                     | – (under `notifications`)| ✅                            | ✅                 | Tags/emojis for ntfy notifications |
-| `notification_cooldown`         | ✅                   | ✅                            | ✅                     | Seconds between repeated alerts per container or keyword |
+| `ntfy_topic`                    | (`notifications.ntfy`)| ✅                            | ✅                 | Override global topic per container or keyword |
+| `ntfy_priority`                 | (`notifications.ntfy`)| ✅                            | ✅                 | Ntfy priority (1–5) per container or keyword |
+| `ntfy_tags`                     | (`notifications.ntfy`)| ✅                            | ✅                 | Tags/emojis for ntfy notifications |
+| `notification_cooldown`         | ✅                   | ✅                            | ✅                     | Seconds between repeated alerts per container and keyword |
 | `notification_title`            | ✅                   | ✅                            | ✅                     | Template for the notification title (`{container}`, `{keywords}`) |
 | `attachment_lines`              | ✅                   | ✅                            | ✅                     | Number of log lines to include in attachments |
-| `attach_logfile`                | –                    | ✅                            | ✅                     | Attach log output to the notification (true/false) |
-| `action`                        | –                    | ✅                            | –                      | Trigger container actions (restart/stop) |
+| `attach_logfile`                | ✅                   | ✅                            | ✅                     | Attach log output to the notification (true/false) |
 | `action_cooldown`               | ✅                   | ✅                            | –                      | Cooldown before triggering container actions (restart/stop) |
+| `action`                        | –                    | -                             | ✅                      | Trigger container actions (restart/stop) |
 | `json_template`                 | –                    | -                            | ✅                      | Template for JSON log entries (e.g., Authelia) |
 | `template`                      | –                    | -                            | ✅                      | Template for plain text log entries using named capturing groups |
 
 
-> ✅ = supported 
+> ✅ = supported<br>
 > – = not supported
 </details>
 
