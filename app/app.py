@@ -182,8 +182,17 @@ def create_docker_clients() -> dict[str, dict[str, Any]]: # {host: {client: Dock
             hostname = parsed.hostname
             tls_config = get_tls_config(hostname)
         try:
-            client = docker.DockerClient(base_url=host, tls=tls_config, timeout=10)
-            docker_hosts[host] = {"client": client, "tls_config": tls_config, "label": label}
+            if "podman" in host:
+                # podman seems to use the timeout for the log stream as well so when there are no logs for a while there are timeout exceptions.
+                # This is a workaround to avoid this issue by first creating a client with a short timeout to check the connection and then creating a client with a longer timeout.
+                client = docker.DockerClient(base_url=host, tls=tls_config, timeout=10)
+                if client.ping():
+                    logging.info(f"Successfully connected to Podman client on {host}")
+                    client.close()
+                    client = docker.DockerClient(base_url=host, tls=tls_config, timeout=300)
+            else:
+                client = docker.DockerClient(base_url=host, tls=tls_config, timeout=10)
+                docker_hosts[host] = {"client": client, "tls_config": tls_config, "label": label}
         except docker.errors.DockerException as e:
             logging.error(f"Error creating Docker client for {host}: {e}")
             logging.debug(f"Traceback: {traceback.format_exc()}")

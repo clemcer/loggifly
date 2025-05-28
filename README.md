@@ -802,13 +802,13 @@ For all available configuration options, refer to the [Containers section](#-con
 # Podman
 
 LoggiFly can also be used with Podman.<br>
-When running the container as root you can just use the docker compose file and start the container with pdoman-compose up -d. 
+When running the container as root you can just use the docker compose file and start the container with `podman-compose up -d`. 
 Just make sure to mount your Podman socket and set the environment variable `DOCKER_HOST` to it, e.g. `unix:///run/user/1000/podman/podman.sock`. <br>
 
 When running the container rootless it is a bit more complicated.<br>
 You have to set the `userns` which unfortunately can not be set in the docker compose.<br>
 So your two options are to either use the `podman run` command or create a podman quadlet file and run it via `systemctl --user start loggifly`. <br>
-
+  
 Sometimes the `User` and `SecurityLabelDisable` options have to be set as well. <br>
 
 Here is an example of how to run LoggiFly with a Podman run command. <br>
