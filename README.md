@@ -263,9 +263,9 @@ The table below shows which settings are available and where they can be configu
 | `disable_config_reload_message` | ✅                   | –                             | –                      | Disable notification when config is reloaded |
 | `disable_container_event_message`| ✅                  | –                             | –                      | Disable notification when container monitoring starts/stops |
 | `hide_pattern_in_title`         | ✅                   | ✅                            | ✅                     | Exclude regex pattern from notification title for cleaner look | 
-| `ntfy_topic`                    | (`notifications.ntfy`)| ✅                            | ✅                 | Override global topic per container or keyword |
-| `ntfy_priority`                 | (`notifications.ntfy`)| ✅                            | ✅                 | Ntfy priority (1–5) per container or keyword |
-| `ntfy_tags`                     | (`notifications.ntfy`)| ✅                            | ✅                 | Tags/emojis for ntfy notifications |
+| `ntfy_topic`                    | (`notifications.ntfy.topic`)| ✅                            | ✅                 | Override global topic per container or keyword |
+| `ntfy_priority`                 | (`notifications.ntfy.priority`)| ✅                            | ✅                 | Ntfy priority (1–5) per container or keyword |
+| `ntfy_tags`                     | (`notifications.ntfy.tags`)| ✅                            | ✅                 | Tags/emojis for ntfy notifications |
 | `notification_cooldown`         | ✅                   | ✅                            | ✅                     | Seconds between repeated alerts per container and keyword |
 | `notification_title`            | ✅                   | ✅                            | ✅                     | Template for the notification title (`{container}`, `{keywords}`) |
 | `attachment_lines`              | ✅                   | ✅                            | ✅                     | Number of log lines to include in attachments |
