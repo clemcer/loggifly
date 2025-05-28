@@ -799,7 +799,7 @@ For all available configuration options, refer to the [Containers section](#-con
 </details>
 
 
-### Podman
+# Podman
 
 LoggiFly can also be used with Podman. When running as root you can just use the docker compose file and start the container with pdoman-compose up -d. 
 Just make sure to mount your Podman socket and set the environment variable `DOCKER_HOST` to it, e.g. `unix:///run/user/1000/podman/podman.sock`. <br>
