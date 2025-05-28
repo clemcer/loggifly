@@ -824,8 +824,8 @@ podman run -d \
   -v /run/user/1000/podman/podman.sock:/run/user/1000/podman/podman.sock \
   -v /path/to/config.yaml:/config/config.yaml \
   -e DOCKER_HOST=unix:///run/user/1000/podman/podman.sock \
-  -e CONTAINERS=test-container \
-  -e GLOBAL_KEYWORDS=test \
+  -e CONTAINERS="container1,container2" \
+  -e GLOBAL_KEYWORDS="error,critical" \
   ghcr.io/clemcer/loggifly:dev
 ```
 
