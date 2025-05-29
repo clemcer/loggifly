@@ -393,6 +393,7 @@ notifications:
 ```
 
 If a **webhook** is configured LoggiFly will post a JSON to the URL with the following data:
+
 ```yaml
 {
   "container": "...",
@@ -537,14 +538,11 @@ Filtering is most straightforward with logs in JSON Format, but plain text logs 
 > [!Note]
 > If you want to modify the notification title take a look at the setting `notification_title` in the [settings section](#%EF%B8%8F-settings). 
 
-
-<details><summary><em>Click to expand:</em><strong> Filter Logs and set custom template: </strong></summary>
-
-<br>
-
-
 #### Template for JSON Logs:
 
+<details><summary><em>Click to expand:</em><strong> Filter Logs using a json_template: </strong></summary>
+
+<br>
 
 `json_template` only works if the Logs are in JSON Format. Authelia is one such example.<br>
 You can only use the placeholder variables that exist as keys in the JSON from the log line you want to catch.<br>
@@ -556,6 +554,7 @@ Here is an example where you want to catch this very long log entry from Autheli
 ```
 
 In the config.yaml you can set a `json_template` for both plain text keywords and regex patterns. In the template I inserted three keys from the JSON Log Entry:
+
 ```yaml
 containers:
   authelia:
@@ -565,9 +564,16 @@ containers:
       - regex: Unsuccessful.*authentication
         json_template: '🚨 Failed Login Attempt:\n{msg}\n🔎 IP: {remote_ip}\n🕐{time}' 
 ```
+
 <br>
 
+</details>
+
+
 #### Template using named capturing groups in Regex Pattern:
+
+<details><summary><em>Click to expand:</em><strong> Filter Logs using named capturing groups: </strong></summary>
+
 
 To filter non JSON Log Lines for certain parts you have to use a regex pattern with **named capturing groups**.<br> 
 Lets take `(?P<group_name>...)` as an example. 
@@ -616,6 +622,7 @@ containers:
 WIth both `json_template` and `template` you can add the key `original_log_line` to your template to add the full log entry to your notification message.
 
 <br>
+
 </details>
 
 
