@@ -236,8 +236,8 @@ For the program to function you need to configure:
 
 ### 🧩 Settings Overview & Hierarchy Explained
 
-Before we dive into the four main sections of the config.yaml, it's important to understand how settings can be applied on three different levels:
-- Global (`settings`)
+Before we dive into the four main sections of the config.yaml, it's important to understand how settings can be applied on three different levels (this applies to both normal `settings` and `notifications` settings):
+- Global (`settings` / `notifications`)
 - Per container (`containers`)
 - Per keyword or regex (`keyword` / `regex`)
 
@@ -267,7 +267,7 @@ This table is just for reference, detailled explanations and examples for these 
 | `attach_logfile`                | ✅                   | ✅                            | ✅                     | Attach log output to the notification (true/false) |
 | `action_cooldown`               | ✅                   | ✅                            | –                      | Cooldown before triggering container actions (restart/stop) |
 | `action`                        | –                    | -                             | ✅                      | Trigger container actions (restart/stop) |
-| `json_template`                 | –                    | -                            | ✅                      | Template for JSON log entries (e.g., Authelia) |
+| `json_template`                 | –                    | -                            | ✅                      | Template for JSON log entries |
 | `template`                      | –                    | -                            | ✅                      | Template for plain text log entries using named capturing groups |
 
 The same applies to the `notifications` settings. You can set the same settings globally or per container or per keyword/regex pattern. <br>
@@ -617,13 +617,10 @@ containers:
 
 <br>
 
-### Add original Log Entry to template:
-
-WIth both `json_template` and `template` you can add the key `original_log_line` to your template to add the full log entry to your notification message.
-
-<br>
-
 </details>
+
+>[!Note]
+WIth both `json_template` and `template` you can add the key `original_log_line` to your template to add the full log entry to your notification message.
 
 
 ## 🍀 Environment Variables
