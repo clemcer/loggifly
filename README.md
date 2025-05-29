@@ -300,7 +300,8 @@ settings:
   notification_cooldown: 5      # Seconds between alerts for same keyword (per container)
   notification_title: default   # configure a custom template for the notification title (see section below)
   action_cooldown: 300          # Cooldown period (in seconds) before the next container action can be performed. Maximum is always at least 60s.
-  attachment_lines: 20          # Number of Lines to include in log attachments
+  attach_logfile: false     # Attach a logfile to all notifications
+  attachment_lines: 20          # Number of Lines to include in log attachments    
   multi_line_entries: True      # Monitor and catch multi-line log entries instead of going line by line. 
   reload_config: True           # When the config file is changed the program reloads the config
   disable_start_message: False           # Suppress startup notification
@@ -319,7 +320,7 @@ The setting `notification_title` requires a more detailed explanation:<br>
 
 When `notification_title: default` is set LoggiFly uses its own notification titles.<br>
 However, if you prefer something simpler or in another language, you can choose your own template for the notification title. <br>
-This setting can also be configured per container by the way (_see [containers](#-containers) section_).
+This setting can also be configured per container and per keyword (_see [containers](#-containers) section_).
 
 These are the two keys that can be inserted into the template:<br>
 `keywords`: _The keywords that were found in a log line_ <br>
@@ -412,7 +413,7 @@ If a **webhook** is configured LoggiFly will post a JSON to the URL with the fol
 Here you can define containers and assign keywords, regex patterns, and optional settings to each one.<br>
 The container names must match the exact container names you would get with `docker ps`.<br>
 
-This is how you configure **keywords and Regular Expressions:
+This is how you configure **keywords** and **Regular Expressions**:
 
 <details><summary><em>Click to expand:</em><strong> Keywords and regex patterns: </strong></summary>
 
@@ -428,8 +429,6 @@ containers:
 ```
 
 </details>
-
-<br>
 
 This is how to attach logfiles to the notifications or trigger restarts/stops of the container:
 
@@ -447,9 +446,6 @@ containers:
 ```
 
 </details>
-
-
-<br>
 
 Some of the **settings** from the `settings` and the `notifications` sections can also be set per container or per keyword. A summary of all the settings and where you can set them can be found [here](#-settings-overview--hierarchy-explained) <br>
 
@@ -492,7 +488,6 @@ containers:
 
 </details>
 
-<br>
 
 If `global_keywords` are configured and you don't need additional keywords for a container you can **leave it blank**:
 
