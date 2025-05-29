@@ -245,10 +245,10 @@ Before we dive into the four main sections of the config.yaml, it's important to
 
 When the same setting is defined in multiple places, the following priority applies:
 
-`keyword > container > global`
+`keyword/regex > container > global`
 
-The table below shows which settings are available and where they can be configured.
-(Detailled explanations and examples for these settings can be found in the sections below.)
+The table below shows which settings are available and where they can be configured.<br>
+This table is just for reference, detailled explanations and examples for these settings can be found in the sections below.)
 
 <details><summary><em>Click to expand:</em><strong> Overview of all the setings: </strong></summary>
 
@@ -263,9 +263,6 @@ The table below shows which settings are available and where they can be configu
 | `disable_config_reload_message` | ✅                   | –                             | –                      | Disable notification when config is reloaded |
 | `disable_container_event_message`| ✅                  | –                             | –                      | Disable notification when container monitoring starts/stops |
 | `hide_pattern_in_title`         | ✅                   | ✅                            | ✅                     | Exclude regex pattern from notification title for cleaner look | 
-| `ntfy_topic`                    | (`notifications.ntfy.topic`)| ✅                            | ✅                 | Override global topic per container or keyword |
-| `ntfy_priority`                 | (`notifications.ntfy.priority`)| ✅                            | ✅                 | Ntfy priority (1–5) per container or keyword |
-| `ntfy_tags`                     | (`notifications.ntfy.tags`)| ✅                            | ✅                 | Tags/emojis for ntfy notifications |
 | `notification_cooldown`         | ✅                   | ✅                            | ✅                     | Seconds between repeated alerts per container and keyword |
 | `notification_title`            | ✅                   | ✅                            | ✅                     | Template for the notification title (`{container}`, `{keywords}`) |
 | `attachment_lines`              | ✅                   | ✅                            | ✅                     | Number of log lines to include in attachments |
@@ -275,6 +272,18 @@ The table below shows which settings are available and where they can be configu
 | `json_template`                 | –                    | -                            | ✅                      | Template for JSON log entries (e.g., Authelia) |
 | `template`                      | –                    | -                            | ✅                      | Template for plain text log entries using named capturing groups |
 
+The same thing applies to the `notifications` section, where you can set the same settings globally or per container or per keyword/regex pattern. <br>
+
+| Setting                         | Global (`notifications`) | Per Container (`containers`) | Per Keyword (`keywords`) | Description |
+|---------------------------------|--------------------|-------------------------------|--------------------------|-------------|
+| `apprise_url`                  | ✅ (`.apprise.url`)   | ✅                            | –                      | Apprise-compatible URL for notifications |
+| `ntfy_url`                      | ✅ (`.ntfy.url`)     | ✅                            | ✅                 | Ntfy server URL |
+| `ntfy_topic`                    | ✅ (`.ntfy.topic`)   | ✅                            | ✅                 | Ntfy topic |
+| `ntfy_priority`                 | ✅ (`.ntfy.priority`)| ✅                            | ✅                 | Ntfy priority (1–5) |
+| `ntfy_tags`                     | ✅ (`.ntfy.tags`)    | ✅                            | ✅                 | Tags/emojis for ntfy notifications |
+| `ntfy_token`                    | ✅ (`.ntfy.token`)   | ✅                            |✅                      | Ntfy token for authentication |
+| `ntfy_username`                 | ✅ (`.ntfy.username`) | ✅                            | ✅                     | Ntfy username for authentication |
+| `ntfy_password`                 | ✅ (`.ntfy.password`) | ✅                            | ✅                     | Ntfy password for authentication |
 
 > ✅ = supported<br>
 > – = not supported
@@ -404,36 +413,53 @@ If a **webhook** is configured LoggiFly will post a JSON to the URL with the fol
 Here you can define containers and assign keywords, regex patterns, and optional settings to each one.<br>
 The container names must match the exact container names you would get with `docker ps`.<br>
 
-<details><summary><em>Click to expand:</em><strong> Container Config: </strong></summary>
+This is how you configure **keywords and Regular Expressions:
 
-This is how you configure **keywords, regex patterns and action_keywords**. `action_keywords` trigger a start/stop of the monitored container:
+<details><summary><em>Click to expand:</em><strong> Keywords and regex patterns: </strong></summary>
+
 
 ```yaml
 containers:
   container1:
     keywords:
-      - keyword1
+      - keyword1               # simple keyword
       - regex: regex-patern1   # this is how to set regex patterns
-    keywords_with_attachment: # attach a logfile to the notification
-      - keyword2
-      - regex: regex-pattern2
-        hide_pattern_in_title: true # Exclude the regex pattern from the notification title for a cleaner look. Useful when using very long regex patterns.
-      - keyword3
-    action_keywords: # trigger a restart/stop of the container. can not be set globally
-      - restart: keyword4
-      - stop: 
-          regex: regex-pattern3 # this is how to set regex patterns for action_keywords
-  
+      - keyword: keyword2      # simple keyword
+    
+    
 ```
+
+</details>
+
+This is how to attach logfiles to the notifications or trigger restarts/stops of the container:
+
+<details><summary><em>Click to expand:</em><strong> Attachments anc actions: </strong></summary>
+
+```yaml
+
+containers:
+  container2:
+    - keyword: keyword1
+      attatch_logfile: true  # Attach a log file to the notification
+    - regex: regex-pattern1
+      action: restart  # Restart the container when this regex pattern is found
+
+```
+
+</details>
+
 
 <br>
 
-Some of the **settings** from the `settings` section can also be set per container or per keyword.<br>
+Some of the **settings** from the `settings` and the `notifications` sections can also be set per container or per keyword. A summary of all the settings and where you can set them can be found [here](#settings-overview--hierarchy-explained) <br>
+
+<details><summary><em>Click to expand:</em><strong> Modular Settings: </strong></summary>
 
 
 ```yaml
 containers:
   container2:
+    apprise_url: "discord://webhook-url"  
     ntfy_tags: closed_lock_with_key   
     ntfy_priority: 5
     ntfy_topic: container3
@@ -446,16 +472,21 @@ containers:
     keywords:
       - keyword1
       - keyword2
+
       - regex: regex-pattern1
-            ntfy_tags: closed_lock_with_key   
-            ntfy_priority: 5
-            ntfy_topic: regex-pattern1
-            attachment_lines: 10
-            notification_title: 'custom title'
-            notification_cooldown: 10
-            attach_logfile: true
-            action_cooldown: 60 
- 
+        ntfy_tags: closed_lock_with_key   
+        ntfy_priority: 5
+        ntfy_topic: regex-pattern1
+        attachment_lines: 10
+
+      - keyword: keyword3
+        apprise_url: "discord://webhook-url" 
+        action: restart
+        action_cooldown: 60 
+        notification_title: 'custom title'
+        notification_cooldown: 10
+        attach_logfile: true
+
 
 ```
 
