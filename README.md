@@ -99,8 +99,6 @@ Choose your preferred setup method - a simple docker compose with environment va
 - With a `config.yaml ` you can use complex **Regex patterns**, have different keywords & other settings **per container** and set keywords that trigger a **restart/stop** of the container.
 
 > [!Note]
-In previous versions the default location for the `config.yaml` file was `/app/config.yaml`. The old path still works (so not a breaking change) but the new official path is now `/config/config.yaml`.<br>
-LoggiFly will first look in `/config/config.yaml`, and fall back to `/app/config.yaml` if it's not found.<br>
 When `/config` is mounted a config template will be downloaded into that directory. 
 
 <details><summary><em>Click to expand:</em> 🐋 <strong>Basic Setup: Docker Compose (Environment Variables)</strong></summary>
@@ -248,7 +246,7 @@ When the same setting is defined in multiple places, the following priority appl
 `keyword/regex > container > global`
 
 The table below shows which settings are available and where they can be configured.<br>
-This table is just for reference, detailled explanations and examples for these settings can be found in the sections below.)
+This table is just for reference, detailled explanations and examples for these settings can be found below.
 
 <details><summary><em>Click to expand:</em><strong> Overview of all the setings: </strong></summary>
 
@@ -426,14 +424,15 @@ containers:
       - regex: regex-patern1   # this is how to set regex patterns
       - keyword: keyword2      # simple keyword
     
-    
 ```
 
 </details>
 
+<br>
+
 This is how to attach logfiles to the notifications or trigger restarts/stops of the container:
 
-<details><summary><em>Click to expand:</em><strong> Attachments anc actions: </strong></summary>
+<details><summary><em>Click to expand:</em><strong> Attachments and Actions: </strong></summary>
 
 ```yaml
 
@@ -451,7 +450,7 @@ containers:
 
 <br>
 
-Some of the **settings** from the `settings` and the `notifications` sections can also be set per container or per keyword. A summary of all the settings and where you can set them can be found [here](#settings-overview--hierarchy-explained) <br>
+Some of the **settings** from the `settings` and the `notifications` sections can also be set per container or per keyword. A summary of all the settings and where you can set them can be found [here](#-settings-overview--hierarchy-explained) <br>
 
 <details><summary><em>Click to expand:</em><strong> Modular Settings: </strong></summary>
 
@@ -490,23 +489,30 @@ containers:
 
 ```
 
+</details>
+
 <br>
 
 If `global_keywords` are configured and you don't need additional keywords for a container you can **leave it blank**:
 
+<details><summary><em>Click to expand:</em><strong> Keep it simple: </strong></summary>
+  
 ```yaml
 containers:
   container3:
   container4:
 ```
-
 </details>
+
+<br>
+
+The only keyword settings missing are the templates which are explained [here](#-customize-notifications-templates--log-filtering).
 
 
 ### 🌍 Global Keywords
 
-When `global_keywords` are configured all containers are monitored for these keywords:
-
+When `global_keywords` are configured all containers are monitored for these keywords. These keywords can also be configured with additional settings as described in the [containers](#-containers) section. For an overview of all the possible settings refer to this [table](#-settings-overview--hierarchy-explained).
+ 
 <details><summary><em>Click to expand:</em><strong> Global Keywords: </strong></summary>
 
 ```yaml
