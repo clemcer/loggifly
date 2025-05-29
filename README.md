@@ -236,7 +236,7 @@ For the program to function you need to configure:
 [Here](/config_example.yaml) you can find an example config with some **use cases**.
 
 
-### Settings Overview & Hierarchy Explained
+### 🧩 Settings Overview & Hierarchy Explained
 
 Before we dive into the four main sections of the config.yaml, it's important to understand how settings can be applied on three different levels:
 - Global (`settings`)
@@ -272,11 +272,11 @@ This table is just for reference, detailled explanations and examples for these 
 | `json_template`                 | –                    | -                            | ✅                      | Template for JSON log entries (e.g., Authelia) |
 | `template`                      | –                    | -                            | ✅                      | Template for plain text log entries using named capturing groups |
 
-The same thing applies to the `notifications` section, where you can set the same settings globally or per container or per keyword/regex pattern. <br>
+The same applies to the `notifications` settings. You can set the same settings globally or per container or per keyword/regex pattern. <br>
 
 | Setting                         | Global (`notifications`) | Per Container (`containers`) | Per Keyword (`keywords`) | Description |
 |---------------------------------|--------------------|-------------------------------|--------------------------|-------------|
-| `apprise_url`                  | ✅ (`.apprise.url`)   | ✅                            | –                      | Apprise-compatible URL for notifications |
+| `apprise_url`                  | ✅ (`.apprise.url`)   | ✅                            | ✅                      | Apprise-compatible URL for notifications |
 | `ntfy_url`                      | ✅ (`.ntfy.url`)     | ✅                            | ✅                 | Ntfy server URL |
 | `ntfy_topic`                    | ✅ (`.ntfy.topic`)   | ✅                            | ✅                 | Ntfy topic |
 | `ntfy_priority`                 | ✅ (`.ntfy.priority`)| ✅                            | ✅                 | Ntfy priority (1–5) |
