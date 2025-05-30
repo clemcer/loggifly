@@ -20,38 +20,56 @@ containers:
 
   container1: # leave blank if you only need global keywords
 
-  container2: # must match exact container name
+  container2:
     keywords:
-      - keyword1
-      - keyword2
+      - keyword1               # simple keyword
+      - regex: regex-patern1   # this is how to set regex patterns
+      - keyword: keyword2      # another way to set a simple keyword
+      
 
   container3:
     keywords:
-      - regex: regex-patern       # this is how to set regex patterns
-    keywords_with_attachment: # attach a logfile to the notification
-      - keyword2
-    action_keywords: # trigger a restart/stop of the container. can not be set globally
-      - restart: keyword3
-      - stop: keyword4
+      - keyword: keyword1
+        attatch_logfile: true  # Attach a log file to the notification
+      - regex: regex-pattern1
+        action: restart  # Restart the container when this regex pattern is found
+      - keyword: keyword2
+        action: stop     # Stop the container when this keyword is found
   
+  # You can also set a lot of settings per container or per keyword
+  # Here is an overview of the available settings: https://github.com/clemcer/loggifly/tree/main#-settings-overview--hierarchy-explained
   container4:
-  # The next 6 settings override the global values only for this container
+    apprise_url: "discord://webhook-url"  
     ntfy_tags: closed_lock_with_key   
     ntfy_priority: 5
-    ntfy_topic: container4
-    notification_title: '{keywords} found in {container}' # modify the notification title for this container
-    attachment_lines: 50     
+    ntfy_topic: container3
+    webhook_url: https://custom.endpoint.com/post
+    attachment_lines: 50
+    notification_title: '{keywords} found in {container}'
     notification_cooldown: 2  
-    action_cooldown: 300
-
+    attach_logfile: true
+    action_cooldown: 60 
+    hide_pattern_in_title: true
+  
     keywords:
       - keyword1
-    keywords_with_attachment:
       - keyword2
-    action_keywords:  
-      - stop: keyword3
-      - restart: 
-          regex: regex-pattern # this is how to set regex patterns for action_keywords
+
+      - regex: regex-pattern1
+        ntfy_tags: closed_lock_with_key   
+        ntfy_priority: 5
+        ntfy_topic: regex-pattern1
+        attachment_lines: 10
+        hide_pattern_in_title: true
+
+      - keyword: keyword3
+        apprise_url: "discord://webhook-url" 
+        action: restart
+        action_cooldown: 60 
+        notification_title: 'custom title'
+        notification_cooldown: 10
+        attach_logfile: true
+
           
 # Global keywords are applied to all containers
 global_keywords:
@@ -81,12 +99,16 @@ notifications:
 # These are the default settings
 settings:          
   log_level: INFO               # DEBUG, INFO, WARNING, ERROR
-  notification_cooldown: 5      # Seconds between alerts for same keyword (per container)
-  action_cooldown: 300          # Cooldown period (in seconds) before the next container action can be performed. Maximum is always at least 60s.
-  notification_title: default   # configure a custom template for the notification title (see section below)  attachment_lines: 20          # Number of Lines to include in log attachments
   multi_line_entries: True      # Monitor and catch multi-line log entries instead of going line by line. 
   reload_config: True           # When the config file is changed the program reloads the config
-  disable_start_message: False  # Suppress startup notification
+  disable_start_message: False           # Suppress startup notification
   disable_shutdown_message: False        # Suppress shutdown notification
   disable_config_reload_message: False   # Suppress config reload notification
   disable_container_event_message: False # Suppress notification when monitoring of containers start/stop
+
+  notification_cooldown: 5      # Seconds between alerts for same keyword (per container)
+  notification_title: default   # configure a custom template for the notification title (see section below)
+  action_cooldown: 300          # Cooldown period (in seconds) before the next container action can be performed. Maximum is always at least 60s.
+  attach_logfile: False          # Attach a log file to all notifications
+  attachment_lines: 20          # Number of Lines to include in log attachments
+  hide_pattern_in_title: False   # Exclude regex pattern from the notification title for a cleaner look

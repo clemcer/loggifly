@@ -429,7 +429,7 @@ containers:
     keywords:
       - keyword1               # simple keyword
       - regex: regex-patern1   # this is how to set regex patterns
-      - keyword: keyword2      # simple keyword
+      - keyword: keyword2      # another way to set a simple keyword
     
 ```
 
@@ -448,7 +448,7 @@ containers:
     - regex: regex-pattern1
       action: restart  # Restart the container when this regex pattern is found
     - keyword: keyword2
-      action: stop     # Restart the container when this keyword is found
+      action: stop     # Stop the container when this keyword is found
 ```
 
 </details>
@@ -463,7 +463,7 @@ containers:
   container2:
     apprise_url: "discord://webhook-url"  
     ntfy_tags: closed_lock_with_key   
-    ntfy_priority: 5
+    ntfy_priority: 3
     ntfy_topic: container3
     webhook_url: https://custom.endpoint.com/post
     attachment_lines: 50
@@ -471,16 +471,15 @@ containers:
     notification_cooldown: 2  
     attach_logfile: true
     action_cooldown: 60 
-    hide_pattern_in_title: true
   
     keywords:
       - keyword1
       - keyword2
 
       - regex: regex-pattern1
-        ntfy_tags: closed_lock_with_key   
+        ntfy_tags: partying_face   
         ntfy_priority: 5
-        ntfy_topic: regex-pattern1
+        ntfy_topic: error
         attachment_lines: 10
         hide_pattern_in_title: true
 
@@ -488,7 +487,7 @@ containers:
         apprise_url: "discord://webhook-url" 
         action: restart
         action_cooldown: 60 
-        notification_title: 'custom title'
+        notification_title: '{container} restarted because these keywords were found: {keywords}'
         notification_cooldown: 10
         attach_logfile: true
 
