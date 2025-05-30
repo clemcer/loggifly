@@ -544,7 +544,7 @@ Filtering is most straightforward with logs in JSON Format, but plain text logs 
 
 #### Template for JSON Logs:
 
-<details><summary><em>Click to expand:</em><strong> Filter Logs using a json_template: </strong></summary>
+<details><summary><em>Click to expand:</em>Filter Logs using a json_template:</summary>
 
 <br>
 
