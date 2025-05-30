@@ -569,7 +569,7 @@ containers:
         json_template: '🚨 Failed Login Attempt:\n{msg}\n🔎 IP: {remote_ip}\n🕐{time}' 
 ```
 
-You can define a custom json_template to extract data from nested structures, including dictionaries and lists:
+You can also define a custom `json_template` to extract data from nested structures, including dictionaries and lists:
 
 - {key} for top-level fields
 - {dict[key]} for nested fields
