@@ -236,8 +236,8 @@ For the program to function you need to configure:
 
 ### 🧩 Settings Overview & Hierarchy Explained
 
-Before we dive into the four main sections of the config.yaml, it's important to understand how settings can be applied on three different levels:
-- Global (`settings`)
+Before we dive into the four main sections of the config.yaml, it's important to understand how settings can be applied on three different levels (this applies to both normal `settings` and `notifications` settings):
+- Global (`settings` / `notifications`)
 - Per container (`containers`)
 - Per keyword or regex (`keyword` / `regex`)
 
@@ -267,7 +267,7 @@ This table is just for reference, detailled explanations and examples for these 
 | `attach_logfile`                | ✅                   | ✅                            | ✅                     | Attach log output to the notification (true/false) |
 | `action_cooldown`               | ✅                   | ✅                            | –                      | Cooldown before triggering container actions (restart/stop) |
 | `action`                        | –                    | -                             | ✅                      | Trigger container actions (restart/stop) |
-| `json_template`                 | –                    | -                            | ✅                      | Template for JSON log entries (e.g., Authelia) |
+| `json_template`                 | –                    | -                            | ✅                      | Template for JSON log entries |
 | `template`                      | –                    | -                            | ✅                      | Template for plain text log entries using named capturing groups |
 
 The same applies to the `notifications` settings. You can set the same settings globally or per container or per keyword/regex pattern. <br>
@@ -325,7 +325,7 @@ The setting `notification_title` requires a more detailed explanation:<br>
 
 When `notification_title: default` is set LoggiFly uses its own notification titles.<br>
 However, if you prefer something simpler or in another language, you can choose your own template for the notification title. <br>
-This setting can also be configured per container by the way (_see [containers](#-containers) section_).
+This setting can also be configured per container and per keyword (_see [containers](#-containers) section_).
 
 These are the two keys that can be inserted into the template:<br>
 `keywords`: _The keywords that were found in a log line_ <br>
@@ -418,7 +418,7 @@ If a **webhook** is configured LoggiFly will post a JSON to the URL with the fol
 Here you can define containers and assign keywords, regex patterns, and optional settings to each one.<br>
 The container names must match the exact container names you would get with `docker ps`.<br>
 
-This is how you configure **keywords and Regular Expressions:
+This is how you configure **keywords** and **Regular Expressions**:
 
 <details><summary><em>Click to expand:</em><strong> Keywords and regex patterns: </strong></summary>
 
@@ -435,8 +435,6 @@ containers:
 
 </details>
 
-<br>
-
 This is how to attach logfiles to the notifications or trigger restarts/stops of the container:
 
 <details><summary><em>Click to expand:</em><strong> Attachments and Actions: </strong></summary>
@@ -449,13 +447,11 @@ containers:
       attatch_logfile: true  # Attach a log file to the notification
     - regex: regex-pattern1
       action: restart  # Restart the container when this regex pattern is found
-
+    - keyword: keyword2
+      action: stop     # Restart the container when this keyword is found
 ```
 
 </details>
-
-
-<br>
 
 Some of the **settings** from the `settings` and the `notifications` sections can also be set per container or per keyword. A summary of all the settings and where you can set them can be found [here](#-settings-overview--hierarchy-explained) <br>
 
@@ -501,7 +497,6 @@ containers:
 
 </details>
 
-<br>
 
 If `global_keywords` are configured and you don't need additional keywords for a container you can **leave it blank**:
 
@@ -658,13 +653,10 @@ containers:
 
 <br>
 
-### Add original Log Entry to template:
-
-WIth both `json_template` and `template` you can add the key `original_log_line` to your template to add the full log entry to your notification message.
-
-<br>
-
 </details>
+
+>[!Note]
+WIth both `json_template` and `template` you can add the key `original_log_line` to your template to add the full log entry to your notification message.
 
 
 ## 🍀 Environment Variables
@@ -973,11 +965,11 @@ systemctl --user start loggifly
 1. Ensure containers names **exactly match** your Docker **container names**. 
     - Find out your containers names: ```docker ps --format "{{.Names}}" ```
     - 💡 Pro Tip: Define the `container_name:` in your compose files.
-2. **`action_keywords`** can not be set via environment variables, they can only be set per container in the `config.yaml`. The `action_cooldown` is always at least 60s long and defaults to 300s
-3. **Regex Patterns**:
+2. **Regex Patterns**:
    - Validate patterns at [regex101.com](https://regex101.com) before adding them to your config.
    - use `hide_pattern_in_title: true` when using very long regex patterns to have a cleaner notification title _(or hide found keywords from the title altogether with your own custom `notification_title` ([see settings](#%EF%B8%8F-settings))_
-5. **Troubleshooting Multi-Line Log Entries**. If LoggiFly only catches single lines from log entries that span over multiple lines:
+   - 
+3. **Troubleshooting Multi-Line Log Entries**. If LoggiFly only catches single lines from log entries that span over multiple lines:
     - Wait for Patterns: LoggiFly needs to process a few lines in order to detect the pattern the log entries start with (e.g. timestamps/log level)
     - Unrecognized Patterns: If issues persist, open an issue and share the affected log samples
 
