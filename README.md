@@ -608,7 +608,7 @@ json_template: 'User {user[name]}logged in from {location[city]}, Role: {user[ro
 
 #### Template using named capturing groups in Regex Pattern:
 
-<details><summary><em>Click to expand:</em><strong> Filter Logs using named capturing groups: </strong></summary>
+<details><summary><em>Click to expand:</em> Filter Logs using named capturing groups:</summary>
 
 
 To filter non JSON Log Lines for certain parts you have to use a regex pattern with **named capturing groups**.<br> 
