@@ -282,6 +282,8 @@ The same applies to the `notifications` settings. You can set the same settings 
 | `ntfy_token`                    | ✅ (`.ntfy.token`)   | ✅                            |✅                      | Ntfy token for authentication |
 | `ntfy_username`                 | ✅ (`.ntfy.username`) | ✅                            | ✅                     | Ntfy username for authentication |
 | `ntfy_password`                 | ✅ (`.ntfy.password`) | ✅                            | ✅                     | Ntfy password for authentication |
+| `webhook_url`                   | ✅ (`.webhook.url`)  | ✅                            | ✅                     | Custom webhook URL for notifications |
+| `webhook_headers`               | ✅ (`.webhook.headers`) | ✅                            | ✅                     | Custom headers for webhook notifications |
 
 > ✅ = supported<br>
 > – = not supported
@@ -297,16 +299,20 @@ Here you can see how to define global settings in the config.yaml. These are the
 ```yaml
 settings:          
   log_level: INFO               # DEBUG, INFO, WARNING, ERROR
-  notification_cooldown: 5      # Seconds between alerts for same keyword (per container)
-  notification_title: default   # configure a custom template for the notification title (see section below)
-  action_cooldown: 300          # Cooldown period (in seconds) before the next container action can be performed. Maximum is always at least 60s.
-  attachment_lines: 20          # Number of Lines to include in log attachments
   multi_line_entries: True      # Monitor and catch multi-line log entries instead of going line by line. 
   reload_config: True           # When the config file is changed the program reloads the config
   disable_start_message: False           # Suppress startup notification
   disable_shutdown_message: False        # Suppress shutdown notification
   disable_config_reload_message: False   # Suppress config reload notification
   disable_container_event_message: False # Suppress notification when monitoring of containers start/stop
+
+  notification_cooldown: 5      # Seconds between alerts for same keyword (per container)
+  notification_title: default   # configure a custom template for the notification title (see section below)
+  action_cooldown: 300          # Cooldown period (in seconds) before the next container action can be performed. Maximum is always at least 60s.
+  attach_logfile: False          # Attach a log file to all notifications
+  attachment_lines: 20          # Number of Lines to include in log attachments
+  hide_pattern_in_title: False   # Exclude regex pattern from the notification title for a cleaner look
+
 ```
 </details>
 
@@ -463,11 +469,13 @@ containers:
     ntfy_tags: closed_lock_with_key   
     ntfy_priority: 5
     ntfy_topic: container3
+    webhook_url: https://custom.endpoint.com/post
     attachment_lines: 50
     notification_title: '{keywords} found in {container}'
     notification_cooldown: 2  
     attach_logfile: true
     action_cooldown: 60 
+    hide_pattern_in_title: true
   
     keywords:
       - keyword1
@@ -478,6 +486,7 @@ containers:
         ntfy_priority: 5
         ntfy_topic: regex-pattern1
         attachment_lines: 10
+        hide_pattern_in_title: true
 
       - keyword: keyword3
         apprise_url: "discord://webhook-url" 
@@ -563,6 +572,38 @@ containers:
         json_template: '🚨 Failed Login Attempt:\n{msg}\n🔎 IP: {remote_ip}\n🕐{time}' 
       - regex: Unsuccessful.*authentication
         json_template: '🚨 Failed Login Attempt:\n{msg}\n🔎 IP: {remote_ip}\n🕐{time}' 
+```
+
+You can define a custom json_template to extract data from nested structures, including dictionaries and lists:
+
+- {key} for top-level fields
+- {dict[key]} for nested fields
+- {list[index][key]} for list access (with indices starting at 0)
+
+Example json log entry:
+
+```json
+{
+  "user": {
+    "name": "admin",
+    "roles": [
+      {"name": "superuser"},
+      {"name": "editor"}
+    ]
+  },
+  "location": {
+    "city": "Berlin",
+    "country": "Germany"
+  }
+}
+
+```
+
+Example `json_template`:
+
+```yaml
+json_template: 'User {user[name]}logged in from {location[city]}, Role: {user[roles][0][name]}'
+
 ```
 
 <br>
