@@ -256,7 +256,7 @@ This table is just for reference, detailled explanations and examples for these 
 | `disable_shutdown_message`      | ✅                   | –                             | –                      | Disable shutdown notification |
 | `disable_config_reload_message` | ✅                   | –                             | –                      | Disable notification when config is reloaded |
 | `disable_container_event_message`| ✅                  | –                             | –                      | Disable notification when container monitoring starts/stops |
-| `hostname`                      | –                    | ✅                            | –                      | Name of the host a container should be monitored on (if monitoring multiple hosts) |
+| `hostnames`                      | –                    | ✅                            | –                      | Name of the host a container should be monitored on (if monitoring multiple hosts) |
 | `hide_pattern_in_title`         | ✅                   | ✅                            | ✅                     | Exclude regex pattern from notification title for cleaner look | 
 | `notification_cooldown`         | ✅                   | ✅                            | ✅                     | Seconds between repeated alerts per container and keyword |
 | `notification_title`            | ✅                   | ✅                            | ✅                     | Template for the notification title (`{container}`, `{keywords}`) |
@@ -721,7 +721,9 @@ If you want to set a label to the mounted docker socket you can do so by adding 
 
 ## Assign Containers to specific Hosts
 
-You can assign containers to specific hosts by setting the `hostname` key in the container configuration. The [labels](#labels) section shows how the hostname is constructed.<br>
+You can assign containers to specific hosts by providing a comma-separated list of hostnames under the `hostnames` field in the container configuration. The [labels](#labels) section shows how the hostname is constructed.<br> 
+When no hostnames are set LoggiFly will look for the container on all configured remote hosts.
+
 Here is a short yaml snippet showing how to assign a container to a specific host:
 
 <details><summary><em>Click to expand:</em><strong> Assign Containers </strong></summary><br>
@@ -729,7 +731,7 @@ Here is a short yaml snippet showing how to assign a container to a specific hos
 ```yaml 
 containers:
   container1:
-    hostname: foobar  # This container will only be monitored on the host with the label 'foobar'
+    hostnames: foobar  # This container will only be monitored on the host with the label 'foobar'
     keywords:
       - error
 ```
