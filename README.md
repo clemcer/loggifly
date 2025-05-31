@@ -451,9 +451,12 @@ containers:
 
 </details>
 
-#### Settings per container
+#### Settings per container and keyword
 
 Most of the **settings** from the `settings` and the `notifications` sections can also be set per container or per keyword. A summary of all the settings and where you can set them can be found [here](#-settings-overview--hierarchy-explained) <br>
+
+>[!Note]
+>When multiple keywords are found in a log line that share the same setting, the one listed first in the YAML takes precedence.
 
 <details><summary><em>Click to expand:</em><strong> Modular Settings: </strong></summary>
 
