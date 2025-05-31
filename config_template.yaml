@@ -10,10 +10,10 @@
 #
 # If you want to use this file after editing it make sure to rename it to config.yaml
 #
-# With every container exaample you can see some more available configuration options
+# With every container example you can see some more available configuration options
 #
 # I did not include the option to customize notifications in this template but:
-#   - Here is a detailed explanation on that: https://github.com/clemcer/loggifly/main#-customize-notifications-templates--log-filtering
+#   - Here is a detailed explanation: https://github.com/clemcer/loggifly/main#-customize-notifications-templates--log-filtering
 #   - And here are some examples: https://github.com/clemcer/loggifly/blob/main/config_example.yaml
 
 containers:
@@ -75,8 +75,8 @@ containers:
 global_keywords:
   keywords:
     - global_keyword1
-  keywords_with_attachment:
-    - global_keyword2
+    - regex: regex1
+      attach_logfile: true
 
 notifications:                       
   # At least one of these (Ntfy/Apprise/Webhook) is required.
