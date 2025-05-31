@@ -721,7 +721,7 @@ If you want to set a label to the mounted docker socket you can do so by adding 
 You can assign containers to specific hosts by setting the `hostname` key in the container configuration. The [labels](#labels) section shows how the hostname is constructed.<br>
 Here is a short yaml snippet showing how to assign a container to a specific host:
 
-<details><summary><em>Click to expand:</em><strong> Environment Variables </strong></summary><br>
+<details><summary><em>Click to expand:</em><strong> Assign Containers </strong></summary><br>
   
 ```yaml 
 containers:
