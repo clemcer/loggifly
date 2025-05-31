@@ -415,9 +415,9 @@ If a **webhook** is configured LoggiFly will post a JSON to the URL with the fol
 Here you can define containers and assign keywords, regex patterns, and optional settings to each one.<br>
 The container names must match the exact container names you would get with `docker ps`.<br>
 
-#### Configure **keywords** and **Regular Expressions**
+#### Configure **Keywords** and **Regular Expressions**
 
-<details><summary><em>Click to expand:</em><strong> Keywords and regex patterns: </strong></summary>
+<details><summary><em>Click to expand:</em><strong> Keywords and Regex: </strong></summary>
 
 
 ```yaml
@@ -453,7 +453,7 @@ containers:
 
 #### Settings per container
 
-Some of the **settings** from the `settings` and the `notifications` sections can also be set per container or per keyword. A summary of all the settings and where you can set them can be found [here](#-settings-overview--hierarchy-explained) <br>
+Most of the **settings** from the `settings` and the `notifications` sections can also be set per container or per keyword. A summary of all the settings and where you can set them can be found [here](#-settings-overview--hierarchy-explained) <br>
 
 <details><summary><em>Click to expand:</em><strong> Modular Settings: </strong></summary>
 
@@ -516,7 +516,7 @@ The only keyword settings missing are the templates which are explained [here](#
 
 ### 🌍 Global Keywords
 
-When `global_keywords` are configured all containers are monitored for these keywords. These keywords can also be configured with additional settings as described in the [containers](#-containers) section. For an overview of all the possible settings refer to this [table](#-settings-overview--hierarchy-explained).
+When `global_keywords` are configured, all containers are monitored for these keywords. These keywords can also be configured with additional settings as described in the [containers](#-containers) section. For an overview of all the possible settings refer to this [table](#-settings-overview--hierarchy-explained).
  
 <details><summary><em>Click to expand:</em><strong> Global Keywords: </strong></summary>
 
@@ -544,7 +544,7 @@ Filtering is most straightforward with logs in JSON Format, but plain text logs 
 
 #### Template for JSON Logs:
 
-<details><summary><em>Click to expand:</em>Filter Logs using a json_template:</summary>
+<details><summary><em>Click to expand:</em> Filter Logs using a json_template:</summary>
 
 <br>
 
@@ -661,7 +661,7 @@ WIth both `json_template` and `template` you can add the key `original_log_line`
 
 ## 🍀 Environment Variables
 
-Except for `action_keywords`, container specific settings/keywords and regex patterns you can configure most settings via **Docker environment variables**.
+Except for container / keyword specific settings and regex patterns you can configure most settings via **Docker environment variables**.
 
 <details><summary><em>Click to expand:</em><strong> Environment Variables </strong></summary><br>
 
@@ -718,9 +718,11 @@ If you want to set a label to the mounted docker socket you can do so by adding 
 
 ## Assign Containers to specific Hosts
 
-You can assign containers to specific hosts by setting the `hostname` key in the container configuration. The [labels](#labels) section shows how the hostname is constructed-
+You can assign containers to specific hosts by setting the `hostname` key in the container configuration. The [labels](#labels) section shows how the hostname is constructed.<br>
 Here is a short yaml snippet showing how to assign a container to a specific host:
 
+<details><summary><em>Click to expand:</em><strong> Environment Variables </strong></summary><br>
+  
 ```yaml 
 containers:
   container1:
@@ -728,6 +730,7 @@ containers:
     keywords:
       - error
 ```
+</details>
 
 ## Remote Hosts Example
 
