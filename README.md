@@ -48,7 +48,6 @@ Get instant alerts for security breaches, system errors, or custom patterns thro
   - [Environment Variables](#-environment-variables)
 - [Remote Hosts](#-remote-hosts)
   - [Labels](#labels)
-  - [Assign Containers to hosts](#assign-containers-to-specific-hosts)
   - [Remote Hosts Example](#remote-hosts-example)
   - [Socket Proxy](#socket-proxy)
 - [Docker Swarm](#docker-swarm)
@@ -719,7 +718,7 @@ When no label is set LoggiFly will use the **hostname** retrieved via the docker
 
 If you want to set a label to the mounted docker socket you can do so by adding `unix:///var/run/docker.sock|label` in the `DOCKER_HOST` environment variable (_the socket still has to be mounted_) or just set the address of a [socket proxy](#socket-proxy) with a label.
 
-## Assign Containers to specific Hosts
+### Assign Containers to Hosts
 
 You can assign containers to specific hosts by providing a comma-separated list of hostnames under the `hostnames` field in the container configuration. The [labels](#labels) section shows how the hostname is constructed.<br> 
 When no hostnames are set LoggiFly will look for the container on all configured remote hosts.
