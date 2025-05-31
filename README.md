@@ -39,18 +39,20 @@ Get instant alerts for security breaches, system errors, or custom patterns thro
 - [Quick Start](#️-quick-start)
 - [Configuration Deep Dive](#-Configuration-Deep-Dive)
   - [Basic config structure](#-basic-structure)
+  - [Settings Overview & Hierarchy Explained](#-settings-overview--hierarchy-explained)
     - [Settings](#%EF%B8%8F-settings)
     - [Notifications](#-notifications)
     - [Containers](#-containers)
     - [Global Keywords](#-global-keywords)
-  - [Customize Notifications (Templates & Log Filtering)
-](#-customize-notifications-templates--log-filtering)
+  - [Customize Notifications (Templates & Log Filtering)](#-customize-notifications-templates--log-filtering)
   - [Environment Variables](#-environment-variables)
 - [Remote Hosts](#-remote-hosts)
   - [Labels](#labels)
+  - [Assign Containers to hosts](#assign-containers-to-specific-hosts)
   - [Remote Hosts Example](#remote-hosts-example)
   - [Socket Proxy](#socket-proxy)
-- [Docker Swarm](#docker-swarm-experimental)
+- [Docker Swarm](#docker-swarm)
+- [Podman](#podman)
 - [Tips](#-tips)
 - [Support / Buy me a coffee](#support)
 
@@ -166,20 +168,14 @@ containers:
     keywords:
       - error
       - regex: (username|password).*incorrect  # Use regex patterns when you need them
-    # Attach a log file to the notification 
-    keywords_with_attachment:
-      - warn
-    # Caution advised! These keywords will trigger a restart/stop of the container
-    # There is an action_cooldown (see config deep dive)
-    action_keywords:
-      - stop: traceback
-      - restart: critical
-
+  another-container:
+    keywords:
+      - login
+    
 # Optional. These keywords are being monitored for all configured containers. 
 global_keywords:
   keywords:
     - failed
-  keywords_with_attachment:
     - critical
 
 notifications:     
@@ -234,7 +230,7 @@ For the program to function you need to configure:
 [Here](/config_example.yaml) you can find an example config with some **use cases**.
 
 
-### 🧩 Settings Overview & Hierarchy Explained
+## 🧩 Settings Overview & Hierarchy Explained
 
 Before we dive into the four main sections of the config.yaml, it's important to understand how settings can be applied on three different levels (this applies to both normal `settings` and `notifications` settings):
 - Global (`settings` / `notifications`)
@@ -260,15 +256,16 @@ This table is just for reference, detailled explanations and examples for these 
 | `disable_shutdown_message`      | ✅                   | –                             | –                      | Disable shutdown notification |
 | `disable_config_reload_message` | ✅                   | –                             | –                      | Disable notification when config is reloaded |
 | `disable_container_event_message`| ✅                  | –                             | –                      | Disable notification when container monitoring starts/stops |
+| `hostname`                      | –                    | ✅                            | –                      | Name of the host a container should be monitored on (if monitoring multiple hosts) |
 | `hide_pattern_in_title`         | ✅                   | ✅                            | ✅                     | Exclude regex pattern from notification title for cleaner look | 
 | `notification_cooldown`         | ✅                   | ✅                            | ✅                     | Seconds between repeated alerts per container and keyword |
 | `notification_title`            | ✅                   | ✅                            | ✅                     | Template for the notification title (`{container}`, `{keywords}`) |
 | `attachment_lines`              | ✅                   | ✅                            | ✅                     | Number of log lines to include in attachments |
 | `attach_logfile`                | ✅                   | ✅                            | ✅                     | Attach log output to the notification (true/false) |
 | `action_cooldown`               | ✅                   | ✅                            | –                      | Cooldown before triggering container actions (restart/stop) |
-| `action`                        | –                    | -                             | ✅                      | Trigger container actions (restart/stop) |
-| `json_template`                 | –                    | -                            | ✅                      | Template for JSON log entries |
-| `template`                      | –                    | -                            | ✅                      | Template for plain text log entries using named capturing groups |
+| `action`                        | –                    | –                             | ✅                      | Trigger container actions (restart/stop) |
+| `json_template`                 | –                    | –                            | ✅                      | Template for JSON log entries |
+| `template`                      | –                    | –                            | ✅                      | Template for plain text log entries using named capturing groups |
 
 The same applies to the `notifications` settings. You can set the same settings globally or per container or per keyword/regex pattern. <br>
 
@@ -418,7 +415,7 @@ If a **webhook** is configured LoggiFly will post a JSON to the URL with the fol
 Here you can define containers and assign keywords, regex patterns, and optional settings to each one.<br>
 The container names must match the exact container names you would get with `docker ps`.<br>
 
-This is how you configure **keywords** and **Regular Expressions**:
+#### Configure **keywords** and **Regular Expressions**
 
 <details><summary><em>Click to expand:</em><strong> Keywords and regex patterns: </strong></summary>
 
@@ -435,7 +432,8 @@ containers:
 
 </details>
 
-This is how to attach logfiles to the notifications or trigger restarts/stops of the container:
+
+#### Attach logfiles or trigger restarts/stops of the container
 
 <details><summary><em>Click to expand:</em><strong> Attachments and Actions: </strong></summary>
 
@@ -452,6 +450,8 @@ containers:
 ```
 
 </details>
+
+#### Settings per container
 
 Some of the **settings** from the `settings` and the `notifications` sections can also be set per container or per keyword. A summary of all the settings and where you can set them can be found [here](#-settings-overview--hierarchy-explained) <br>
 
@@ -496,6 +496,7 @@ containers:
 
 </details>
 
+#### Keep it simple
 
 If `global_keywords` are configured and you don't need additional keywords for a container you can **leave it blank**:
 
@@ -708,12 +709,25 @@ You can also combine remote hosts with a mounted docker socket.<br>
 >[!NOTE]
 When the connection to a docker host is lost, LoggiFly will try to reconnect every 60s
 
-## Labels
+## Labels 
 When multiple hosts are set LoggiFly will use **labels** to differentiate between them both in notifications and in logging.<br>
 You can set a **label** by appending it to the address with `"|"` ([_see example_](#remote-hosts-example)).<br>
 When no label is set LoggiFly will use the **hostname** retrieved via the docker daemon. If that fails, usually because `INFO=1` has to be set when using a proxy, the labels will just be `Host-{Nr}`.<br>
 
 If you want to set a label to the mounted docker socket you can do so by adding `unix:///var/run/docker.sock|label` in the `DOCKER_HOST` environment variable (_the socket still has to be mounted_) or just set the address of a [socket proxy](#socket-proxy) with a label.
+
+## Assign Containers to specific Hosts
+
+You can assign containers to specific hosts by setting the `hostname` key in the container configuration. The [labels](#labels) section shows how the hostname is constructed-
+Here is a short yaml snippet showing how to assign a container to a specific host:
+
+```yaml 
+containers:
+  container1:
+    hostname: foobar  # This container will only be monitored on the host with the label 'foobar'
+    keywords:
+      - error
+```
 
 ## Remote Hosts Example
 
@@ -792,7 +806,7 @@ services:
 <br>
 
 
-# Docker Swarm (_Experimental_)
+# Docker Swarm
 
 > [!Important] 
 Docker Swarm Support is still experimental because I have little to no experience with it and can not say for certain whether it works flawlessly.
@@ -902,7 +916,7 @@ podman run -d \
   -e DOCKER_HOST=unix:///run/user/1000/podman/podman.sock \
   -e CONTAINERS="container1,container2" \
   -e GLOBAL_KEYWORDS="error,critical" \
-  ghcr.io/clemcer/loggifly:dev
+  ghcr.io/clemcer/loggifly:latest
 ```
 
 You might also need these two options depending on your setup:
@@ -919,9 +933,9 @@ Here is an example of how to run LoggiFly with a Podman quadlet file. <br>
 
 <details><summary><em>Click to expand:</em> <strong>Podman Quadlet: </strong></summary>
 
+Place the following file in  `~/.config/containers/systemd/loggifly.container`:
 
 ```ini
-
 [Unit]
 Description=Loggifly container
 Wants=network-online.target
