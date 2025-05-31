@@ -255,7 +255,7 @@ This table is just for reference, detailled explanations and examples for these 
 | `disable_shutdown_message`      | ✅                   | –                             | –                      | Disable shutdown notification |
 | `disable_config_reload_message` | ✅                   | –                             | –                      | Disable notification when config is reloaded |
 | `disable_container_event_message`| ✅                  | –                             | –                      | Disable notification when container monitoring starts/stops |
-| `hostnames`                      | –                    | ✅                            | –                      | Name of the host a container should be monitored on (if monitoring multiple hosts) |
+| `hosts`                      | –                    | ✅                            | –                      | Name of the host a container should be monitored on (if monitoring multiple hosts) |
 | `hide_pattern_in_title`         | ✅                   | ✅                            | ✅                     | Exclude regex pattern from notification title for cleaner look | 
 | `notification_cooldown`         | ✅                   | ✅                            | ✅                     | Seconds between repeated alerts per container and keyword |
 | `notification_title`            | ✅                   | ✅                            | ✅                     | Template for the notification title (`{container}`, `{keywords}`) |
@@ -720,8 +720,8 @@ If you want to set a label to the mounted docker socket you can do so by adding 
 
 ### Assign Containers to Hosts
 
-You can assign containers to specific hosts by providing a comma-separated list of hostnames under the `hostnames` field in the container configuration. The [labels](#labels) section shows how the hostname is constructed.<br> 
-When no hostnames are set LoggiFly will look for the container on all configured remote hosts.
+You can assign containers to specific hosts by providing a comma-separated list of labels/hostnames under the `hosts` field in the container configuration. The [labels](#labels) section shows how the hostname is constructed.<br> 
+When no hosts are set LoggiFly will look for the container on all configured remote hosts.
 
 Here is a short yaml snippet showing how to assign a container to a specific host:
 
@@ -730,7 +730,7 @@ Here is a short yaml snippet showing how to assign a container to a specific hos
 ```yaml 
 containers:
   container1:
-    hostnames: foo,bar  # This container will only be monitored on hosts with the labels 'foo' and 'bar'
+    hosts: foo,bar  # This container will only be monitored on hosts with the labels 'foo' and 'bar'
     keywords:
       - error
 ```
