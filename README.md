@@ -936,7 +936,7 @@ Here is an example of how to run LoggiFly with a Podman quadlet file. <br>
 
 <details><summary><em>Click to expand:</em> <strong>Podman Quadlet: </strong></summary>
 
-Place the following file in  `~/.config/containers/systemd/loggifly.container`:
+Place the following file in  `~/.config/containers/systemd/loggifly.container` and edit it to suit your needs:
 
 ```ini
 [Unit]
