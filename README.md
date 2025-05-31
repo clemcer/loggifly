@@ -815,10 +815,6 @@ services:
 
 # Docker Swarm
 
-> [!Important] 
-Docker Swarm Support is still experimental because I have little to no experience with it and can not say for certain whether it works flawlessly.
-If you notice any bugs or have suggestions let me know.
-
 To use LoggiFly in swarm mode you have to set the environment variable `LOGGIFLY_MODE` to `swarm`.<br>
 
 The `config.yaml` is passed to each worker via [Docker Configs](https://docs.docker.com/reference/cli/docker/config/) (_see example_).<br>
@@ -848,7 +844,7 @@ services:
     environment:
       TZ: Europe/Berlin
       LOGGIFLY_MODE: swarm
-      # Uncomment the next three variables if you want to only use environment variables instead of a config.yaml
+      # You can use environment variables instead of a config.yaml if you wang
       # SWARM_SERVICES: nginx,redis
       # GLOBAL_KEYWORDS: keyword1,keyword2
       # GLOBAL_KEYWORDS_WITH_ATTACHMENT: keyword3
