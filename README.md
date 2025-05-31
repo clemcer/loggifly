@@ -721,7 +721,7 @@ If you want to set a label to the mounted docker socket you can do so by adding 
 ### Assign Containers to Hosts
 
 You can assign containers to specific hosts by providing a comma-separated list of labels/hostnames under the `hosts` field in the container configuration. The [labels](#labels) section shows how the hostname is constructed.<br> 
-When no hosts are set LoggiFly will look for the container on all configured remote hosts.
+When no hosts are set LoggiFly will look for the container on _all_ configured remote hosts.
 
 Here is a short yaml snippet showing how to assign a container to a specific host:
 
