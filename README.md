@@ -691,8 +691,8 @@ Except for container / keyword specific settings and regex patterns you can conf
 | `MULTI_LINE_ENTRIES`            | When enabled the program tries to catch log entries that span multiple lines.<br>If you encounter bugs or you simply don't need it you can disable it.| True     |
 | `HIDE_PATTERN_IN_TITLE`         | Exclude regex pattern from the notification title for a cleaner look. Useful when using very long regex patterns.| False     |
 | `RELOAD_CONFIG`               | When the config file is changed the program reloads the config | True  |
-| `DISBLE_START_MESSAGE`          | Disable startup message.                                  | False     |
-| `DISBLE_SHUTDOWN_MESSAGE`       | Disable shutdown message.                                 | False     |
+| `DISABLE_START_MESSAGE`          | Disable startup message.                                  | False     |
+| `DISABLE_SHUTDOWN_MESSAGE`       | Disable shutdown message.                                 | False     |
 | `DISABLE_CONFIG_RELOAD_MESSAGE`       | Disable message when the config file is reloaded.| False     |
 | `DISABLE_CONTAINER_EVENT_MESSAGE`       | Disable message when the monitoring of a container stops or starts.| False     |
 
