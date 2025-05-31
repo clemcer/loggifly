@@ -860,7 +860,7 @@ services:
 
 configs:
   loggifly-config:
-    file: ./loggifly/config.yaml  # SET YOU THE PATH TO YOUR CONFIG.YAML HERE
+    file: ./loggifly/config.yaml  # SET THE PATH TO YOUR CONFIG.YAML HERE
 
 ```
 </details>
