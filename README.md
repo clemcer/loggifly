@@ -730,7 +730,7 @@ Here is a short yaml snippet showing how to assign a container to a specific hos
 ```yaml 
 containers:
   container1:
-    hostnames: foobar  # This container will only be monitored on the host with the label 'foobar'
+    hostnames: foo,bar  # This container will only be monitored on hosts with the labels 'foo' and 'bar'
     keywords:
       - error
 ```
