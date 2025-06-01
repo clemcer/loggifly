@@ -288,7 +288,8 @@ The same applies to the `notifications` settings. You can set the same settings 
 
 ### ⚙️ Settings
 
-Here you can see how to define global settings in the config.yaml. These are the default values:
+Thi is how to define global settings in the config.yaml.<br>
+These are the default values:
 
 <details><summary><em>Click to expand:</em><strong> Settings: </strong></summary>
   
@@ -441,7 +442,7 @@ containers:
 containers:
   container2:
     - keyword: keyword1
-      attatch_logfile: true  # Attach a log file to the notification
+      attach_logfile: true  # Attach a log file to the notification
     - regex: regex-pattern1
       action: restart  # Restart the container when this regex pattern is found
     - keyword: keyword2
@@ -452,7 +453,7 @@ containers:
 
 #### Settings per container and keyword
 
-Most of the **settings** from the `settings` and the `notifications` sections can also be set per container or per keyword. A summary of all the settings and where you can set them can be found [here](#-settings-overview--hierarchy-explained) <br>
+Most of the **settings** from the `settings` and the `notifications` sections can also be set per container or per keyword. A summary of all the settings and where you can set them can be found [here](#-settings-overview--hierarchy-explained).<br>
 
 >[!Note]
 >When multiple keywords are found in a log line that share the same setting, the one listed first in the YAML takes precedence.
