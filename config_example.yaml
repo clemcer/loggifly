@@ -47,10 +47,11 @@ containers:
       - 100%
       - sentence
       - converting
-    keywords_with_attachment:
-      - total audio parts saved to        
+      - keyword: total audio parts saved to        
+        attach_logfile: true  # Attach a log file to the notification
 
   authelia:
+    ntfy_topic: security
     keywords:
       - regex: \bsuccessful.*authentication 
         json_template: '{msg}\n🔎 IP: {remote_ip}\n{time}' 
@@ -58,6 +59,9 @@ containers:
         json_template: '🚨 Somebody tried to log in with a username that does not exist\n\n🕐{time}\nFull Error Message:\n{msg}'
 
   adguard:
+    attach_logfile: true  # Attach a log file to the notification
+    attachment_lines: 100
+    ntfy_topic: adguard
     keywords: 
       - failed
       - error
@@ -68,10 +72,10 @@ containers:
 
 global_keywords:
   keywords:
-    - critical
-  keywords_with_attachment:
-    - fatal
-    - panic
+    - keyword: panic
+      attach_logfile: true  # Attach a log file to the notification
+    - keyword: fatal
+      ntfy_topic: fatal-errors
 
 
 notifications:                     

@@ -60,10 +60,10 @@ containers:
         ntfy_priority: 5
         ntfy_topic: regex-pattern1
         attachment_lines: 10
-        hide_pattern_in_title: true
+        hide_pattern_in_title: false
 
       - keyword: keyword3
-        apprise_url: "discord://webhook-url" 
+        apprise_url: "discord://another-webhook-url" 
         action: restart
         action_cooldown: 60 
         notification_title: 'custom title'
