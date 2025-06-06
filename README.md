@@ -255,8 +255,9 @@ This table is just for reference, detailled explanations and examples for these 
 | `disable_shutdown_message`      | ✅                   | –                             | –                      | Disable shutdown notification |
 | `disable_config_reload_message` | ✅                   | –                             | –                      | Disable notification when config is reloaded |
 | `disable_container_event_message`| ✅                  | –                             | –                      | Disable notification when container monitoring starts/stops |
-| `hosts`                      | –                    | ✅                            | –                      | Name of the host a container should be monitored on (if monitoring multiple hosts) |
-| `hide_pattern_in_title`         | ✅                   | ✅                            | ✅                     | Exclude regex pattern from notification title for cleaner look | 
+| `hosts`                          | –                    | ✅                            | –                      | Name of the host a container should be monitored on (if monitoring multiple hosts) |
+| `excluded_keywords`             | ✅                   | ✅                            | ✅                     | Log lines with these keywords will always be ignored | 
+| `hide_regex_in_title`           | ✅                   | ✅                            | ✅                     | Exclude regex  from notification title for cleaner look | 
 | `notification_cooldown`         | ✅                   | ✅                            | ✅                     | Seconds between repeated alerts per container and keyword |
 | `notification_title`            | ✅                   | ✅                            | ✅                     | Template for the notification title (`{container}`, `{keywords}`) |
 | `attachment_lines`              | ✅                   | ✅                            | ✅                     | Number of log lines to include in attachments |
@@ -308,8 +309,9 @@ settings:
   action_cooldown: 300          # Cooldown period (in seconds) before the next container action can be performed. Maximum is always at least 60s.
   attach_logfile: False          # Attach a log file to all notifications
   attachment_lines: 20          # Number of Lines to include in log attachments
-  hide_pattern_in_title: False   # Exclude regex pattern from the notification title for a cleaner look
-
+  hide_regex_in_title: False   # Exclude regex pattern from the notification title for a cleaner look
+  excluded_keywords: <empty if not set> # List of keywords that will always be ignored in log lines. See the section below for how to configure these
+  
 ```
 </details>
 
@@ -340,6 +342,19 @@ Or keep it simple:
 notification_title: {container}
 ```
 
+</details>
+
+`excluded_keywords` are set like this:<br>
+
+<details><summary><em>Click to expand:</em><strong> excluded_keywords: </strong></summary>
+
+```yaml
+settings:
+  excluded_keywords:
+    - keyword1
+    - regex: regex-pattern1
+```
+<br>
 </details>
 
 
@@ -451,6 +466,30 @@ containers:
 
 </details>
 
+#### Exclude Keywords
+
+You can also exclude certain keywords from being monitored. This can be done globally (in `settings`), per container or per keyword/regex. This is useful when you want to ignore certain log lines that contain keywords but are not relevant.<br>
+
+<details><summary><em>Click to expand:</em><strong> Exclude Keywords: </strong></summary>
+
+```yaml
+containers:
+  # Exclude keywords for a whole container
+  container2:
+    keywords:
+      - keyword1
+      - regex: regex-pattern1
+    excluded_keywords:
+      - keyword2  # This keyword will be ignored in this container
+      - regex: regex-pattern2  # This regex pattern will be ignored in this container
+  # You can also exclude keywords for a specific keyword or regex pattern
+  container3:
+    keywords:
+      - keyword3
+      - keyword: keyword4
+        excluded_keywords:
+          - keyword5  # Log lines with 'keyword4' and 'keyword5' will be ignored in this container
+
 #### Settings per container and keyword
 
 Most of the **settings** from the `settings` and the `notifications` sections can also be set per container or per keyword. A summary of all the settings and where you can set them can be found [here](#-settings-overview--hierarchy-explained).<br>
@@ -484,7 +523,7 @@ containers:
         ntfy_priority: 5
         ntfy_topic: error
         attachment_lines: 10
-        hide_pattern_in_title: true
+        hide_regex_in_title: true
 
       - keyword: keyword3
         apprise_url: "discord://webhook-url" 
@@ -635,13 +674,13 @@ containers:
     keywords:
       - regex: '(?P<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}.\d{3}).*Socket.*disconnected from client "(?P<user>[A-Za-z\s]+)"'
         template: '\n🔎 The user {user} was seen!\n🕐 {timestamp}'
-        hide_pattern_in_title: true  # Exclude the regex pattern from the notification title for a cleaner look
+        hide_regex_in_title: true  # Exclude the regex pattern from the notification title for a cleaner look
       
 ```
 
 **Result:**
 
-- with `template` and `hide_pattern_in_title`:
+- with `template` and `hide_regex_in_title`:
 
 <div style="display: flex; justify-content: center; gap: 10px;">
   <img src="/images/abs_with_template.png" style="height: 100px; object-fit: contain;">
@@ -690,7 +729,7 @@ Except for container / keyword specific settings and regex patterns you can conf
 | `ACTION_COOLDOWN`         | Cooldown period (in seconds) before the next container action can be performed. Always at least 60s. (`action_keywords` are only configurable in YAML)  | 300        |
 | `LOG_LEVEL`                     | Log Level for LoggiFly container logs.                    | INFO     |
 | `MULTI_LINE_ENTRIES`            | When enabled the program tries to catch log entries that span multiple lines.<br>If you encounter bugs or you simply don't need it you can disable it.| True     |
-| `HIDE_PATTERN_IN_TITLE`         | Exclude regex pattern from the notification title for a cleaner look. Useful when using very long regex patterns.| False     |
+| `HIDE_regex_IN_TITLE`         | Exclude regex pattern from the notification title for a cleaner look. Useful when using very long regex patterns.| False     |
 | `RELOAD_CONFIG`               | When the config file is changed the program reloads the config | True  |
 | `DISABLE_START_MESSAGE`          | Disable startup message.                                  | False     |
 | `DISABLE_SHUTDOWN_MESSAGE`       | Disable shutdown message.                                 | False     |
@@ -984,7 +1023,7 @@ systemctl --user start loggifly
     - 💡 Pro Tip: Define the `container_name:` in your compose files.
 2. **Regex Patterns**:
    - Validate patterns at [regex101.com](https://regex101.com) before adding them to your config.
-   - use `hide_pattern_in_title: true` when using very long regex patterns to have a cleaner notification title _(or hide found keywords from the title altogether with your own custom `notification_title` ([see settings](#%EF%B8%8F-settings))_
+   - use `hide_regex_in_title: true` when using very long regex patterns to have a cleaner notification title _(or hide found keywords from the title altogether with your own custom `notification_title` ([see settings](#%EF%B8%8F-settings))_
    - 
 3. **Troubleshooting Multi-Line Log Entries**. If LoggiFly only catches single lines from log entries that span over multiple lines:
     - Wait for Patterns: LoggiFly needs to process a few lines in order to detect the pattern the log entries start with (e.g. timestamps/log level)
