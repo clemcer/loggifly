@@ -468,7 +468,7 @@ containers:
 
 #### Exclude Keywords
 
-You can also exclude certain keywords from being monitored. This can be done globally (in `settings`), per container or per keyword/regex. This is useful when you want to ignore certain log lines that contain keywords but are not relevant.<br>
+You can also exclude certain keywords from being monitored. This can be done globally (in `settings`), per container or per keyword/regex. This is useful when you want to irrelevant log lines that contain keywords.<br>
 
 <details><summary><em>Click to expand:</em><strong> Exclude Keywords: </strong></summary>
 
@@ -482,6 +482,7 @@ containers:
     excluded_keywords:
       - keyword2  # This keyword will be ignored in this container
       - regex: regex-pattern2  # This regex pattern will be ignored in this container
+
   # You can also exclude keywords for a specific keyword or regex pattern
   container3:
     keywords:
@@ -489,6 +490,8 @@ containers:
       - keyword: keyword4
         excluded_keywords:
           - keyword5  # Log lines with 'keyword4' and 'keyword5' will be ignored in this container
+```
+</details>
 
 #### Settings per container and keyword
 
