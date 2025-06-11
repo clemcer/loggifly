@@ -97,7 +97,7 @@ In this quickstart only the most essential settings are covered, [here](#-config
 
 Choose your preferred setup method - a simple docker compose with environment variables for basic use or a YAML config for advanced control.
 - Environment variables allow for a **simple** and **much quicker** setup
-- With a `config.yaml ` you can use complex **Regex patterns**, have different keywords & other settings **per container** and set keywords that trigger a **restart/stop** of the container.
+- With a `config.yaml ` you can use complex **Regex patterns**, have different keywords **per container** & configure other settings per container or even per keyword (like attaching logfiles, triggering container restarts, message formatting, etc)
 
 > [!Note]
 When `/config` is mounted a config template will be downloaded into that directory. 
@@ -163,7 +163,6 @@ Or you can just edit and copy paste the following **minimal config** into a newl
 # You have to configure at least one container.
 containers:
   container-name:  # Exact container name
-  # Configure at least one type of keywords or use global keywords
     keywords:
       - error
       - regex: (username|password).*incorrect  # Use regex patterns when you need them
@@ -468,7 +467,7 @@ containers:
 
 #### Exclude Keywords
 
-You can also exclude certain keywords from being monitored. This can be done globally (in `settings`), per container or per keyword/regex. This is useful when you want to irrelevant log lines that contain keywords.<br>
+You can also exclude certain keywords from triggering notifications. This can be done globally (in `settings`), per container or per keyword/regex. This is useful when you don't want to get notifications from irrelevant log lines that contain certain keywords.<br>
 
 <details><summary><em>Click to expand:</em><strong> Exclude Keywords: </strong></summary>
 
@@ -642,8 +641,14 @@ Example json log entry:
 Example `json_template`:
 
 ```yaml
-json_template: 'User {user[name]}logged in from {location[city]}, Role: {user[roles][0][name]}'
+json_template: 'User {user[name]} logged in from {location[city]}, Role: {user[roles][0][name]}'
 
+```
+
+Output:
+
+```txt 
+User admin logged in from Berlin, Role: superuser
 ```
 
 <br>
@@ -725,7 +730,7 @@ Except for container / keyword specific settings and regex patterns you can conf
 | `SWARM_SERVICES`              |  A comma separated list of docker swarm services to monitor. | _N/A_     |
 | `LOGGIFLY_MODE`              | Set this variable to `swarm` when wanting to use LoggiFly in swarm mode | _N/A_     |
 | `GLOBAL_KEYWORDS`       | Keywords that will be monitored for all containers. Overrides `global_keywords.keywords` from the config.yaml.| _N/A_     |
-| `GLOBAL_KEYWORDS_WITH_ATTACHMENT`| Notifications triggered by these global keywords have a logfile attached. (These are converted into normal keywords with `attach_logfile`set to `True`| _N/A_     |
+| `GLOBAL_KEYWORDS_WITH_ATTACHMENT`| Notifications triggered by these global keywords have a logfile attached. | _N/A_     |
 | `ATTACH_LOGFILE`                | Attach a Logfile to *all* notifications. | True    |
 | `ATTACHMENT_LINES`              | Define the number of Log Lines in the attachment file     | 20     |
 | `NOTIFICATION_COOLDOWN`         | Cooldown period (in seconds) per container per keyword before a new message can be sent  | 5        | 
@@ -814,7 +819,7 @@ services:
 
 ## Socket Proxy
 
-You can also connect via a **Docker Socket Proxy**.<br>
+You can also use a **Docker Socket Proxy** with LoggiFly.<br>
 A Socket Proxy adds a security layer by **controlling access to the Docker daemon**, essentially letting LoggiFly only read certain info like container logs without giving it full control over the docker socket.<br>
 With the linuxserver image I have had some connection and timeout problems so the recommended proxy is **[Tecnativa/docker-socket-proxy](https://github.com/Tecnativa/docker-socket-proxy)**.<br>
 When using the Tecnativa Proxy the log stream connection drops every ~10 minutes for whatever reason, LoggiFly simply resets the connection.<br>
@@ -887,7 +892,7 @@ services:
     environment:
       TZ: Europe/Berlin
       LOGGIFLY_MODE: swarm
-      # You can use environment variables instead of a config.yaml if you wang
+      # You can use environment variables instead of a config.yaml if you want
       # SWARM_SERVICES: nginx,redis
       # GLOBAL_KEYWORDS: keyword1,keyword2
       # GLOBAL_KEYWORDS_WITH_ATTACHMENT: keyword3
@@ -1027,7 +1032,6 @@ systemctl --user start loggifly
 2. **Regex Patterns**:
    - Validate patterns at [regex101.com](https://regex101.com) before adding them to your config.
    - use `hide_regex_in_title: true` when using very long regex patterns to have a cleaner notification title _(or hide found keywords from the title altogether with your own custom `notification_title` ([see settings](#%EF%B8%8F-settings))_
-   - 
 3. **Troubleshooting Multi-Line Log Entries**. If LoggiFly only catches single lines from log entries that span over multiple lines:
     - Wait for Patterns: LoggiFly needs to process a few lines in order to detect the pattern the log entries start with (e.g. timestamps/log level)
     - Unrecognized Patterns: If issues persist, open an issue and share the affected log samples
