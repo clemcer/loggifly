@@ -2,7 +2,9 @@
 
 # Settings Overview & Priority
 
-It is important to understand how settings can be applied on three different levels (this applies to both normal `settings` and `notifications` settings):
+It is important to understand how settings can be applied on three different levels (this applies to both normal `settings` and `notifications` settings).
+
+The three levels are:
 - Global (`settings` / `notifications`)
 - Per container (`containers`)
 - Per keyword or regex (`keyword` / `regex`)

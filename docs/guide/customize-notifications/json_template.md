@@ -28,6 +28,8 @@ containers:
         json_template: '🚨 Failed Login Attempt:\n{msg}\n🔎 IP: {remote_ip}\n🕐{time}' 
 ```
 
+---
+
 ::: tip
 You can add the key `original_log_line` to your template to add the full log entry to your notification message.
 :::

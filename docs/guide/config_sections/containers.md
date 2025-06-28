@@ -21,6 +21,11 @@ containers:
 
 With the `attach_logfile` option you can attach a logfile to the notification. 
 
+::: tip
+The setting `attachment_lines` which lets you configure the number of log lines included in the attached file.
+:::
+
+
 ```yaml
 containers:
   container2:
@@ -30,10 +35,6 @@ containers:
 
 ## Container Actions
 
-
-::: tip
-The setting `attachment_lines` which lets you configure the number of log lines included in the attached file.
-:::
 
 With the `action` option you can either `stop` or `restart` the container.
 
@@ -48,8 +49,7 @@ containers:
 
 ## Exclude Keywords
 
-You can also exclude certain keywords from triggering notifications. This can be done globally (in `settings`), per container or per keyword/regex. This is useful when you don't want to get notifications from irrelevant log lines that contain certain keywords.
-
+You can also exclude certain keywords from triggering notifications. This can be done globally (in [`settings`](./settings.md)), per container or per keyword/regex. 
 
 ```yaml
 containers:

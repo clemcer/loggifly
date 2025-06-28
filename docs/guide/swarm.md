@@ -73,6 +73,6 @@ swarm_services:
       - fatal
 ```
 
-For all available configuration options, refer to the [Containers section](#-containers) of the configuration walkthrough, the `swarm_services` configuration is identical to that of `containers`.
+For all available configuration options, refer to the [Containers section](./config_sections/containers) of the configuration walkthrough, the `swarm_services` configuration is identical to that of `containers`.
 
 

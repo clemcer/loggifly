@@ -31,6 +31,11 @@ containers:
       
 ```
 
+
+::: tip
+You can add the key `original_log_line` to your template to add the full log entry to your notification message.
+:::
+
 **Result:**
 
 Normal notification and notification With `template` and `hide_regex_in_title`:

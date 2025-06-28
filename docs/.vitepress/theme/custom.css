@@ -11,7 +11,7 @@
   --vp-custom-block-tip-border: var(--vp-c-success-3);
   --vp-custom-block-tip-bg: var(--vp-c-success-soft);
 
-  --vp-custom-block-important-border: transparent;
+  --vp-custom-block-important-border: var(--vp-c-important-3);
   --vp-custom-block-important-bg: var(--vp-c-important-soft);
 
   --vp-custom-block-warning-border: var(--vp-c-warning-3);
