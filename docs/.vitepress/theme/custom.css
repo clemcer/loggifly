@@ -1,0 +1,28 @@
+
+/**
+ * Component: Custom Block
+ * -------------------------------------------------------------------------- */
+
+:root {
+
+  --vp-custom-block-info-border: var(--vp-c-brand-2);
+  --vp-custom-block-info-bg: var(--vp-c-brand-soft);
+
+  --vp-custom-block-tip-border: var(--vp-c-success-3);
+  --vp-custom-block-tip-bg: var(--vp-c-success-soft);
+
+  --vp-custom-block-important-border: transparent;
+  --vp-custom-block-important-bg: var(--vp-c-important-soft);
+
+  --vp-custom-block-warning-border: var(--vp-c-warning-3);
+  --vp-custom-block-warning-bg: var(--vp-c-warning-soft);
+
+  --vp-custom-block-danger-border: transparent;
+  --vp-custom-block-danger-bg: var(--vp-c-danger-soft);
+
+  --vp-custom-block-caution-border: transparent;
+  --vp-custom-block-caution-bg: var(--vp-c-caution-soft);
+
+  --vp-custom-block-details-border: var(--vp-c-default-1);
+  --vp-custom-block-details-bg: var(--vp-c-default-soft);
+}

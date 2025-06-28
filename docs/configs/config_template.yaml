@@ -12,9 +12,8 @@
 #
 # With every container example you can see some more available configuration options
 #
-# I did not include the option to customize notifications in this template but:
-#   - Here is a detailed explanation: https://github.com/clemcer/loggifly/main#-customize-notifications-templates--log-filtering
-#   - And here are some examples: https://github.com/clemcer/loggifly/blob/main/config_example.yaml
+# I did not include the option to customize notifications in this template but
+# here is a detailed explanation: https://clemcer.github.io/loggifly/guide/customize-notifications/
 
 containers:
 
@@ -23,7 +22,7 @@ containers:
   container2:
     keywords:
       - keyword1               # simple keyword
-      - regex: regex-patern1   # this is how to set regex patterns
+      - regex: regex-pattern1   # this is how to set regex patterns
       - keyword: keyword2      # another way to set a simple keyword
       
 
@@ -49,7 +48,7 @@ containers:
     notification_cooldown: 2  
     attach_logfile: true
     action_cooldown: 60 
-    hide_pattern_in_title: true
+    hide_regex_in_title: true
   
     keywords:
       - keyword1
@@ -60,7 +59,7 @@ containers:
         ntfy_priority: 5
         ntfy_topic: regex-pattern1
         attachment_lines: 10
-        hide_pattern_in_title: false
+        hide_regex_in_title: false
 
       - keyword: keyword3
         apprise_url: "discord://another-webhook-url" 
@@ -111,4 +110,4 @@ settings:
   action_cooldown: 300          # Cooldown period (in seconds) before the next container action can be performed. Maximum is always at least 60s.
   attach_logfile: False          # Attach a log file to all notifications
   attachment_lines: 20          # Number of Lines to include in log attachments
-  hide_pattern_in_title: False   # Exclude regex pattern from the notification title for a cleaner look
+  hide_regex_in_title: False   # Exclude regex pattern from the notification title for a cleaner look
