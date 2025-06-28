@@ -4,14 +4,13 @@ import { defineConfig } from 'vitepress'
 export default defineConfig({
   title: "LoggiFly",
   description: "LoggiFly Documentation",
-  head: [['link', { rel: 'icon', href: '/icon.png' }]],
+  head: [['link', { rel: 'icon', href: '/loggifly/icon.png' }]],
   base: '/loggifly/',
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     search: {
       provider: 'local'
     },
-
     nav: [
       { text: 'Home', link: '/' },
       { text: 'Guide', link: '/guide/what-is-loggifly' },
