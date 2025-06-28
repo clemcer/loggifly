@@ -4,7 +4,7 @@ layout: home
 
 hero:
   name: "LoggiFly"
-  text: "Get Alerts from Your Docker Container Logs"
+  text: "Get Alerts from your Docker Container Logs"
   # tagline: My great project tagline
   image:
     src: /icon.png
@@ -15,10 +15,10 @@ hero:
       text: Get Started  
       link: /guide/getting-started
     - theme: alt
-      text: Github
+      text: GitHub
       link: https://github.com/clemcer/loggifly
     - theme: alt
-      text: Buy me a Coffe
+      text: Buy me a Coffee
       link: https://www.buymeacoffee.com/clemcer
 
 features:
