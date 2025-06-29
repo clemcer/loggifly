@@ -33,7 +33,7 @@ Here is an example config. This file automatically gets downloaded into your mou
 ## Config Example
 
 Here is an example config with some real use cases. 
-::: details Config Template
+::: details Config Example with Use Cases
 
 <<< @/configs/config_example.yaml{yaml}
 

@@ -19,7 +19,7 @@ Example Log Line from audiobookshelf:
 [2025-05-03 10:16:53.154] INFO: [SocketAuthority] Socket VKrcSNa--FjwAqmSAAAU disconnected from client "example user" after 11696ms (Reason: transport close)
 ```
 
-Regex pattern & Template:
+Regex & Template:
 
 ```yaml
 containers:

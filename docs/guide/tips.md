@@ -6,7 +6,7 @@
     docker ps --format "{{.Names}}"
     ```
     - Or better: Define the `container_name:` in your compose files.
-2. **Regex Patterns**:
+2. **Regex**:
    - Validate patterns against the log entries you want to catch at [regex101.com](https://regex101.com) before adding them to your config.
    - use `hide_regex_in_title: true` when using very long regex patterns to have a cleaner notification title _(or hide found keywords from the title altogether with your own custom `notification_title` ([see settings](./config_sections/settings))_
 3. **Troubleshooting Multi-Line Log Entries**. If LoggiFly only catches single lines from log entries that span over multiple lines:

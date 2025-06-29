@@ -73,8 +73,8 @@ notifications:
     url: http://your-ntfy-server    # Required. The URL of your Ntfy instance
     topic: loggifly.                # Required. the topic for Ntfy
     token: ntfy-token               # Ntfy token in case you need authentication 
-    username: john                  # Ntfy Username+Password in case you need authentication 
-    password: password              # Ntfy Username+Password in case you need authentication 
+    username: john                  # Ntfy Username + Password in case you need authentication 
+    password: password              # Ntfy Username + Password in case you need authentication 
     priority: 3                     # Ntfy priority (1-5)
     tags: kite,mag                  # Ntfy tags/emojis 
 ```
@@ -224,7 +224,7 @@ containers:
 
 ### Keep it simple
 
-If `global_keywords` are configured and you don't need additional keywords for a container you can **leave it blank**:
+If `global_keywords` are configured and you don't need additional keywords or settings for a container you can **leave it blank**:
   
 ```yaml
 containers:

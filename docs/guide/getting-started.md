@@ -4,11 +4,11 @@ title: What is LoggiFly?
 
 # Getting Started
 
-LoggiFly can easily be deployed on Docker, Docker Swarm, or Podman.
+LoggiFly can easily be deployed on Docker, Docker Swarm or Podman.
 The quickest way to get started is by configuring LoggiFly with environment variables only, but for full flexibility and feature access, using a config.yaml file is recommended.
 
 ::: info
-Environment variables allow for a simple and much quicker setup but they don't support configuring different keywords per Container or features like Regex, container actions, message formatting and more.
+Environment variables allow for a simple and much quicker setup but they don't support configuring different keywords per Container or features like regex, container actions, message formatting and more.
 With a config.yaml you do have access to all features as well as finegrained control over which keywords and settings are applied to each container.
 :::
 
@@ -47,7 +47,7 @@ services:
       # Choose at least one notification service
       NTFY_URL: "https://ntfy.sh"       
       NTFY_TOPIC: "your_topic"          
-      # Ntfy Token or Username+Password In case you need authentication
+      # Ntfy Token or Username + Password In case you need authentication
       NTFY_TOKEN: <token>
       NTFY_USERNAME: <username>
       NTFY_PASSWORD: <password>
@@ -80,7 +80,7 @@ ghcr.io/clemcer/loggifly:latest
 
 ## Option 2: Mount a config.yaml (recommended for most setups)
 
-Recommended for granular control and access to all features like Regex, container actions, message formatting.
+Recommended for granular control and access to all features like regex, container actions, message formatting and more.
 
 ::: code-group
 
@@ -147,8 +147,8 @@ notifications:
     url: http://your-ntfy-server  
     topic: loggifly                   
     token: ntfy-token               # Ntfy token in case you need authentication 
-    username: john                  # Ntfy Username+Password in case you need authentication 
-    password: 1234                  # Ntfy Username+Password in case you need authentication 
+    username: john                  # Ntfy Username + Password in case you need authentication 
+    password: 1234                  # Ntfy Username + Password in case you need authentication 
   apprise:
     url: "discord://webhook-url"    # Any Apprise-compatible URL (https://github.com/caronc/apprise/wiki)
 ```

@@ -52,7 +52,8 @@ notification_title: {container}
 
 ## Excluded Keywords
 
-With this setting you can specify keywords that should _always_ be ignored. This is useful when you don't want to get notifications from certain irrelevant log lines.
+With this setting you can specify keywords that should _always_ be ignored. This is useful when you don't want to get notifications from irrelevant log lines.
+
 `excluded_keywords` are set like this:
 
 ```yaml

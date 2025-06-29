@@ -97,7 +97,7 @@ In this quickstart only the most essential settings are covered, [here](#-config
 
 Choose your preferred setup method - a simple docker compose with environment variables for basic use or a YAML config for advanced control.
 - Environment variables allow for a **simple** and **much quicker** setup
-- With a `config.yaml ` you can use complex **Regex patterns**, have different keywords **per container** & configure other settings per container or even per keyword (like attaching logfiles, triggering container restarts, message formatting, etc)
+- With a `config.yaml ` you can use complex **regular expressions**, have different keywords **per container** & configure other settings per container or even per keyword (like attaching logfiles, triggering container restarts, message formatting, etc)
 
 > [!Note]
 When `/config` is mounted a config template will be downloaded into that directory. 
@@ -120,7 +120,7 @@ services:
       # Choose at least one notification service
       NTFY_URL: "https://ntfy.sh"       
       NTFY_TOPIC: "your_topic"          
-      # Token or Username+Password In case you need authentication
+      # Ntfy Token or Username + Password In case you need authentication
       # NTFY_TOKEN:
       # NTFY_USERNAME:
       # NTFY_PASSWORD:
@@ -182,8 +182,8 @@ notifications:
     url: http://your-ntfy-server  
     topic: loggifly                   
     token: ntfy-token               # Ntfy token in case you need authentication 
-    username: john                  # Ntfy Username+Password in case you need authentication 
-    password: 1234                  # Ntfy Username+Password in case you need authentication 
+    username: john                  # Ntfy Username + Password in case you need authentication 
+    password: 1234                  # Ntfy Username + Password in case you need authentication 
   apprise:
     url: "discord://webhook-url"    # Any Apprise-compatible URL (https://github.com/caronc/apprise/wiki)
 ```
@@ -656,7 +656,7 @@ User admin logged in from Berlin, Role: superuser
 </details>
 
 
-#### Template using named capturing groups in Regex Pattern:
+#### Template using named capturing groups in regex:
 
 <details><summary><em>Click to expand:</em> Filter Logs using named capturing groups:</summary>
 
@@ -682,7 +682,7 @@ containers:
     keywords:
       - regex: '(?P<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}.\d{3}).*Socket.*disconnected from client "(?P<user>[A-Za-z\s]+)"'
         template: '\n🔎 The user {user} was seen!\n🕐 {timestamp}'
-        hide_regex_in_title: true  # Exclude the regex pattern from the notification title for a cleaner look
+        hide_regex_in_title: true  # Exclude the regex from the notification title for a cleaner look
       
 ```
 
@@ -1029,7 +1029,7 @@ systemctl --user start loggifly
 1. Ensure containers names **exactly match** your Docker **container names**. 
     - Find out your containers names: ```docker ps --format "{{.Names}}" ```
     - 💡 Pro Tip: Define the `container_name:` in your compose files.
-2. **Regex Patterns**:
+2. **Regex**:
    - Validate patterns at [regex101.com](https://regex101.com) before adding them to your config.
    - use `hide_regex_in_title: true` when using very long regex patterns to have a cleaner notification title _(or hide found keywords from the title altogether with your own custom `notification_title` ([see settings](#%EF%B8%8F-settings))_
 3. **Troubleshooting Multi-Line Log Entries**. If LoggiFly only catches single lines from log entries that span over multiple lines:
