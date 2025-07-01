@@ -16,7 +16,7 @@ settings:
   disable_shutdown_message: False        # Suppress shutdown notification
   disable_config_reload_message: False   # Suppress config reload notification
   disable_container_event_message: False # Suppress notification when monitoring of containers start/stop
-
+  # The following settings can also be set per container or per keyword/regex pattern
   notification_cooldown: 5      # Seconds between alerts for same keyword (per container)
   notification_title: default   # configure a custom template for the notification title (see section below)
   action_cooldown: 300          # Cooldown period (in seconds) before the next container action can be performed. Maximum is always at least 60s.
@@ -164,8 +164,8 @@ containers:
       - keyword1
       - regex: regex-pattern1
     excluded_keywords:
-      - keyword2  # This keyword will be ignored in this container
-      - regex: regex-pattern2  # This regex pattern will be ignored in this container
+      - keyword2  # This keyword will be ignored for this container
+      - regex: regex-pattern2  # This regex pattern will be ignored for this container
 
   # You can also exclude keywords for a specific keyword or regex pattern
   container3:
@@ -173,7 +173,7 @@ containers:
       - keyword3
       - keyword: keyword4
         excluded_keywords:
-          - keyword5  # Log lines with 'keyword4' and 'keyword5' will be ignored in this container
+          - keyword5  # Log lines with 'keyword4' and 'keyword5' will be ignored
 ```
 
 ### Settings per container and keyword

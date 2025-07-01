@@ -14,7 +14,6 @@ When the same setting is defined in multiple places, the following priority appl
 `keyword/regex > container > global`
 
 The table below shows which settings are available and where they can be configured.<br>
-This table is just for reference, detailled explanations and examples for these settings can be found below.
 
 
 | Setting                         | Global (`settings`) | Per Container (`containers`) | Per Keyword (`keywords`) | Description |
@@ -26,7 +25,7 @@ This table is just for reference, detailled explanations and examples for these 
 | `disable_shutdown_message`      | ✅                   | –                             | –                      | Disable shutdown notification |
 | `disable_config_reload_message` | ✅                   | –                             | –                      | Disable notification when config is reloaded |
 | `disable_container_event_message`| ✅                  | –                             | –                      | Disable notification when container monitoring starts/stops |
-| `hosts`                          | –                    | ✅                            | –                      | Name of the host a container should be monitored on (if monitoring multiple hosts) |
+| `hosts`                          | –                    | ✅                            | –                      | Name of the host a container should be monitored on if monitoring multiple hosts ([details](./remote-hosts#assign-containers-to-hosts)) |
 | `excluded_keywords`             | ✅                   | ✅                            | ✅                     | Log lines with these keywords will always be ignored | 
 | `hide_regex_in_title`           | ✅                   | ✅                            | ✅                     | Exclude regex  from notification title for cleaner look | 
 | `notification_cooldown`         | ✅                   | ✅                            | ✅                     | Seconds between repeated alerts per container and keyword |

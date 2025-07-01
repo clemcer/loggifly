@@ -1,5 +1,7 @@
 
-###### CONFIG EXAMPLE ######
+# ===========================================
+#                CONFIG EXAMPLE
+# ===========================================
 #
 # This is an example config.yaml file for loggifly.
 #
@@ -14,8 +16,6 @@ containers:
     notification_cooldown: 5
     notification_title: "{container}" # hide found keywords from notification title
     keywords:
-      # Here are some custom templates:
-
       # user requested download:
       - regex: '(?P<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}.\d{3}).*User "(?P<user>[A-Za-z\s]+)" requested download for item "(?P<item>[A-Za-z\s]+)"'
         template: '\n🔎 The user {user} requested download for  ''{item}''!\n🕐 {timestamp}'
@@ -67,8 +67,9 @@ containers:
       - error
 
   kitchenowl:
-    action_keywords:
-      - stop: traceback   # I have had container restart loops because kitchenowl couldn't connect to my Authentik Server
+    keywords:
+      - keyword: traceback
+        action: stop  # I have had container restart loops because kitchenowl couldn't connect to my Authentik Server
 
 global_keywords:
   keywords:
@@ -96,16 +97,21 @@ notifications:
       Authorization: "Bearer token"
       X-Custom-Header": "Test123"  
 
-# settings are optional because they all have default values
-# These are the default settings
-settings:          
-  log_level: INFO               # DEBUG, INFO, WARNING, ERROR
-  notification_cooldown: 5      # Seconds between alerts for same keyword (per container)
-  action_cooldown: 300          # Cooldown period (in seconds) before the next container action can be performed. Maximum is always at least 60s.
-  notification_title: default   # configure a custom template for the notification title (see section below)  attachment_lines: 20          # Number of Lines to include in log attachments
-  multi_line_entries: True      # Monitor and catch multi-line log entries instead of going line by line. 
-  reload_config: True           # When the config file is changed the program reloads the config
-  disable_start_message: False  # Suppress startup notification
-  disable_shutdown_message: False        # Suppress shutdown notification
-  disable_config_reload_message: False   # Suppress config reload notification
-  disable_container_event_message: False # Suppress notification when monitoring of containers start/stop
+#  Default settings (can be overridden on container or keyword level)
+settings:
+  log_level: INFO                         # DEBUG, INFO, WARNING, ERROR
+  multi_line_entries: True                # Monitor multi-line log entries
+  reload_config: True                     # Auto-reload config on changes
+  disable_start_message: False            # Suppress startup notification
+  disable_shutdown_message: False         # Suppress shutdown notification
+  disable_config_reload_message: False    # Suppress config reload notification
+  disable_container_event_message: False  # Suppress container start/stop notifications
+
+  notification_cooldown: 5            # Seconds between alerts for same keyword (per container)
+  notification_title: default         # Custom template for notification title
+  action_cooldown: 300                # Cooldown (seconds) before next container action (min 60s)
+  attach_logfile: False               # Attach log file to all notifications
+  attachment_lines: 20                # Lines to include in log attachments
+  hide_regex_in_title: False          # Hide regex pattern in notification title
+  excluded_keywords: # List of keywords that will always be ignored in log lines. See the section below for how to configure these
+    - keyword: ignore this message

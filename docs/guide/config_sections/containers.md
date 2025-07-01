@@ -22,7 +22,7 @@ containers:
 With the `attach_logfile` option you can attach a logfile to the notification. 
 
 ::: tip
-The setting `attachment_lines` which lets you configure the number of log lines included in the attached file.
+The setting `attachment_lines` lets you configure the number of log lines included in the attached file.
 :::
 
 
@@ -113,7 +113,7 @@ containers:
 
 ## Keep it simple
 
-If `global_keywords` are configured and you don't need additional keywords for a container you can **leave it blank**:
+If `global_keywords` are configured and you don't need additional keywords or settings for a container you can **leave it blank**:
   
 ```yaml
 containers:

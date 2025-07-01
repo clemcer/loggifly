@@ -36,7 +36,7 @@ You might also need these two options depending on your setup:
 
 ```bash
   --security-opt label=disable \  # only necessary if SElinux prohibits the access of sockets from inside the container
-  --user 1000:1000 \              # might be necessary depending on your setup```
+  --user 1000:1000 \              # might be necessary depending on your setup
 ```
 
 ## Podmman Quadlet File

@@ -8,18 +8,18 @@ LoggiFly can easily be deployed on Docker, Docker Swarm or Podman.
 The quickest way to get started is by configuring LoggiFly with environment variables only, but for full flexibility and feature access, using a config.yaml file is recommended.
 
 ::: info
-Environment variables allow for a simple and much quicker setup but they don't support configuring different keywords per Container or features like regex, container actions, message formatting and more.
+Environment variables allow for a simple and much quicker setup but they don't support configuring different keywords per container or features like regex, container actions, message formatting and more.
 With a config.yaml you do have access to all features as well as finegrained control over which keywords and settings are applied to each container.
 :::
 
 The following section will provide a quick start with minimal configuration. 
-For more features and customization options, see the Advanced Configuration sections.
+For more features and customization options, start [here](./config-structure) to learn more about how to configure LoggiFly.
 
 ## Notification Services
 
-You can directly send notifications to ntfy and change topic, tags, priority, etc. 
+You can directly send notifications to Ntfy and change topic, tags, priority, etc. 
 
-You can also send notifications to most other notification services via **Apprise**. Just follow their [docs](https://github.com/caronc/apprise/wiki) on how to best configure the Apprise URL for your notification services.
+You can also send notifications to most other notification services via **Apprise**. Just follow their [docs](https://github.com/caronc/apprise/wiki) on how to best configure the Apprise URL for your notification service.
 
 ::: tip
 With a config.yaml you can change ntfy settings and Apprise URLs per container and even per keyword allowing you to send notifications to different channels based on the container/keyword.
