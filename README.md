@@ -63,11 +63,11 @@ Get instant alerts for security breaches, system errors, or custom patterns thro
 ## Documentation
 - [Documentation](https://clemcer.github.io/loggifly/)
 - [Getting Started](https://clemcer.github.io/loggifly/guide/getting-started)
-- [Configuration](https://clemcer.github.io/loggifly/guide/configuration)
+- [Configuration](https://clemcer.github.io/loggifly/guide/config-structure.html)
 
 # Support
 
-If you find LoggiFly useful, drop a ⭐️ on the repo or buy me a coffe!
+If you find LoggiFly useful, drop a ⭐️ on the repo or buy me a coffee!
 
 <p>
     <a href="https://www.buymeacoffee.com/clemcer" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" height="50"></a>
