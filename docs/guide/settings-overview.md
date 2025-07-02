@@ -2,7 +2,9 @@
 
 # Settings Overview & Priority
 
-It is important to understand how settings can be applied on three different levels (this applies to both normal `settings` and `notifications` settings).
+It's important to understand how settings can be applied on three different levels (this applies to both normal `settings` and `notifications` settings).
+
+[details](./remote-hosts#assign-containers-to-hosts)
 
 The three levels are:
 - Global (`settings` / `notifications`)
@@ -13,7 +15,7 @@ When the same setting is defined in multiple places, the following priority appl
 
 `keyword/regex > container > global`
 
-The table below shows which settings are available and where they can be configured.<br>
+This table shows which settings are available and where they can be configured:<br>
 
 
 | Setting                         | Global (`settings`) | Per Container (`containers`) | Per Keyword (`keywords`) | Description |
@@ -25,8 +27,8 @@ The table below shows which settings are available and where they can be configu
 | `disable_shutdown_message`      | ✅                   | –                             | –                      | Disable shutdown notification |
 | `disable_config_reload_message` | ✅                   | –                             | –                      | Disable notification when config is reloaded |
 | `disable_container_event_message`| ✅                  | –                             | –                      | Disable notification when container monitoring starts/stops |
-| `hosts`                          | –                    | ✅                            | –                      | Name of the host a container should be monitored on if monitoring multiple hosts ([details](./remote-hosts#assign-containers-to-hosts)) |
-| `excluded_keywords`             | ✅                   | ✅                            | ✅                     | Log lines with these keywords will always be ignored | 
+| [`hosts`](./remote-hosts#assign-containers-to-hosts) | –     | ✅      | –             | Name of the host a container should be monitored on if monitoring multiple hosts |
+| [`excluded_keywords`](./config_sections/settings#excluded-keywords) | ✅  | ✅  | ✅    | Log lines with these keywords will always be ignored | 
 | `hide_regex_in_title`           | ✅                   | ✅                            | ✅                     | Exclude regex  from notification title for cleaner look | 
 | `notification_cooldown`         | ✅                   | ✅                            | ✅                     | Seconds between repeated alerts per container and keyword |
 | `notification_title`            | ✅                   | ✅                            | ✅                     | Template for the notification title (`{container}`, `{keywords}`) |
@@ -34,21 +36,21 @@ The table below shows which settings are available and where they can be configu
 | `attach_logfile`                | ✅                   | ✅                            | ✅                     | Attach log output to the notification (true/false) |
 | `action_cooldown`               | ✅                   | ✅                            | –                      | Cooldown before triggering container actions (restart/stop) |
 | `action`                        | –                    | –                             | ✅                      | Trigger container actions (restart/stop) |
-| `json_template`                 | –                    | –                            | ✅                      | Template for JSON log entries |
-| `template`                      | –                    | –                            | ✅                      | Template for plain text log entries using named capturing groups |
+| [`json_template`](./customize-notifications/json_template) | – | –                     | ✅                     | Template for JSON log entries |
+| [`template`](./customize-notifications/template) | –   | –                             | ✅                      | Template for plain text log entries using named capturing groups |
 
 The same applies to the `notifications` settings. You can set the same settings globally or per container or per keyword/regex pattern. <br>
 
 | Setting                         | Global (`notifications`) | Per Container (`containers`) | Per Keyword (`keywords`) | Description |
 |---------------------------------|--------------------|-------------------------------|--------------------------|-------------|
 | `apprise_url`                  | ✅ (`.apprise.url`)   | ✅                            | ✅                      | Apprise-compatible URL for notifications |
-| `ntfy_url`                      | ✅ (`.ntfy.url`)     | ✅                            | ✅                 | Ntfy server URL |
-| `ntfy_topic`                    | ✅ (`.ntfy.topic`)   | ✅                            | ✅                 | Ntfy topic |
-| `ntfy_priority`                 | ✅ (`.ntfy.priority`)| ✅                            | ✅                 | Ntfy priority (1–5) |
+| `ntfy_url`                      | ✅ (`.ntfy.url`)     | ✅                            | ✅                 | ntfy server URL |
+| `ntfy_topic`                    | ✅ (`.ntfy.topic`)   | ✅                            | ✅                 | ntfy topic |
+| `ntfy_priority`                 | ✅ (`.ntfy.priority`)| ✅                            | ✅                 | ntfy priority (1–5) |
 | `ntfy_tags`                     | ✅ (`.ntfy.tags`)    | ✅                            | ✅                 | Tags/emojis for ntfy notifications |
-| `ntfy_token`                    | ✅ (`.ntfy.token`)   | ✅                            |✅                      | Ntfy token for authentication |
-| `ntfy_username`                 | ✅ (`.ntfy.username`) | ✅                            | ✅                     | Ntfy username for authentication |
-| `ntfy_password`                 | ✅ (`.ntfy.password`) | ✅                            | ✅                     | Ntfy password for authentication |
+| `ntfy_token`                    | ✅ (`.ntfy.token`)   | ✅                            |✅                      | ntfy token for authentication |
+| `ntfy_username`                 | ✅ (`.ntfy.username`) | ✅                            | ✅                     | ntfy username for authentication |
+| `ntfy_password`                 | ✅ (`.ntfy.password`) | ✅                            | ✅                     | ntfy password for authentication |
 | `webhook_url`                   | ✅ (`.webhook.url`)  | ✅                            | ✅                     | Custom webhook URL for notifications |
 | `webhook_headers`               | ✅ (`.webhook.headers`) | ✅                            | ✅                     | Custom headers for webhook notifications |
 

@@ -25,4 +25,12 @@
 
   --vp-custom-block-details-border: var(--vp-c-default-1);
   --vp-custom-block-details-bg: var(--vp-c-default-soft);
+
+  --vp-code-block-color: rgba(255, 255, 245, 0.86);
+  --vp-code-lang-color: rgba(235, 235, 245, 0.38);
+  --vp-code-line-number-color: rgba(235, 235, 245, 0.38);
+}
+
+table {
+    width: 140%;
 }

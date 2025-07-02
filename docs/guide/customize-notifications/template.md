@@ -2,7 +2,7 @@
 title: template
 ---
 
-# Format Notifications from plain text log lines
+# Formatting Plain Text Logs
 
 ## Regex with named capturing groups
 
@@ -15,7 +15,7 @@ Then you can insert the `{group_name}` into your custom message `template`.
 
 Example Log Line from audiobookshelf:
 
-```
+```txt
 [2025-05-03 10:16:53.154] INFO: [SocketAuthority] Socket VKrcSNa--FjwAqmSAAAU disconnected from client "example user" after 11696ms (Reason: transport close)
 ```
 
@@ -27,17 +27,17 @@ containers:
     keywords:
       - regex: '(?P<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}.\d{3}).*Socket.*disconnected from client "(?P<user>[A-Za-z\s]+)"'
         template: '\n🔎 The user {user} was seen!\n🕐 {timestamp}'
-        hide_regex_in_title: true  # Exclude the regex pattern from the notification title for a cleaner look
+        hide_regex_in_title: true  # Hide regex in notification title for a cleaner look
       
 ```
+
+**Result:**
+
+Normal notification and notification with `template` and `hide_regex_in_title`:
+
+![Template Comparison](/template_comparison.png)
 
 
 ::: tip
 You can add the key `original_log_line` to your template to add the full log entry to your notification message.
 :::
-
-**Result:**
-
-Normal notification and notification With `template` and `hide_regex_in_title`:
-
-![Template Comparison](/template_comparison.png)

@@ -9,20 +9,20 @@ These are the default values:
   
 ```yaml
 settings:          
-  log_level: INFO               # DEBUG, INFO, WARNING, ERROR
-  multi_line_entries: True      # Monitor and catch multi-line log entries instead of going line by line. 
-  reload_config: True           # When the config file is changed the program reloads the config
-  disable_start_message: False           # Suppress startup notification
-  disable_shutdown_message: False        # Suppress shutdown notification
-  disable_config_reload_message: False   # Suppress config reload notification
-  disable_container_event_message: False # Suppress notification when monitoring of containers start/stop
+  log_level: INFO                         # DEBUG, INFO, WARNING, ERROR
+  multi_line_entries: True                # Monitor multi-line log entries
+  reload_config: True                     # Auto-reload config on changes
+  disable_start_message: False            # Suppress startup notification
+  disable_shutdown_message: False         # Suppress shutdown notification
+  disable_config_reload_message: False    # Suppress config reload notification
+  disable_container_event_message: False  # Suppress container start/stop notifications
 
-  notification_cooldown: 5      # Seconds between alerts for same keyword (per container)
-  notification_title: default   # configure a custom template for the notification title (see section below)
-  action_cooldown: 300          # Cooldown period (in seconds) before the next container action can be performed. Maximum is always at least 60s.
-  attach_logfile: False          # Attach a log file to all notifications
-  attachment_lines: 20          # Number of Lines to include in log attachments
-  hide_regex_in_title: False   # Exclude regex pattern from the notification title for a cleaner look
+  notification_cooldown: 5            # Seconds between alerts for same keyword (per container)
+  notification_title: default         # Custom template for notification title
+  action_cooldown: 300                # Cooldown (seconds) before next container action (min 60s)
+  attach_logfile: False               # Attach log file to all notifications
+  attachment_lines: 20                # Lines to include in log attachments
+  hide_regex_in_title: False          # Hide regex pattern in notification title
   excluded_keywords: <empty if not set> # List of keywords that will always be ignored in log lines. See the section below for how to configure these
   
 ```

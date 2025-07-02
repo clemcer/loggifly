@@ -1,6 +1,6 @@
 # Containers 
 
-Here you can define containers and assign keywords, regex patterns, and optional settings to each one.
+Here you can define containers and assign keywords, regex patterns and optional settings to each one.
 The container names must match the exact container names you would get with `docker ps`.
 
 ## Configure **Keywords** and **Regular Expressions**
@@ -12,7 +12,7 @@ containers:
     keywords:
       - error               # simple keyword
       - regex: \error\b.*   # this is how to set regex patterns
-      - keyword: critical      # another way to set a simple keyword
+      - keyword: critical   # another way to set a simple keyword
     
 ```
 
@@ -42,7 +42,7 @@ With the `action` option you can either `stop` or `restart` the container.
 containers:
   container3:
     - regex: \error\b.*
-      action: restart  # Restart the container when this regex pattern is found
+      action: restart  # Restart the container when this regex is found
     - keyword: critical
       action: stop     # Stop the container when this keyword is found
 ```
@@ -56,19 +56,20 @@ containers:
   container4:
     # Exclude keywords for a whole container
     excluded_keywords:
-      - timeout  # This keyword will be ignored in this container
-      - regex: \btimeout\b.*  # This regex pattern will be ignored in this container
+      - timeout  # This keyword will be ignored for this container
+      - regex: \btimeout\b.*  # This regex will be ignored for this container
     keywords:
       - error
       - regex: \error\b.*
         # Exclude keywords for a specific keyword or regex pattern
         excluded_keywords:
-          - uncritical  # Log lines with '\error\b.*' and 'uncritical' will be ignored in this container
+          - uncritical  # Log lines with '\error\b.*' and 'uncritical' will be ignored
 ```
 
 ## Settings per container and keyword
 
-Most of the **settings** from the `settings` and the `notifications` sections can also be set per container or per keyword. A summary of all the settings and where you can set them can be found [here](../settings-overview.md).
+Most of the **settings** from the `settings` and the `notifications` sections can be set per container or per keyword/regex.<br>s
+A summary of all the settings and where you can set them can be found [here](../settings-overview.md).
 
 ::: info
 When multiple keywords with the same setting (e.g., `notification_title`) are found in a log line, the one listed first in the YAML takes precedence.
@@ -121,5 +122,6 @@ containers:
   container4:
 ```
 
-
-The only keyword settings missing are the templates which are explained [here](../customize-notifications/).
+::: info
+The only keyword settings missing here are the templates which are explained [here](../customize-notifications/).
+:::

@@ -33,7 +33,7 @@ containers:
   container3:
     keywords:
       - keyword: keyword1
-        attatch_logfile: true    # Attach a log file to the notification
+        attach_logfile: true    # Attach a log file to the notification
       - regex: regex-pattern1
         action: restart          # Restart container on this regex match
       - keyword: keyword2

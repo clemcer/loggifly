@@ -10,7 +10,7 @@ To use **TLS** you have to mount `/certs` in the volumes section of your docker 
 LoggiFly expects the TLS certificates to be in `/certs/{ca,cert,key}.pem` or in case of multiple hosts `/certs/{host}/{ca,cert,key}.pem` with `{host}` being either the IP or FQDN.<br>
 
 ::: info
-When the connection to a docker host is lost, LoggiFly will try to reconnect every 60s
+When the connection to a docker host is lost, LoggiFly will try to reconnect every 60s.
 :::
 
 ## Labels 
@@ -73,11 +73,11 @@ services:
 
 You can also use a **Docker Socket Proxy** with LoggiFly.<br>
 A Socket Proxy adds a security layer by **controlling access to the Docker daemon**, essentially letting LoggiFly only read certain info like container logs without giving it full control over the docker socket.<br>
-With the linuxserver image I have had some connection and timeout problems so the recommended proxy is **[Tecnativa/docker-socket-proxy](https://github.com/Tecnativa/docker-socket-proxy)**.<br>
-When using the Tecnativa Proxy the log stream connection drops every ~10 minutes for whatever reason, LoggiFly simply resets the connection.<br>
+With the linuxserver image there have been some connection and timeout problems so the recommended proxy is **[Tecnativa/docker-socket-proxy](https://github.com/Tecnativa/docker-socket-proxy)**.<br>
+When using the Tecnativa Proxy the log stream connection drops every ~10 minutes, LoggiFly simply resets the connection.<br>
 
 ::: info
-Container restart/stop actions are not supported when using a Docker Socket Proxy unless `POST=1` is enabled which defeats the purpose of the proxy.
+Container restart/stop actions are not supported when using a Docker Socket Proxy unless `POST=1` is enabled which kind of defeats the purpose of the proxy.
 :::
 
 Here is a sample **docker compose** file:

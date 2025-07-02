@@ -51,7 +51,7 @@ export default defineConfig({
           { text: 'Customize Notifications',
             collapsed: true,
             items: [
-              { text: 'Introduction', link: '/guide/customize-notifications/' },
+              { text: 'Overview', link: '/guide/customize-notifications/' },
               { text: 'JSON Logs', link: '/guide/customize-notifications/json_template' },
               { text: 'Plain Text Logs', link: '/guide/customize-notifications/template' },
             ]

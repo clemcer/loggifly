@@ -4,7 +4,7 @@
 # You can edit this file and remove all the parts you don't need.
 # For the program to function you need to configure: 
 #   - at least one container
-#   - at least one notification service (Ntfy or Apprise)
+#   - at least one notification service (ntfy or Apprise)
 #   - at least one keyword (either set globally or per container)
 # The rest is optional or has default values.
 #
@@ -29,7 +29,7 @@ containers:
   container3:
     keywords:
       - keyword: keyword1
-        attatch_logfile: true  # Attach a log file to the notification
+        attach_logfile: true  # Attach a log file to the notification
       - regex: regex-pattern1
         action: restart  # Restart the container when this regex pattern is found
       - keyword: keyword2
@@ -78,15 +78,15 @@ global_keywords:
       attach_logfile: true
 
 notifications:                       
-  # At least one of these (Ntfy/Apprise/Webhook) is required.
+  # At least one of these (ntfy/Apprise/Webhook) is required.
   ntfy:
-    url: http://your-ntfy-server    # Required. The URL of your Ntfy instance
-    topic: loggifly                 # Required. the topic for Ntfy
-    token: ntfy-token               # Ntfy token in case you need authentication 
-    username: john                  # Ntfy Username + Password in case you need authentication 
-    password: password              # Ntfy Username + Password in case you need authentication 
-    priority: 3                     # Ntfy priority (1-5)
-    tags: kite,mag                  # Ntfy tags/emojis 
+    url: http://your-ntfy-server    # Required. The URL of your ntfy instance
+    topic: loggifly                 # Required. the topic for ntfy
+    token: ntfy-token               # ntfy token in case you need authentication 
+    username: john                  # ntfy Username + Password in case you need authentication 
+    password: password              # ntfy Username + Password in case you need authentication 
+    priority: 3                     # ntfy priority (1-5)
+    tags: kite,mag                  # ntfy tags/emojis 
   apprise:
     url: "discord://webhook-url"    # Any Apprise-compatible URL (https://github.com/caronc/apprise/wiki)
   webhook: 

@@ -21,8 +21,11 @@ You can directly send notifications to Ntfy and change topic, tags, priority, et
 
 You can also send notifications to most other notification services via **Apprise**. Just follow their [docs](https://github.com/caronc/apprise/wiki) on how to best configure the Apprise URL for your notification service.
 
-::: tip
-With a config.yaml you can change ntfy settings and Apprise URLs per container and even per keyword allowing you to send notifications to different channels based on the container/keyword.
+---
+
+::: tip Tips
+- With a config.yaml you can change ntfy settings and Apprise URLs per container and even per keyword allowing you to send notifications to different channels based on the container/keyword.
+- For better security use a **[Docker Socket Proxy](#socket-proxy)**.
 :::
 
 ## Option 1: Environment Variables Only (no `config.yaml`)
