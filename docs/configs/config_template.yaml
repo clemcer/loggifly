@@ -4,10 +4,10 @@
 #
 # This is a template for your config.yaml file.
 #
-# Quick Start:
+# For LoggiFly to work, you need to:
 #   - Configure at least ONE container
 #   - Set up at least ONE notification service (Ntfy or Apprise)
-#   - Add at least ONE keyword (globally or per container)
+#   - Add at least ONE keyword/regex (globally or per container)
 #
 # Optional: Remove any sections you don't need.
 # After editing, rename this file to config.yaml to use it.
