@@ -17,7 +17,7 @@ For more features and customization options, start [here](./config-structure) to
 
 ## Notification Services
 
-You can directly send notifications to Ntfy and change topic, tags, priority, etc. 
+You can directly send notifications to ntfy and change topic, tags, priority, etc. 
 
 You can also send notifications to most other notification services via **Apprise**. Just follow their [docs](https://github.com/caronc/apprise/wiki) on how to best configure the Apprise URL for your notification service.
 
@@ -50,7 +50,7 @@ services:
       # Choose at least one notification service
       NTFY_URL: "https://ntfy.sh"       
       NTFY_TOPIC: "your_topic"          
-      # Ntfy Token or Username + Password In case you need authentication
+      # ntfy Token or Username + Password In case you need authentication
       NTFY_TOKEN: <token>
       NTFY_USERNAME: <username>
       NTFY_PASSWORD: <password>
@@ -145,13 +145,13 @@ global_keywords:
     - critical
 
 notifications:     
-  # Configure either Ntfy or Apprise or both
+  # Configure either ntfy or Apprise or both
   ntfy:
     url: http://your-ntfy-server  
     topic: loggifly                   
-    token: ntfy-token               # Ntfy token in case you need authentication 
-    username: john                  # Ntfy Username + Password in case you need authentication 
-    password: 1234                  # Ntfy Username + Password in case you need authentication 
+    token: ntfy-token               # ntfy token in case you need authentication 
+    username: john                  # ntfy Username + Password in case you need authentication 
+    password: 1234                  # ntfy Username + Password in case you need authentication 
   apprise:
     url: "discord://webhook-url"    # Any Apprise-compatible URL (https://github.com/caronc/apprise/wiki)
 ```

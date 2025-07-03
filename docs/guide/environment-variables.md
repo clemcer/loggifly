@@ -22,6 +22,7 @@ Except for container / keyword specific settings and regex patterns a lot of the
 | `LOGGIFLY_MODE`              | Set this variable to `swarm` when wanting to use LoggiFly in swarm mode | _N/A_     |
 | `GLOBAL_KEYWORDS`       | Keywords that will be monitored for all containers. Overrides `global_keywords.keywords` from the `config.yaml`.| _N/A_     |
 | `GLOBAL_KEYWORDS_WITH_ATTACHMENT`| Notifications triggered by these global keywords have a logfile attached. | _N/A_     |
+| `EXCLUDED_KEYWORDS`       | Keywords that will always be ignored. Can be used to suppress notifications from irrelevant log lines | _N/A_     |
 | `ATTACH_LOGFILE`                | Attach a Logfile to *all* notifications. | True    |
 | `ATTACHMENT_LINES`              | Define the number of Log Lines in the attachment file     | 20     |
 | `NOTIFICATION_COOLDOWN`         | Cooldown period (in seconds) per container per keyword before a new message can be sent  | 5        | 
