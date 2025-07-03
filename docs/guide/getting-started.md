@@ -1,5 +1,5 @@
 ---
-title: What is LoggiFly?
+title: Getting started
 ---
 
 # Getting Started
@@ -45,9 +45,9 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     environment:
       # Configute at least one:
-         - notification service
-         - container to.monitor
-         - keyword
+      #  - notification service
+      #  - container to.monitor
+      #  - keyword
       NTFY_URL: "https://ntfy.sh"       
       NTFY_TOPIC: "your_topic"          
       # ntfy Token or Username + Password In case you need authentication
