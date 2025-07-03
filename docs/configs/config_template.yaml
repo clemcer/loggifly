@@ -6,7 +6,7 @@
 #
 # For LoggiFly to work, you need to:
 #   - Configure at least ONE container
-#   - Set up at least ONE notification service (Ntfy or Apprise)
+#   - Set up at least ONE notification service (Ntfy/Apprise/Webhook)
 #   - Add at least ONE keyword/regex (globally or per container)
 #
 # Optional: Remove any sections you don't need.
