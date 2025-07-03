@@ -46,7 +46,7 @@ services:
     environment:
       # Configute at least one:
       #  - notification service
-      #  - container to.monitor
+      #  - container to monitor
       #  - keyword
       NTFY_URL: "https://ntfy.sh"       
       NTFY_TOPIC: "your_topic"          
