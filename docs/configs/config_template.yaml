@@ -115,5 +115,5 @@ settings:
   attach_logfile: False               # Attach log file to all notifications
   attachment_lines: 20                # Lines to include in log attachments
   hide_regex_in_title: False          # Hide regex in notification title
-  excluded_keywords:                  # List of keywords that will always be ignored in log lines. (https://clemcer.github.io/loggifly/guide/config_sections/settings.html#excluded-keywords). 
+  excluded_keywords:                  # List of keywords that will always be ignored in log lines. (https://clemcer.github.io/loggifly/guide/config_sections/settings#excluded-keywords). 
 
