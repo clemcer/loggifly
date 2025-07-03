@@ -8,7 +8,7 @@ LoggiFly can easily be deployed on Docker, Docker Swarm or Podman.
 The quickest way to get started is by configuring LoggiFly with environment variables only, but for full flexibility and feature access, using a config.yaml file is recommended.
 
 ::: info
-Environment variables allow for a simple and much quicker setup but they don't support configuring different keywords per container or features like regex, container actions, message formatting and more.
+Environment variables allow for a simple and much quicker setup but they don't support configuring different keywords per container or features like regex, container actions, message formatting and more.<br>
 With a config.yaml you do have access to all features as well as finegrained control over which keywords and settings are applied to each container.
 :::
 
@@ -17,7 +17,7 @@ For more features and customization options, start [here](./config-structure) to
 
 ## Notification Services
 
-You can directly send notifications to ntfy and change topic, tags, priority, etc. 
+You can send notifications directly to [ntfy](https://ntfy.sh/) and change topic, tags, priority, etc.
 
 You can also send notifications to most other notification services via **Apprise**. Just follow their [docs](https://github.com/caronc/apprise/wiki) on how to best configure the Apprise URL for your notification service.
 
@@ -44,7 +44,10 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     environment:
-      # Choose at least one notification service
+      # Configute at least one:
+         - notification service
+         - container to.monitor
+         - keyword
       NTFY_URL: "https://ntfy.sh"       
       NTFY_TOPIC: "your_topic"          
       # ntfy Token or Username + Password In case you need authentication
@@ -54,7 +57,7 @@ services:
       APPRISE_URL: "discord://..."      # Apprise-compatible URL
     
       CONTAINERS: "vaultwarden,audiobookshelf"        # Comma-separated list
-      GLOBAL_KEYWORDS: "error,failed login,password"  # Basic keyword monitoring
+      GLOBAL_KEYWORDS: "error,failed login,critical"  # Basic keyword monitoring
       GLOBAL_KEYWORDS_WITH_ATTACHMENT: "critical"     # Attaches a log file to the notification
     restart: unless-stopped 
 ```
