@@ -19,13 +19,13 @@ Except for container / keyword specific settings and regex patterns a lot of the
 | `APPRISE_URL`                   | Any [Apprise-compatible URL](https://github.com/caronc/apprise/wiki)  | _N/A_    |
 | `CONTAINERS`                    | A comma separated list of containers. These are added to the containers from the `config.yaml` (if you are using one).| _N/A_     |
 | `SWARM_SERVICES`              |  A comma separated list of docker swarm services to monitor. | _N/A_     |
-| `LOGGIFLY_MODE`              | Set this variable to `swarm` when wanting to use LoggiFly in swarm mode | _N/A_     |
+| `LOGGIFLY_MODE`              | Set this variable to `swarm` to use LoggiFly in swarm mode | _N/A_     |
 | `GLOBAL_KEYWORDS`       | Keywords that will be monitored for all containers. Overrides `global_keywords.keywords` from the `config.yaml`.| _N/A_     |
 | `GLOBAL_KEYWORDS_WITH_ATTACHMENT`| Notifications triggered by these global keywords have a logfile attached. | _N/A_     |
 | `EXCLUDED_KEYWORDS`       | Keywords that will always be ignored. Can be used to suppress notifications from irrelevant log lines | _N/A_     |
 | `ATTACH_LOGFILE`                | Attach a Logfile to *all* notifications. | True    |
 | `ATTACHMENT_LINES`              | Define the number of Log Lines in the attachment file     | 20     |
-| `NOTIFICATION_COOLDOWN`         | Cooldown period (in seconds) per container per keyword before a new message can be sent  | 5        | 
+| `NOTIFICATION_COOLDOWN`         | Cooldown period in seconds between alerts for same keyword (per container)  | 5        | 
 | `ACTION_COOLDOWN`         | Cooldown period (in seconds) before the next container action can be performed. Always at least 60s. (`action_keywords` are only configurable in YAML)  | 300        |
 | `LOG_LEVEL`                     | Log Level for LoggiFly container logs.                    | INFO     |
 | `MULTI_LINE_ENTRIES`            | When enabled the program tries to catch log entries that span multiple lines.<br>If you encounter bugs or you simply don't need it you can disable it.| True     |
