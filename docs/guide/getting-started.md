@@ -33,9 +33,6 @@ You can also send notifications to most other notification services via **Appris
 This is the fastest way to try out LoggiFly with minimal setup.
 Simply run the container and pass the required options as environment variables. All available environment variables are listed [here](./environment-variables).
 
-<!-- <details>
-<summary>Compose & Run command</summary> -->
-
 ::: code-group
 
 ```yaml [docker-compose.yaml]
@@ -111,14 +108,6 @@ ghcr.io/clemcer/loggifly:latest
 ```
 :::
 
-<!-- Here is a minimal config.yaml you can edit to suit your needs:
-
-::: tip
-For all configuration options take a look at the [Config Sections](./config-structure). There are also config examples like this [`config_example.yaml`](https://github.com/clemcer/loggifly/blob/main/docs/configs/config_example.yaml) with some real use cases or the [`config_template`](https://github.com/clemcer/loggifly/blob/main/docs/configs/config_template.yaml).yaml which automatically gets downloaded into your mounted /config directory.
-::: -->
-
-
-
 ::: tip Tips
 - For all configuration options take a look at the [Config Sections](./config-structure). 
 - If `/config` is mounted a **[template file](./config-structure#config-template) will be downloaded** into that directory. You can edit the downloaded template file and rename it to `config.yaml` to use it. 
@@ -133,7 +122,7 @@ containers:
   container-name:  # Exact container name
     keywords:
       - error
-      - regex: (username|password).*incorrect  # Use regex patterns when you need them
+      - regex: (username|password).*incorrect  # Use regex when you need them
   another-container:
     keywords:
       - login

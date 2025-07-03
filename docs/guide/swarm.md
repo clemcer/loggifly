@@ -50,7 +50,7 @@ configs:
 ## Configuring the `config.yaml`
 
 
-In the `config.yaml` you can set swarm services that should be monitored just like you would do with containers.
+In the `config.yaml`, you can configure Swarm services to be monitored in the same way as containers.
 
 ```yaml
 swarm_services:

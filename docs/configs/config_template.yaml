@@ -99,19 +99,21 @@ notifications:
       X-Custom-Header": "Test123"
 
 #  Default settings (can be overridden on container or keyword level)
-settings:
-  log_level: INFO                         # DEBUG, INFO, WARNING, ERROR
-  multi_line_entries: True                # Monitor multi-line log entries
+settings:          
+  log_level: INFO                        # DEBUG, INFO, WARNING, ERROR
+  multi_line_entries: True               # Monitor and catch multi-line log entries instead of going line by line. 
   reload_config: True                     # Auto-reload config on changes
   disable_start_message: False            # Suppress startup notification
-  disable_shutdown_message: False         # Suppress shutdown notification
+  disable_shutdown_message: False         # Suppress shutdown snotification
   disable_config_reload_message: False    # Suppress config reload notification
   disable_container_event_message: False  # Suppress container start/stop notifications
 
+  # The following settings can also be set per container or per keyword/regex pattern
   notification_cooldown: 5            # Seconds between alerts for same keyword (per container)
   notification_title: default         # Custom template for notification title
   action_cooldown: 300                # Cooldown (seconds) before next container action (min 60s)
   attach_logfile: False               # Attach log file to all notifications
   attachment_lines: 20                # Lines to include in log attachments
-  hide_regex_in_title: False          # Hide regex pattern in notification title
+  hide_regex_in_title: False          # Hide regex in notification title
+  excluded_keywords:                  # List of keywords that will always be ignored in log lines. (https://clemcer.github.io/loggifly/guide/config_sections/settings.html#excluded-keywords). 
 

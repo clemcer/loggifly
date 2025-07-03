@@ -100,7 +100,7 @@ notifications:
 #  Default settings (can be overridden on container or keyword level)
 settings:
   log_level: INFO                         # DEBUG, INFO, WARNING, ERROR
-  multi_line_entries: True                # Monitor multi-line log entries
+  multi_line_entries: True                # Monitor and catch multi-line log entries instead of going line by line.
   reload_config: True                     # Auto-reload config on changes
   disable_start_message: False            # Suppress startup notification
   disable_shutdown_message: False         # Suppress shutdown notification
@@ -112,6 +112,6 @@ settings:
   action_cooldown: 300                # Cooldown (seconds) before next container action (min 60s)
   attach_logfile: False               # Attach log file to all notifications
   attachment_lines: 20                # Lines to include in log attachments
-  hide_regex_in_title: False          # Hide regex pattern in notification title
-  excluded_keywords: # List of keywords that will always be ignored in log lines. See the section below for how to configure these
+  hide_regex_in_title: False          # Hide regex in notification title
+  excluded_keywords:                  # List of keywords that will always be ignored in log lines.
     - keyword: ignore this message

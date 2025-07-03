@@ -29,7 +29,7 @@ Except for container / keyword specific settings and regex patterns a lot of the
 | `ACTION_COOLDOWN`         | Cooldown period (in seconds) before the next container action can be performed. Always at least 60s. (`action_keywords` are only configurable in YAML)  | 300        |
 | `LOG_LEVEL`                     | Log Level for LoggiFly container logs.                    | INFO     |
 | `MULTI_LINE_ENTRIES`            | When enabled the program tries to catch log entries that span multiple lines.<br>If you encounter bugs or you simply don't need it you can disable it.| True     |
-| `HIDE_REGEX_IN_TITLE`         | Exclude regex pattern from the notification title for a cleaner look. Useful when using very long regex patterns.| False     |
+| `HIDE_REGEX_IN_TITLE`         | Exclude regex from the notification title for a cleaner look. Useful when using very long regexes.| False     |
 | `RELOAD_CONFIG`               | When the config file is changed the program reloads the config | True  |
 | `DISABLE_START_MESSAGE`          | Disable startup message.                                  | False     |
 | `DISABLE_SHUTDOWN_MESSAGE`       | Disable shutdown message.                                 | False     |

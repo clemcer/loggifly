@@ -17,7 +17,7 @@ containers:
 ```
 
 
-## Attachments Logfiles
+## Attach Logfiles
 
 With the `attach_logfile` option you can attach a logfile to the notification. 
 
@@ -68,7 +68,7 @@ containers:
 
 ## Settings per container and keyword
 
-Most of the **settings** from the `settings` and the `notifications` sections can be set per container or per keyword/regex.<br>s
+Most of the **settings** from the `settings` and the `notifications` sections can be set per container or per keyword/regex.<br>
 A summary of all the settings and where you can set them can be found [here](../settings-overview.md).
 
 ::: info

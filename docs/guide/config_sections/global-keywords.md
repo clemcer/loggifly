@@ -1,5 +1,5 @@
 
-### 🌍 Global Keywords
+# Global Keywords
 
 `global_keywords` are monitored on all containers. 
 

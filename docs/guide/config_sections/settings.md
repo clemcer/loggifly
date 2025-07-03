@@ -10,7 +10,7 @@ These are the default values:
 ```yaml
 settings:          
   log_level: INFO                         # DEBUG, INFO, WARNING, ERROR
-  multi_line_entries: True                # Monitor multi-line log entries
+  multi_line_entries: True                # Monitor and catch multi-line log entries instead of going line by line
   reload_config: True                     # Auto-reload config on changes
   disable_start_message: False            # Suppress startup notification
   disable_shutdown_message: False         # Suppress shutdown notification
@@ -23,7 +23,7 @@ settings:
   attach_logfile: False               # Attach log file to all notifications
   attachment_lines: 20                # Lines to include in log attachments
   hide_regex_in_title: False          # Hide regex pattern in notification title
-  excluded_keywords: <empty if not set> # List of keywords that will always be ignored in log lines. See the section below for how to configure these
+  excluded_keywords:                  # List of keywords that will always be ignored in log lines. See the section below for how to configure these
   
 ```
 

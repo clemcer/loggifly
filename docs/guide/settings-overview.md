@@ -4,8 +4,6 @@
 
 It's important to understand how settings can be applied on three different levels (this applies to both normal `settings` and `notifications` settings).
 
-[details](./remote-hosts#assign-containers-to-hosts)
-
 The three levels are:
 - Global (`settings` / `notifications`)
 - Per container (`containers`)
@@ -39,7 +37,7 @@ This table shows which settings are available and where they can be configured:<
 | [`json_template`](./customize-notifications/json_template) | – | –                     | ✅                     | Template for JSON log entries |
 | [`template`](./customize-notifications/template) | –   | –                             | ✅                      | Template for plain text log entries using named capturing groups |
 
-The same applies to the `notifications` settings. You can set the same settings globally or per container or per keyword/regex pattern. <br>
+The same applies to the `notifications` settings. You can set the same settings globally or per container or per keyword/regex. <br>
 
 | Setting                         | Global (`notifications`) | Per Container (`containers`) | Per Keyword (`keywords`) | Description |
 |---------------------------------|--------------------|-------------------------------|--------------------------|-------------|

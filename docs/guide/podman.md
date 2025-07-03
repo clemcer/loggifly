@@ -39,7 +39,7 @@ You might also need these two options depending on your setup:
   --user 1000:1000 \              # might be necessary depending on your setup
 ```
 
-## Podmman Quadlet File
+## Podman Quadlet File
 
 Here is an example of how to run LoggiFly with a Podman quadlet file. <br>
 
