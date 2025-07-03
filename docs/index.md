@@ -26,7 +26,7 @@ features:
     details: Catch simple keywords or complex patterns in log entries that span multiple lines.
     icon: 🔍
   - title: Notifications
-    details: Send notifications directly to Ntfy or via Apprise to 100+ different services (Slack, Discord, Telegram) or even to your own custom endpoint.
+    details: Send notifications directly to ntfy or via Apprise to 100+ different services (Slack, Discord, Telegram) or even to your own custom endpoint.
     icon: 🚨
   - title: Trigger Stop/Restart
     details: Restart or stop containers automatically when critical keywords appear in the logs.
