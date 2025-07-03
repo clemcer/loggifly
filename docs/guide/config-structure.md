@@ -22,7 +22,7 @@ For the program to function you need to configure:
 
 ## Config Template
 
-Here is an example config. This file automatically gets downloaded into your mounted `/config` directory. 
+Here is a config template. This file automatically gets downloaded into your mounted `/config` directory. 
 ::: details Config Template
 
 <<< @/configs/config_template.yaml{yaml}
